@@ -17,7 +17,9 @@
     "db:start": "supabase start",
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
-    "db:types": "supabase gen types typescript --local > packages/db/src/database.types.ts && prettier --write packages/db/src/database.types.ts"
+    "db:types": "supabase gen types typescript --local > packages/db/src/database.types.ts && prettier --write packages/db/src/database.types.ts",
+    "env:setup": "node scripts/setup-env.mjs",
+    "setup": "pnpm db:start && pnpm env:setup"
   },
   "devDependencies": {
     "prettier": "3.9.9",
