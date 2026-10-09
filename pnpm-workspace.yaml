@@ -1,0 +1,8 @@
+packages:
+  - apps/*
+  - packages/*
+minimumReleaseAgeExclude:
+  - '@anthropic-ai/sdk@0.133.0'
+# Dependencies whose install scripts may run (true) or are deliberately skipped (false).
+allowBuilds:
+  unrs-resolver: false
