@@ -3,7 +3,8 @@
 Personal fitness and nutrition coach. This repo currently has the foundation plus one working
 flow:
 
-- **Magic-link sign-in** (Supabase Auth). A profile is created automatically on signup.
+- **Email + password sign-in** (Supabase Auth). A profile is created automatically for each new
+  user.
 - **Profile** (name, goal, units, time zone).
 - **Energy test (Mifflin-St Jeor)**: BMR and TDEE, stored as an append-only history.
 - **AI coach chat** that knows your profile and latest test. It uses a free mock AI by default.
@@ -31,10 +32,11 @@ the Supabase images, which takes a few minutes.
 
 ### Try the flow
 
-1. Open http://localhost:3000. You'll be redirected to `/login`.
-2. Enter any email address and click **Send magic link**.
-3. Open the local inbox (Mailpit) at http://127.0.0.1:54324 and click the link in the
-   "Your sign-in link" email. Open it in the same browser you requested it from.
+1. Create a user: in Supabase Studio (http://127.0.0.1:54323) go to Authentication → Users →
+   **Add user**, enter an email and password, and tick **Auto confirm user**. There is no
+   sign-up page yet.
+2. Open http://localhost:3000. You'll be redirected to `/login`.
+3. Sign in with that email and password.
 4. On `/app`: save your profile, take the energy test, and ask the coach a question.
 
 Other local URLs: Supabase Studio at http://127.0.0.1:54323 and the API at

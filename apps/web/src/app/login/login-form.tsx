@@ -2,44 +2,36 @@
 
 import { Button, ErrorText, Field, inputClass } from '@/components/ui'
 import { getSupabaseBrowserClient } from '@/lib/supabase-browser'
+import { useRouter } from 'next/navigation'
 import { useState, type FormEvent } from 'react'
 
-export function LoginForm({ linkError }: { linkError: boolean }) {
+export function LoginForm() {
+  const router = useRouter()
   const [email, setEmail] = useState('')
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle')
-  const [error, setError] = useState(linkError ? 'That link is invalid or expired. Try again.' : '')
+  const [password, setPassword] = useState('')
+  const [pending, setPending] = useState(false)
+  const [error, setError] = useState('')
 
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
-    setStatus('sending')
+    setPending(true)
     setError('')
-    const { error: signInError } = await getSupabaseBrowserClient().auth.signInWithOtp({
+    const { error: signInError } = await getSupabaseBrowserClient().auth.signInWithPassword({
       email,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback?next=/app` },
+      password,
     })
     if (signInError) {
-      setError(signInError.message)
-      setStatus('idle')
+      setError(
+        signInError.code === 'invalid_credentials'
+          ? 'Wrong email or password.'
+          : signInError.message,
+      )
+      setPending(false)
       return
     }
-    setStatus('sent')
-  }
-
-  if (status === 'sent') {
-    return (
-      <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-sm">
-        <p className="font-medium">Check your email for a sign-in link.</p>
-        {process.env.NODE_ENV === 'development' && (
-          <p className="mt-2 text-slate-600">
-            Local dev: open the Supabase inbox at{' '}
-            <a className="underline" href="http://127.0.0.1:54324" target="_blank" rel="noreferrer">
-              127.0.0.1:54324
-            </a>
-            .
-          </p>
-        )}
-      </div>
-    )
+    // The session cookie is set; re-render server components with the signed-in user.
+    router.replace('/app')
+    router.refresh()
   }
 
   return (
@@ -57,9 +49,22 @@ export function LoginForm({ linkError }: { linkError: boolean }) {
           }}
         />
       </Field>
+      <Field label="Password">
+        <input
+          className={inputClass}
+          type="password"
+          name="password"
+          autoComplete="current-password"
+          required
+          value={password}
+          onChange={(e) => {
+            setPassword(e.target.value)
+          }}
+        />
+      </Field>
       <ErrorText>{error}</ErrorText>
-      <Button type="submit" disabled={status === 'sending'}>
-        {status === 'sending' ? 'Sending…' : 'Send magic link'}
+      <Button type="submit" disabled={pending}>
+        {pending ? 'Signing in…' : 'Sign in'}
       </Button>
     </form>
   )
