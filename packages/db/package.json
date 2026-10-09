@@ -1,0 +1,25 @@
+{
+  "name": "@mycoach/db",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./admin": "./src/admin.ts",
+    "./browser": "./src/browser.ts",
+    "./ssr": "./src/ssr.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/ssr": "0.12.7",
+    "@supabase/supabase-js": "2.117.3"
+  },
+  "devDependencies": {
+    "@mycoach/config": "workspace:*",
+    "eslint": "10.12.0",
+    "typescript": "6.0.3"
+  }
+}
