@@ -1,0 +1,31 @@
+{
+  "name": "@mycoach/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:integration": "vitest run --config vitest.integration.config.ts"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "0.9.1",
+    "@mycoach/core": "workspace:*",
+    "@mycoach/db": "workspace:*",
+    "hono": "4.13.13",
+    "pino": "10.4.0",
+    "zod": "4.6.5"
+  },
+  "devDependencies": {
+    "@mycoach/config": "workspace:*",
+    "@supabase/supabase-js": "2.117.3",
+    "@types/node": "22.20.5",
+    "eslint": "10.12.0",
+    "typescript": "6.0.3",
+    "vitest": "5.0.3"
+  }
+}

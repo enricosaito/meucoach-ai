@@ -1,0 +1,194 @@
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import {
+  adminClient,
+  authHeaders,
+  createTestUser,
+  deleteTestUser,
+  newKey,
+  testApp,
+  type TestUser,
+} from './helpers'
+
+const app = testApp()
+let user: TestUser
+
+beforeAll(async () => {
+  user = await createTestUser()
+})
+afterAll(async () => {
+  await deleteTestUser(user)
+})
+
+const assessment = {
+  sex: 'male',
+  ageYears: 30,
+  heightCm: 180,
+  weightKg: 80,
+  activityLevel: 'moderate',
+}
+
+describe('platform', () => {
+  it('GET /health is public and returns a request id', async () => {
+    const res = await app.request('/api/v1/health')
+    expect(res.status).toBe(200)
+    expect(res.headers.get('x-request-id')).toBeTruthy()
+  })
+
+  it('propagates a caller-supplied request id', async () => {
+    const res = await app.request('/api/v1/health', { headers: { 'x-request-id': 'trace-123' } })
+    expect(res.headers.get('x-request-id')).toBe('trace-123')
+  })
+
+  it('rejects unauthenticated requests with the standard error shape', async () => {
+    const res = await app.request('/api/v1/me', { headers: { 'x-request-id': 'req-401' } })
+    expect(res.status).toBe(401)
+    expect(await res.json()).toEqual({
+      error: { code: 'unauthorized', message: 'Sign in required', requestId: 'req-401' },
+    })
+  })
+
+  it('rejects a forged bearer token', async () => {
+    const res = await app.request('/api/v1/me', {
+      headers: { authorization: `Bearer ${user.accessToken.slice(0, -4)}abcd` },
+    })
+    expect(res.status).toBe(401)
+  })
+
+  it('rate limits per user', async () => {
+    const limited = testApp({ limits: { perMinute: 2, chatPerMinute: 1 } })
+    const statuses = []
+    for (let i = 0; i < 3; i++) {
+      statuses.push((await limited.request('/api/v1/me', { headers: authHeaders(user) })).status)
+    }
+    expect(statuses).toEqual([200, 200, 429])
+  })
+})
+
+describe('GET /me', () => {
+  it('returns the profile created by the signup trigger', async () => {
+    const res = await app.request('/api/v1/me', { headers: authHeaders(user) })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as { profile: { id: string; units: string } }
+    expect(body.profile.id).toBe(user.id)
+    expect(body.profile.units).toBe('metric')
+  })
+})
+
+describe('PATCH /me/profile', () => {
+  it('updates the profile', async () => {
+    const res = await app.request('/api/v1/me/profile', {
+      method: 'PATCH',
+      headers: authHeaders(user, { 'idempotency-key': newKey() }),
+      body: JSON.stringify({ displayName: 'Test User', timezone: 'America/Sao_Paulo' }),
+    })
+    expect(res.status).toBe(200)
+    const body = (await res.json()) as { profile: { displayName: string; timezone: string } }
+    expect(body.profile).toMatchObject({ displayName: 'Test User', timezone: 'America/Sao_Paulo' })
+  })
+})
+
+describe('POST /me/assessments (Mifflin-St Jeor test)', () => {
+  const post = (body: unknown, key: string | null = newKey()) =>
+    app.request('/api/v1/me/assessments', {
+      method: 'POST',
+      headers: authHeaders(user, key ? { 'idempotency-key': key } : {}),
+      body: JSON.stringify(body),
+    })
+
+  it('requires an Idempotency-Key header', async () => {
+    const res = await post(assessment, null)
+    expect(res.status).toBe(400)
+    expect(await res.json()).toMatchObject({ error: { code: 'idempotency_key_required' } })
+  })
+
+  it('computes and stores BMR and TDEE for the authenticated user', async () => {
+    const res = await post(assessment)
+    expect(res.status).toBe(201)
+    const { assessment: saved } = (await res.json()) as {
+      assessment: { id: string; bmrKcal: number; tdeeKcal: number; formulaVersion: number }
+    }
+    expect(saved).toMatchObject({ bmrKcal: 1780, tdeeKcal: 2759, formulaVersion: 1 })
+
+    const { data } = await adminClient()
+      .from('metabolic_assessments')
+      .select('user_id')
+      .eq('id', saved.id)
+      .single()
+    expect(data?.user_id).toBe(user.id)
+
+    const me = await app.request('/api/v1/me', { headers: authHeaders(user) })
+    expect(await me.json()).toMatchObject({ latestAssessment: { id: saved.id } })
+  })
+
+  it('replays the original response when retried with the same key', async () => {
+    const key = newKey()
+    const first = await post(assessment, key)
+    const second = await post(assessment, key)
+    expect(second.status).toBe(201)
+    expect(second.headers.get('idempotent-replayed')).toBe('true')
+    expect(await second.json()).toEqual(await first.json())
+
+    const { count } = await adminClient()
+      .from('metabolic_assessments')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+    expect(count).toBe(2) // one from the previous test + one here, not three
+  })
+
+  it('rejects reusing a key with a different body', async () => {
+    const key = newKey()
+    await post(assessment, key)
+    const res = await post({ ...assessment, weightKg: 81 }, key)
+    expect(res.status).toBe(422)
+  })
+
+  it('validates input and never accepts a user id from the body', async () => {
+    const res = await post({ ...assessment, userId: crypto.randomUUID(), ageYears: 5 })
+    expect(res.status).toBe(400)
+    const body = (await res.json()) as { error: { code: string; details: { path: string }[] } }
+    expect(body.error.code).toBe('validation_failed')
+    expect(body.error.details.map((d) => d.path)).toEqual(expect.arrayContaining(['ageYears']))
+  })
+})
+
+describe('POST /chat/messages', () => {
+  it('answers with the AI coach, stores the exchange and logs the AI call', async () => {
+    const res = await app.request('/api/v1/chat/messages', {
+      method: 'POST',
+      headers: authHeaders(user, { 'idempotency-key': newKey(), 'x-request-id': 'chat-req-1' }),
+      body: JSON.stringify({ content: 'How many calories should I eat?' }),
+    })
+    expect(res.status).toBe(201)
+    const body = (await res.json()) as {
+      question: { role: string; content: string }
+      reply: { id: string; role: string; content: string }
+    }
+    expect(body.question).toMatchObject({
+      role: 'user',
+      content: 'How many calories should I eat?',
+    })
+    expect(body.reply.role).toBe('assistant')
+    // The mock provider sees the latest assessment through the coaching prompt.
+    expect(body.reply.content).toContain('2759 kcal/day')
+
+    const { data: calls } = await adminClient()
+      .from('ai_calls')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('request_id', 'chat-req-1')
+    expect(calls).toHaveLength(1)
+    expect(calls?.[0]).toMatchObject({
+      feature: 'coach_chat',
+      provider: 'mock',
+      prompt_version: 'coach-chat@1',
+      status: 'succeeded',
+    })
+
+    // The client can read its own history directly (RLS), oldest first.
+    const { data: history } = await user.client
+      .from('chat_messages')
+      .select('role, content')
+      .order('created_at')
+    expect(history?.map((m) => m.role)).toEqual(['user', 'assistant'])
+  })
+})

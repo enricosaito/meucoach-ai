@@ -1,0 +1,25 @@
+{
+  "name": "@mycoach/api-client",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "hono": "4.13.13"
+  },
+  "devDependencies": {
+    "@mycoach/api": "workspace:*",
+    "@mycoach/config": "workspace:*",
+    "@types/node": "22.20.5",
+    "eslint": "10.12.0",
+    "typescript": "6.0.3",
+    "vitest": "5.0.3"
+  }
+}
