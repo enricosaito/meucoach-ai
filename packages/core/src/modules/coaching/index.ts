@@ -1,5 +1,7 @@
-// Public API of the coaching module. Other modules and packages may import ONLY from here.
+// Public API of the coaching module (server side). Other modules and packages may import ONLY from
+// here or from `contracts.ts` (the client-safe subset).
 // All AI calls in the codebase go through the gateway exported below.
+export * from './contracts'
 export {
   createAiGateway,
   type AiCallRecord,
@@ -15,14 +17,4 @@ export {
 } from './ai/registry'
 export type { AiProvider, ChatTurn } from './ai/types'
 export { createAiCallRecorder } from './data/ai-calls-repository'
-export {
-  CHAT_MESSAGE_MAX_LENGTH,
-  sendChatMessageSchema,
-  type SendChatMessageInput,
-} from './schemas'
-export {
-  COACH_CHAT_FEATURE,
-  createCoachingService,
-  type ChatMessage,
-  type CoachingService,
-} from './service'
+export { COACH_CHAT_FEATURE, createCoachingService, type CoachingService } from './service'

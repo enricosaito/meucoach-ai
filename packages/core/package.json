@@ -6,7 +6,9 @@
   "exports": {
     "./shared": "./src/shared/index.ts",
     "./profile": "./src/modules/profile/index.ts",
-    "./coaching": "./src/modules/coaching/index.ts"
+    "./profile/contracts": "./src/modules/profile/contracts.ts",
+    "./coaching": "./src/modules/coaching/index.ts",
+    "./coaching/contracts": "./src/modules/coaching/contracts.ts"
   },
   "scripts": {
     "lint": "eslint .",

@@ -7,44 +7,8 @@ import {
   type AssessmentRow,
 } from './data/assessment-repository'
 import { findProfile, updateProfileRow, type ProfileRow } from './data/profile-repository'
-import { goalsSchema, type AssessmentInput, type Goals, type UpdateProfileInput } from './schemas'
-
-export interface Profile {
-  id: string
-  displayName: string | null
-  goals: Goals
-  units: UnitSystem
-  timezone: string
-  createdAt: string
-  updatedAt: string
-}
-
-export interface Assessment {
-  id: string
-  formula: string
-  formulaVersion: number
-  sex: Sex
-  ageYears: number
-  heightCm: number
-  weightKg: number
-  activityLevel: ActivityLevel
-  bmrKcal: number
-  tdeeKcal: number
-  createdAt: string
-}
-
-export interface Me {
-  profile: Profile
-  latestAssessment: Assessment | null
-}
-
-/** What the coaching module is allowed to know about a user. */
-export interface CoachingContext {
-  displayName: string | null
-  goals: Goals
-  units: UnitSystem
-  latestAssessment: Assessment | null
-}
+import { goalsSchema, type AssessmentInput, type UpdateProfileInput } from './schemas'
+import type { Assessment, CoachingContext, Me, Profile } from './types'
 
 function toProfile(row: ProfileRow): Profile {
   const goals = goalsSchema.safeParse(row.goals)

@@ -4,7 +4,8 @@ import boundaries from 'eslint-plugin-boundaries'
 /**
  * Inside packages/core/src:
  *  - files may import anything inside their own module
- *  - other modules may only be imported through their public `index.ts`
+ *  - other modules may only be imported through their public `index.ts` (server API) or
+ *    `contracts.ts` (client-safe subset)
  *  - `shared` may be imported by any module through its `index.ts`; `shared` never imports modules
  */
 export function moduleBoundariesConfig() {
@@ -30,7 +31,9 @@ export function moduleBoundariesConfig() {
               { allow: { dependency: { relationship: { to: 'internal' } } } },
               {
                 from: { element: { type: 'module' } },
-                allow: { to: { element: { type: 'module', fileInternalPath: 'index.ts' } } },
+                allow: {
+                  to: { element: { type: 'module', fileInternalPath: '{index,contracts}.ts' } },
+                },
               },
               {
                 from: { element: { type: 'module' } },

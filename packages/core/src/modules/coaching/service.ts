@@ -4,18 +4,12 @@ import type { AiGateway } from './ai/gateway'
 import { insertExchange, listRecentMessages, type ChatMessageRow } from './data/chat-repository'
 import { MAX_HISTORY_TURNS, buildChatWindow } from './domain/chat-window'
 import { coachChat } from './prompts'
+import type { ChatMessage } from './types'
 
 export const COACH_CHAT_FEATURE = 'coach_chat'
 const MAX_REPLY_TOKENS = 16000
 const REFUSAL_REPLY =
   "I can't help with that one. Try asking about training, nutrition, sleep or habits."
-
-export interface ChatMessage {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-  createdAt: string
-}
 
 function toChatMessage(row: ChatMessageRow): ChatMessage {
   return {

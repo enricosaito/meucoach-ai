@@ -65,7 +65,10 @@ export function createAiGateway(deps: {
       } catch (error) {
         const latencyMs = Math.round(now() - started)
         const message = error instanceof Error ? error.message : String(error)
-        logger.error({ err: error, feature: input.feature, latencyMs }, 'ai call failed')
+        logger.error(
+          { err: error, requestId: base.requestId, feature: input.feature, latencyMs },
+          'ai call failed',
+        )
         await recordCall({
           ...base,
           model: 'unknown',
@@ -96,7 +99,14 @@ export function createAiGateway(deps: {
         error: null,
       })
       logger.info(
-        { feature: input.feature, model: result.model, latencyMs, costUsd, aiCallId: id },
+        {
+          requestId: base.requestId,
+          feature: input.feature,
+          model: result.model,
+          latencyMs,
+          costUsd,
+          aiCallId: id,
+        },
         'ai call succeeded',
       )
       return { ...result, aiCallId: id }
