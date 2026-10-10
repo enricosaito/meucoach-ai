@@ -36,17 +36,25 @@ Done (2026-10-10):
   body stats; cog opens Configurações.
 - Configurações: photo (pick, crop, 512 px JPEG), name, @username, goal, language, units,
   privacy (photo consent revoke, legal links), sign out.
+- Treino: plan overview, day picker (today's rotation day first), exercises, mark any day done
+  (+ XP note), workout history (last 5 weeks), body analysis, progress photos (signed URLs,
+  delete), polling while a plan generates. "Novo plano" wizard (pushed screen `new-plan`):
+  questionnaire prefilled with the last answers, LGPD consent card, then camera or library photos
+  (resized to ≤1600 px JPEG, EXIF stripped, signed upload), review, submit. Home and Treino reload
+  on focus. Verified end to end in the web preview (local stack, mock AI).
 - Expo project @enricolass/meucoach, EAS profiles in `apps/mobile/eas.json`; dev build uses the
   temporary identifier `dev.enricolass.meucoach.dev`; the store identifier is unset in
   `app.config.ts` until the app name/publisher is decided (before the first TestFlight upload).
 
-Next, in order: port **Treino** (plan view, log any day, history, plan questionnaire with
-photos), **Dieta** (plan view, questionnaire), **Coach** (chat), the **energy test**; then
+Next, in order: port **Dieta** (plan view, questionnaire), **Coach** (chat), the **energy test**
+(the wizard's energy hint has no link until then); then
 **freemium** with RevenueCat (needs an EAS development build, not Expo Go). The web UI is paused
 (no new features).
 
-To verify on the phone (not testable in the web preview): profile photo upload, haptics, safe
-areas on iOS.
+To verify on the phone (not testable in the web preview): profile photo upload, progress photos
+from the camera and library (permission prompts, action sheet), haptics, safe areas on iOS.
+Known: the web preview logs "Unexpected text node" six times on the first page load (from before
+Treino; an empty string rendered with `&&` somewhere); harmless, but worth finding.
 
 ## What is built
 

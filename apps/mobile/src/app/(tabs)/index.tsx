@@ -4,16 +4,8 @@ import { planTotals, type DietPlanRecord } from '@mycoach/core/nutrition/contrac
 import { firstName } from '@mycoach/core/profile/contracts'
 import { weekProgress, type WorkoutPlanRecord } from '@mycoach/core/training/contracts'
 import type { MessageKey } from '@mycoach/i18n'
-import { Link } from 'expo-router'
-import {
-  ArrowRight,
-  Check,
-  ChevronRight,
-  Dumbbell,
-  Flame,
-  Salad,
-  Sparkles,
-} from 'lucide-react-native'
+import { Link, useFocusEffect } from 'expo-router'
+import { ArrowRight, Check, ChevronRight, Dumbbell, Flame, Salad } from 'lucide-react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { MacroTiles } from '../../components/home/macro-tiles'
@@ -21,6 +13,7 @@ import { StoryCard } from '../../components/home/story-card'
 import { StreakCelebration } from '../../components/home/streak-celebration'
 import { WeekHero } from '../../components/home/week-hero'
 import { WeekStrip } from '../../components/home/week-strip'
+import { XpNote } from '../../components/xp-note'
 import {
   Button,
   Card,
@@ -34,7 +27,7 @@ import { fetchLatestPlan, fetchLatestReadyDietPlan, fetchLatestReadyPlan } from 
 import { haptics } from '../../lib/haptics'
 import { useI18n } from '../../lib/i18n'
 import { useMe, type Me } from '../../lib/me'
-import { useWorkoutLog, type XpFeedback } from '../../lib/use-workout-log'
+import { useWorkoutLog } from '../../lib/use-workout-log'
 import { radius, space, useColors } from '../../theme'
 
 function greetingKey(date = new Date()): MessageKey {
@@ -66,11 +59,16 @@ export default function HomeScreen() {
     setPlans({ latest, ready, diet })
   }, [])
 
-  useEffect(() => {
-    void loadPlans().catch(() => {
-      setPlans({ latest: null, ready: null, diet: null })
-    })
-  }, [loadPlans])
+  // Reload whenever Home comes into view: a plan or workout may have changed on another tab.
+  const reloadLog = log.reload
+  useFocusEffect(
+    useCallback(() => {
+      void loadPlans().catch(() => {
+        setPlans((current) => current ?? { latest: null, ready: null, diet: null })
+      })
+      void reloadLog()
+    }, [loadPlans, reloadLog]),
+  )
 
   async function refresh() {
     setRefreshing(true)
@@ -253,31 +251,6 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
   )
 }
 
-function XpNote({ feedback }: { feedback: XpFeedback | null }) {
-  const { t, formatNumber } = useI18n()
-  const colors = useColors()
-  if (!feedback) return null
-  return (
-    <View style={styles.row}>
-      {feedback.awarded > 0 && (
-        <View style={[styles.xpPill, { backgroundColor: colors.accent }]}>
-          <Sparkles size={13} color={colors.accentFg} />
-          <Txt variant="caption" style={{ color: colors.accentFg, fontWeight: '700' }}>
-            {t('workout.xpEarned', { xp: formatNumber(feedback.awarded) })}
-          </Txt>
-        </View>
-      )}
-      <Txt variant="caption" style={{ flexShrink: 1 }}>
-        {feedback.leveledUp
-          ? t('workout.levelUp', { level: formatNumber(feedback.level) })
-          : feedback.awarded > 0
-            ? t('workout.logged')
-            : t('workout.loggedNoXp')}
-      </Txt>
-    </View>
-  )
-}
-
 // ---------------------------------------------------------------------------
 // Diet
 // ---------------------------------------------------------------------------
@@ -342,14 +315,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: space.sm,
     height: 48,
-    borderRadius: radius.full,
-  },
-  xpPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    paddingHorizontal: 10,
-    paddingVertical: 3,
     borderRadius: radius.full,
   },
 })

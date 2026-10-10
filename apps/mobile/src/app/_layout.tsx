@@ -35,6 +35,15 @@ function RootStack() {
 
   if (!ready) return null
 
+  // Pushed screens: native header with a back button, in the app's colors.
+  const pushed = {
+    headerShown: true,
+    headerTintColor: colors.accent,
+    headerTitleStyle: { color: colors.fg },
+    headerStyle: { backgroundColor: colors.bg },
+    headerShadowVisible: false,
+  }
+
   return (
     <>
       <StatusBar style="auto" />
@@ -43,15 +52,11 @@ function RootStack() {
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
             name="settings"
-            options={{
-              headerShown: true,
-              title: t('settings.title'),
-              headerBackTitle: t('nav.profile'),
-              headerTintColor: colors.accent,
-              headerTitleStyle: { color: colors.fg },
-              headerStyle: { backgroundColor: colors.bg },
-              headerShadowVisible: false,
-            }}
+            options={{ ...pushed, title: t('settings.title'), headerBackTitle: t('nav.profile') }}
+          />
+          <Stack.Screen
+            name="new-plan"
+            options={{ ...pushed, title: t('meta.newPlan'), headerBackTitle: t('nav.training') }}
           />
         </Stack.Protected>
         <Stack.Protected guard={session === null}>

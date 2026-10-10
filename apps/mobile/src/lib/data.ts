@@ -1,7 +1,11 @@
 import { toDietPlanRecord, type DietPlanRecord } from '@mycoach/core/nutrition/contracts'
 import {
+  questionnaireSchema,
+  toBodyScan,
   toWorkoutPlanRecord,
   toWorkoutSession,
+  type BodyScan,
+  type Questionnaire,
   type WorkoutPlanRecord,
   type WorkoutSession,
 } from '@mycoach/core/training/contracts'
@@ -34,6 +38,34 @@ export async function fetchLatestPlan(): Promise<WorkoutPlanRecord | null> {
     .maybeSingle()
   if (error) throw error
   return data ? toWorkoutPlanRecord(data) : null
+}
+
+/** The last questionnaire the user sent, to prefill the plan wizard. */
+export async function fetchQuestionnaire(): Promise<Questionnaire | null> {
+  const { data, error } = await supabase
+    .from('training_profiles')
+    .select('experience, days_per_week, session_minutes, equipment, limitations')
+    .maybeSingle()
+  if (error) throw error
+  if (!data) return null
+  const parsed = questionnaireSchema.safeParse({
+    experience: data.experience,
+    daysPerWeek: data.days_per_week,
+    sessionMinutes: data.session_minutes,
+    equipment: data.equipment,
+    ...(data.limitations && { limitations: data.limitations }),
+  })
+  return parsed.success ? parsed.data : null
+}
+
+/** Progress photo sets (body scans), newest first. */
+export async function fetchScans(): Promise<BodyScan[]> {
+  const { data, error } = await supabase
+    .from('body_scans')
+    .select('id, status, front_path, side_path, back_path, analysis, created_at, completed_at')
+    .order('created_at', { ascending: false })
+  if (error) throw error
+  return data.map(toBodyScan)
 }
 
 /** Completed workouts from the last `days` days, newest first (any plan). */

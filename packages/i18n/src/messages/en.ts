@@ -9,6 +9,7 @@ export const en = {
     kcalPerDay: 'kcal/day',
     grams: '{value} g',
     cancel: 'Cancel',
+    today: 'Today',
   },
   errors: {
     generic: 'Something went wrong. Please try again.',
@@ -309,6 +310,11 @@ export const en = {
     scanUnusable: 'These photos couldn’t be analysed.',
     scanPending: 'Analysing…',
     views: { front: 'Front', side: 'Side', back: 'Back' },
+    historyTitle: 'History',
+    historyBody: 'Your workouts from the last 5 weeks.',
+    historyEmpty: 'Workouts you mark as done show up here.',
+    showMore: 'Show more',
+    showLess: 'Show less',
   },
   wizard: {
     stepOf: 'Step {current} of {total}',
@@ -343,6 +349,8 @@ export const en = {
     addPhoto: 'Add photo',
     replacePhoto: 'Replace',
     removePhoto: 'Remove',
+    takePhoto: 'Take photo',
+    choosePhoto: 'Choose from library',
     skipPhotos: 'Continue without photos',
     reviewTitle: 'Ready to build your plan',
     reviewBody: 'Here’s what your coach will use.',

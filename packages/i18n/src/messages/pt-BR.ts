@@ -9,6 +9,7 @@ export const ptBR = {
     kcalPerDay: 'kcal/dia',
     grams: '{value} g',
     cancel: 'Cancelar',
+    today: 'Hoje',
   },
   errors: {
     generic: 'Algo deu errado. Tente de novo.',
@@ -313,6 +314,11 @@ export const ptBR = {
     scanUnusable: 'Não foi possível analisar estas fotos.',
     scanPending: 'Analisando…',
     views: { front: 'Frente', side: 'Lado', back: 'Costas' },
+    historyTitle: 'Histórico',
+    historyBody: 'Seus treinos das últimas 5 semanas.',
+    historyEmpty: 'Os treinos que você marcar como feitos aparecem aqui.',
+    showMore: 'Ver mais',
+    showLess: 'Ver menos',
   },
   wizard: {
     stepOf: 'Etapa {current} de {total}',
@@ -345,6 +351,8 @@ export const ptBR = {
     addPhoto: 'Adicionar foto',
     replacePhoto: 'Trocar',
     removePhoto: 'Remover',
+    takePhoto: 'Tirar foto',
+    choosePhoto: 'Escolher da galeria',
     skipPhotos: 'Continuar sem fotos',
     reviewTitle: 'Tudo pronto para montar seu plano',
     reviewBody: 'Isto é o que seu coach vai usar.',
