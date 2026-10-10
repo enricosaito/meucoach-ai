@@ -53,7 +53,7 @@ workout first, then awards XP, so a retry after a partial failure completes the 
   protection is currently off.
 - **Deploy procedure**: `pnpm ship` (clean `main` → `pnpm verify` → pending migrations via
   `pnpm db:push` → `git push origin main`, which Vercel deploys). After the deploy is live:
-  `pnpm health` (and `pnpm inngest:status` once `.env.inngest.local` exists). If Inngest stopped
+  `pnpm health` and `pnpm inngest:status`. If Inngest stopped
   calling the app, re-sync: `curl -X PUT https://meucoach-ai.vercel.app/api/inngest`.
 - **Git**: `main` is pushed to `enricosaito/meucoach-ai` and CI is green. Every push to `main` also
   triggers a Vercel production deploy (repo connected), so run `pnpm db:push` BEFORE pushing
@@ -66,7 +66,7 @@ workout first, then awards XP, so a retry after a partial failure completes the 
   `*.stale-<timestamp>`, recreate an empty `Docker\run`, `docker desktop start`.
 - **Supabase CLI login keeps getting replaced** by another account on this machine (403 on
   "Initialising login role"). Use `pnpm db:push*`, which take the owner's token from
-  `.env.supabase.local` instead of the CLI login.
+  the root `.env.local` instead of the CLI login.
 - Vercel CLI was once switched to another account (`ripaames-2699`); check `vercel whoami`.
 - Git Bash mangles paths: `export MSYS_NO_PATHCONV=1` before `vercel curl /api/...`.
 - `vercel env add ... preview` fails non-interactively; use

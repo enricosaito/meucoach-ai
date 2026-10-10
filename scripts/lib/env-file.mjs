@@ -1,27 +1,32 @@
-// Reads a git-ignored `KEY=value` file from the repo root (e.g. `.env.supabase.local`).
-// Secrets in these files are passed to tools, never printed.
+// Reads git-ignored `KEY=value` files from the repo root (`.env.local`, or a tool-specific
+// `.env.<tool>.local`). Secrets in these files are passed to tools, never printed.
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 export const repoRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..')
 
-/** Returns the variables in `fileName`, or exits with `help` if the file or `required` is missing. */
-export function loadEnvFile(fileName, required, help) {
-  const file = join(repoRoot, fileName)
-  if (!existsSync(file)) {
-    console.error(`Missing ${fileName}. ${help}`)
-    process.exit(1)
-  }
+function parse(file) {
   const vars = {}
   for (const line of readFileSync(file, 'utf8').split(/\r?\n/)) {
     if (line.trimStart().startsWith('#')) continue
-    const match = /^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/.exec(line)
-    if (match?.[1]) vars[match[1]] = (match[2] ?? '').replace(/^(['"])(.*)\1$/, '$2')
-  }
-  if (!vars[required]) {
-    console.error(`${fileName} has no ${required}. ${help}`)
-    process.exit(1)
+    const match = /^\s*([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*?)\s*$/.exec(line)
+    if (match?.[1]) vars[match[1].toUpperCase()] = (match[2] ?? '').replace(/^(['"])(.*)\1$/, '$2')
   }
   return vars
+}
+
+/**
+ * Returns the variables of the first file in `fileNames` that defines `required`, or exits with
+ * `help`. Keys are matched case-insensitively.
+ */
+export function loadEnvFile(fileNames, required, help) {
+  for (const fileName of fileNames) {
+    const file = join(repoRoot, fileName)
+    if (!existsSync(file)) continue
+    const vars = parse(file)
+    if (vars[required]) return { [required]: vars[required] }
+  }
+  console.error(`${required} not found in ${fileNames.join(' or ')}. ${help}`)
+  process.exit(1)
 }

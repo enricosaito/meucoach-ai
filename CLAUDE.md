@@ -144,7 +144,7 @@ analysis, AI workout plans generated in a background job, workout log) and `gami
 | `pnpm verify`           | format, lint, typecheck, unit + integration tests (~1 min)           |
 | `pnpm ship`             | PRODUCTION: verify → `db:push` → `git push origin main` (deploys)    |
 | `pnpm health`           | PRODUCTION job pipeline health (`--local` for :3000); exit 1 = stuck |
-| `pnpm inngest:status`   | PRODUCTION Inngest events/runs (needs `.env.inngest.local`)          |
+| `pnpm inngest:status`   | PRODUCTION Inngest events/runs (key in root `.env.local`)            |
 
 Before finishing a change run `pnpm verify` (needs `pnpm db:start`). Release with `pnpm ship`, then
 `pnpm health` once Vercel has deployed. Local demo user (seeded): `demo@example.test` /
@@ -157,7 +157,7 @@ Before finishing a change run `pnpm verify` (needs `pnpm db:start`). Release wit
   debug, run advisors and manage test data. Never use it for schema changes (`apply_migration`,
   DDL via `execute_sql`): add a migration file and `pnpm db:push` so the repo stays the source
   of truth. Delete any test users/data you create.
-- `pnpm db:push*` use the owner's access token from the git-ignored `.env.supabase.local`
+- `pnpm db:push*` use the owner's access token from the git-ignored root `.env.local`
   (`scripts/with-supabase-token.mjs`), never the machine's `supabase login`. Claude may run them:
   always `db:push:check` first, push only migrations that passed `pnpm test:integration`
   locally, and push BEFORE pushing code that needs them to `main` (auto-deploys). Never print the

@@ -1,7 +1,7 @@
 // Shows recent PRODUCTION Inngest activity: the last events of each kind and the runs they
 // started (status, function, timing), plus the job-health verdict from the app.
 //
-// Needs `.env.inngest.local` (git-ignored by `.env.*.local`) with the production signing key:
+// Needs the production signing key in the git-ignored `.env.local` (or `.env.inngest.local`):
 //   INNGEST_SIGNING_KEY=signkey-prod-...
 // Inngest dashboard → your app's Production environment → Manage → Signing Key.
 //
@@ -9,7 +9,7 @@
 import { loadEnvFile } from './lib/env-file.mjs'
 
 const { INNGEST_SIGNING_KEY } = loadEnvFile(
-  '.env.inngest.local',
+  ['.env.local', '.env.inngest.local'],
   'INNGEST_SIGNING_KEY',
   'Add INNGEST_SIGNING_KEY=signkey-prod-... (see scripts/inngest-status.mjs).',
 )
@@ -20,6 +20,8 @@ const EVENTS = [
   'outbox/dispatch.requested',
 ]
 const limit = Number(process.argv[2]) || 5
+// Without received_after the API only searches a short recent window.
+const since = new Date(Date.now() - 7 * 24 * 3600 * 1000).toISOString()
 
 async function get(path) {
   const res = await fetch(`${API}${path}`, {
@@ -44,7 +46,9 @@ for (const name of EVENTS) {
   console.log(`\n# ${name}`)
   let events
   try {
-    events = await get(`/events?name=${encodeURIComponent(name)}&limit=${String(limit)}`)
+    events = await get(
+      `/events?name=${encodeURIComponent(name)}&limit=${String(limit)}&received_after=${since}`,
+    )
   } catch (error) {
     console.log(`  could not list events: ${error.message}`)
     failures++
@@ -68,8 +72,12 @@ for (const name of EVENTS) {
 }
 
 const health = await fetch('https://meucoach-ai.vercel.app/api/v1/health/jobs')
-  .then((r) => r.json())
+  .then((r) => (r.ok || r.status === 503 ? r.json() : null))
   .catch(() => null)
 console.log('\n# app job health')
-console.log(health ? `  ${health.status} ${health.problems?.join('; ') ?? ''}` : '  unreachable')
+console.log(
+  health
+    ? `  ${health.status} ${health.problems?.join('; ') ?? ''}`
+    : '  unavailable (not deployed yet?)',
+)
 process.exit(failures ? 1 : 0)
