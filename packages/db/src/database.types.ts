@@ -518,11 +518,92 @@ export type Database = {
           },
         ]
       }
+      workout_sessions: {
+        Row: {
+          created_at: string
+          day_index: number
+          day_title: string
+          id: string
+          local_date: string
+          plan_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day_index: number
+          day_title: string
+          id?: string
+          local_date: string
+          plan_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day_index?: number
+          day_title?: string
+          id?: string
+          local_date?: string
+          plan_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'workout_sessions_plan_id_fkey'
+            columns: ['plan_id']
+            isOneToOne: false
+            referencedRelation: 'workout_plans'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'workout_sessions_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      xp_events: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          reason: string
+          source: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          reason: string
+          source: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          reason?: string
+          source?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'xp_events_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      gamification_xp_total: { Args: { p_user_id: string }; Returns: number }
       generate_username: { Args: { base: string }; Returns: string }
       training_request_plan: {
         Args: {

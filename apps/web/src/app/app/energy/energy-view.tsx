@@ -16,6 +16,7 @@ import {
 import { getApi, unwrap, writeHeaders } from '@/lib/api'
 import { useI18n } from '@/lib/i18n/client'
 import { useWrite } from '@/lib/use-write'
+import type { LevelProgress } from '@mycoach/core/gamification/contracts'
 import {
   ACTIVITY_LEVELS,
   cmToFeetInches,
@@ -52,7 +53,7 @@ export function EnergyView() {
 }
 
 function EnergyContent({ units, latest }: { units: UnitSystem; latest: Assessment | null }) {
-  const { me, setLatestAssessment } = useMe()
+  const { me, setLatestAssessment, setLevel } = useMe()
   const resultRef = useRef<HTMLDivElement>(null)
   const [justUpdated, setJustUpdated] = useState(false)
 
@@ -67,8 +68,9 @@ function EnergyContent({ units, latest }: { units: UnitSystem; latest: Assessmen
       <AssessmentForm
         units={units}
         latest={latest}
-        onSaved={(assessment) => {
+        onSaved={(assessment, level) => {
           setLatestAssessment(assessment)
+          setLevel(level)
           setJustUpdated(true)
           requestAnimationFrame(() => {
             resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -140,7 +142,7 @@ function AssessmentForm({
 }: {
   units: UnitSystem
   latest: Assessment | null
-  onSaved: (assessment: Assessment) => void
+  onSaved: (assessment: Assessment, level: LevelProgress) => void
 }) {
   const { t } = useI18n()
   const imperial = units === 'imperial'
@@ -187,7 +189,7 @@ function AssessmentForm({
   async function onSubmit(event: FormEvent) {
     event.preventDefault()
     const result = await save.run()
-    if (result) onSaved(result.assessment)
+    if (result) onSaved(result.assessment, result.xp.progress)
   }
 
   return (

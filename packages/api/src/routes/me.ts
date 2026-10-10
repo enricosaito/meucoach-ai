@@ -23,19 +23,23 @@ const ON_REVOKE: Record<ConsentKind, (deps: AppDeps, userId: string) => Promise<
 export const meRoutes = new Hono<AppEnv>()
   .get('/', async (c) => {
     const me = await c.var.deps.profile.getMe(c.var.userId)
-    const streak = await c.var.deps.gamification.getStreak(c.var.userId, me.profile.timezone)
-    // Targets and streaks are derived on every read (never stored), so rule changes apply at once.
-    return c.json({ ...me, targets: targetsForMe(me), streak })
+    const [streak, level] = await Promise.all([
+      c.var.deps.gamification.getStreak(c.var.userId, me.profile.timezone),
+      c.var.deps.gamification.getLevel(c.var.userId),
+    ])
+    // Targets, streaks and levels are derived on every read (never stored), so rule changes apply
+    // at once.
+    return c.json({ ...me, targets: targetsForMe(me), streak, level })
   })
   .patch('/profile', jsonBody(updateProfileSchema), async (c) => {
     const profile = await c.var.deps.profile.updateProfile(c.var.userId, c.req.valid('json'))
     return c.json({ profile })
   })
-  // Logs today (in the user's time zone) as an active day; call on app open. Returns the streak.
+  // Logs today (in the user's time zone) as an active day and grants the daily XP; call on app
+  // open. Returns the streak and level.
   .post('/check-in', async (c) => {
     const { profile } = await c.var.deps.profile.getMe(c.var.userId)
-    const streak = await c.var.deps.gamification.checkIn(c.var.userId, profile.timezone)
-    return c.json({ streak })
+    return c.json(await c.var.deps.gamification.checkIn(c.var.userId, profile.timezone))
   })
   // Avatar, step 1: signed upload URL. Step 2: PUT /avatar with the uploaded path.
   .post('/avatar/upload-url', async (c) => {
@@ -48,10 +52,14 @@ export const meRoutes = new Hono<AppEnv>()
   .delete('/avatar', async (c) => {
     return c.json({ profile: await c.var.deps.profile.removeAvatar(c.var.userId) })
   })
-  // Mifflin-St Jeor test: computes BMR/TDEE server-side and stores the result.
+  // Mifflin-St Jeor test: computes BMR/TDEE server-side and stores the result. Grants XP once a
+  // month, so retaking the test is rewarded without being farmable.
   .post('/assessments', jsonBody(assessmentInputSchema), async (c) => {
-    const assessment = await c.var.deps.profile.recordAssessment(c.var.userId, c.req.valid('json'))
-    return c.json({ assessment }, 201)
+    const { deps, userId } = c.var
+    const assessment = await deps.profile.recordAssessment(userId, c.req.valid('json'))
+    const { profile } = await deps.profile.getMe(userId)
+    const xp = await deps.gamification.awardXp(userId, 'energy_test', profile.timezone)
+    return c.json({ assessment, xp }, 201)
   })
   // Explicit, versioned consent (LGPD). Granting is idempotent.
   .put('/consents/:kind', jsonBody(grantConsentSchema), async (c) => {

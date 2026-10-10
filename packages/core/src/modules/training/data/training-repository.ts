@@ -112,3 +112,42 @@ export async function deleteScanRows(
   const { error } = await db.from('body_scans').delete().eq('user_id', userId).in('id', scanIds)
   if (error) throw dbError('deleteScanRows', error)
 }
+
+export type WorkoutSessionRow = Tables<'workout_sessions'>
+
+/**
+ * Logs a completed plan day. Idempotent: the (user, plan, day, local date) unique key absorbs
+ * repeats, and the existing row is returned. `created` is true only for the first call.
+ */
+export async function insertWorkoutSession(
+  db: AdminClient,
+  row: { userId: string; planId: string; dayIndex: number; dayTitle: string; localDate: string },
+): Promise<{ row: WorkoutSessionRow; created: boolean }> {
+  const { data, error } = await db
+    .from('workout_sessions')
+    .upsert(
+      {
+        user_id: row.userId,
+        plan_id: row.planId,
+        day_index: row.dayIndex,
+        day_title: row.dayTitle,
+        local_date: row.localDate,
+      },
+      { onConflict: 'user_id,plan_id,day_index,local_date', ignoreDuplicates: true },
+    )
+    .select('*')
+  if (error) throw dbError('insertWorkoutSession', error)
+  const inserted = data[0]
+  if (inserted) return { row: inserted, created: true }
+
+  const existing = await db
+    .from('workout_sessions')
+    .select('*')
+    .eq('user_id', row.userId)
+    .eq('plan_id', row.planId)
+    .eq('day_index', row.dayIndex)
+    .eq('local_date', row.localDate)
+    .single()
+  if (existing.error) throw dbError('insertWorkoutSession', existing.error)
+  return { row: existing.data, created: false }
+}

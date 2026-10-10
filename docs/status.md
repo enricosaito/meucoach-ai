@@ -30,11 +30,16 @@ every checkpoint. Last updated: 2026-10-10.
 | Energy       | Mifflin-St Jeor test, history, derived daily targets (`nutrition` module)                                                                                 |
 | Coach chat   | Prompt `coach-chat@2` (language, goal guidance, targets, local time), mock in prod                                                                        |
 | Training     | Questionnaire, consent-gated body photos (private bucket), AI analysis + plan in an Inngest job via the outbox, plan UI, progress photos, delete / revoke |
-| Gamification | Append-only `activity_days`, daily check-in, login streak on Home                                                                                         |
+| Gamification | Append-only `activity_days` (login streak) + `xp_events` ledger (unique user/reason/source), pure level curve 50·n·(n−1), level card on Home              |
+| Workouts     | `workout_sessions` log (unique user/plan/day/local date), "today's workout" rotation on Home + Training, mark any plan day done                           |
 | Legal        | Privacy Policy + Terms (pt-BR / en), **drafts** with [placeholders]                                                                                       |
 
-Tests: ~130 unit (pure domain, prompts, i18n), 45 integration (API + RLS + storage + jobs) against
+Tests: ~146 unit (pure domain, prompts, i18n), 56 integration (API + RLS + storage + jobs) against
 local Supabase.
+
+XP rules (`gamification/domain/levels.ts`): workout 50 (once per local day), daily check-in 5 (once
+per day), energy test 20 (once per month). Awards are idempotent; `POST /training/workouts` logs the
+workout first, then awards XP, so a retry after a partial failure completes the award.
 
 ## Environments and deploy
 
@@ -69,11 +74,25 @@ local Supabase.
 - "Error while parsing config file: pnpm-lock.yaml" during `vercel deploy` is harmless.
 - If the dev server loops reloading `/login`, restart it (stale HMR state).
 - New Supabase tables get **no** Data API privileges by default: always grant explicitly.
+- After `pnpm db:reset` the local storage API can fail with `42P10` (ON CONFLICT without a matching
+  index), breaking avatar/photo integration tests: `pnpm db:stop && pnpm db:start` fixes it. The
+  reset also wipes the demo user (it is not in `seed.sql`); recreate it with the local admin API.
+- Next 16 allows one `next dev` per app folder; a second session must reuse the running server.
 
 ## Open items (not yet done)
 
-- [ ] Production end-to-end plan test with a temporary user (needs MCP), then Supabase security
-      advisor.
+- [ ] **Inngest is not calling production** (blocks plan generation). Until ~15:29 UTC on
+      2026-10-10 the cron dispatcher POSTed `/api/inngest` every minute; it stopped right after the
+      Inngest auto-sync from the git-push deploy of `6f162dd` and did not resume after a manual
+      `PUT /api/inngest` ("Successfully registered", modified: true). Check the Inngest dashboard
+      (app/function status, paused functions, plan limits, sync URL). The e2e test user
+      `e2e-temp-20261010@example.test` (pending plan `d763d018…`) is still in production for a
+      re-test; delete it afterwards (`auth.users` row cascades; also its `outbox_events` row).
+- [ ] Security advisor (2026-10-10): WARN "Leaked password protection disabled" (Auth settings) and
+      INFO "RLS enabled, no policy" on `ai_calls`, `idempotency_keys`, `outbox_events` (intended:
+      server-only tables).
+- [ ] Migration `20261012000000_workout_sessions_and_xp` is NOT in production yet: run
+      `supabase db push` before pushing the checkpoint 3 code to `main`.
 - [ ] Legal: fill [placeholders] (company, CNPJ, contacts) and lawyer review.
 - [ ] Age rules mismatch: energy test allows 15+, Terms say 16+ (18+ for photos).
 - [ ] Account deletion (app-store requirement) must also delete storage files (body photos,
@@ -83,13 +102,11 @@ local Supabase.
 - [ ] Shared rate limiter (Upstash) before real traffic; in-memory today.
 - [ ] Add `ANTHROPIC_API_KEY` + `AI_PROVIDER=anthropic` in Vercel when ready.
 
-## Next: checkpoint 3
+## Next: rest of checkpoint 3
 
-1. **Workout logging**: mark a plan day as done (`workout_sessions`, append-only, unique per user /
-   plan / day / local date), show "today's workout" on Home and Training.
-2. **XP and levels**: append-only `xp_events` with a unique (user, reason, source) constraint;
-   award for logging workouts, completing the energy test, daily check-in; pure level curve.
-   Consider a workout streak alongside the login streak.
-3. **Freemium**: `entitlements` / plan tier, free quotas (coach messages per day, plans per month)
+1. Workout logging and XP/levels are done (local only, not deployed). Left over: workout streak or
+   weekly goal (days per week from the questionnaire), undo a mis-tapped log, workout history,
+   level-up celebration.
+2. **Freemium**: `entitlements` / plan tier, free quotas (coach messages per day, plans per month)
    enforced in the API/gateway, upgrade prompt in the UI; payments (RevenueCat for mobile, Stripe
    for web) later.

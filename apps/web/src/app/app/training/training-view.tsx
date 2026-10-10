@@ -3,7 +3,8 @@
 import { buttonClass, Card, cx, ErrorText, PageHeader, Skeleton } from '@/components/ui'
 import { errorMessage, useI18n } from '@/lib/i18n/client'
 import { fetchLatestPlan, fetchLatestReadyPlan, fetchScans } from '@/lib/training-data'
-import type { BodyScan, WorkoutPlanRecord } from '@mycoach/core/training/contracts'
+import { useWorkoutLog } from '@/lib/use-workout-log'
+import type { BodyScan, WorkoutPlan, WorkoutPlanRecord } from '@mycoach/core/training/contracts'
 import { AlertTriangle, ArrowRight, Check, Dumbbell, Loader2, RefreshCw } from 'lucide-react'
 import Link from 'next/link'
 import { useCallback, useEffect, useState } from 'react'
@@ -85,7 +86,7 @@ export function TrainingView() {
 
       {ready?.plan && (
         <>
-          <PlanView plan={ready.plan} />
+          <LoggablePlan ready={ready} plan={ready.plan} />
           {analysisScan?.analysis && <BodyAnalysisCard analysis={analysisScan.analysis} />}
           {!generating && (
             <Link
@@ -102,6 +103,11 @@ export function TrainingView() {
       <ProgressPhotos scans={scans} onChange={load} />
     </div>
   )
+}
+
+function LoggablePlan({ ready, plan }: { ready: WorkoutPlanRecord; plan: WorkoutPlan }) {
+  const log = useWorkoutLog(ready)
+  return <PlanView plan={plan} log={log} />
 }
 
 function EmptyState() {

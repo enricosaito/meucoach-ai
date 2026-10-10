@@ -4,9 +4,11 @@ import {
   questionnaireSchema,
   toBodyScan,
   toWorkoutPlanRecord,
+  toWorkoutSession,
   type BodyScan,
   type Questionnaire,
   type WorkoutPlanRecord,
+  type WorkoutSession,
 } from '@mycoach/core/training/contracts'
 import { getSupabaseBrowserClient } from './supabase-browser'
 
@@ -100,4 +102,17 @@ export async function uploadToSignedUrl(path: string, token: string, blob: Blob)
     .storage.from('body-photos')
     .uploadToSignedUrl(path, token, blob, { contentType: 'image/jpeg' })
   if (error) throw error
+}
+
+/** Completed workouts from the last `days` days, newest first (any plan). */
+export async function fetchRecentSessions(days = 35): Promise<WorkoutSession[]> {
+  const since = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString().slice(0, 10)
+  const { data, error } = await getSupabaseBrowserClient()
+    .from('workout_sessions')
+    .select('id, plan_id, day_index, day_title, local_date, created_at')
+    .gte('local_date', since)
+    .order('created_at', { ascending: false })
+    .limit(200)
+  if (error) throw error
+  return data.map(toWorkoutSession)
 }

@@ -1,15 +1,28 @@
 'use client'
 
-import { Card, cx } from '@/components/ui'
+import { Button, Card, cx, ErrorText } from '@/components/ui'
 import { useI18n } from '@/lib/i18n/client'
+import type { useWorkoutLog } from '@/lib/use-workout-log'
 import type { WorkoutPlan } from '@mycoach/core/training/contracts'
-import { CalendarDays, Clock, Flame, Lightbulb, Snowflake, TrendingUp } from 'lucide-react'
+import { CalendarDays, Check, Clock, Flame, Lightbulb, Snowflake, TrendingUp } from 'lucide-react'
 import { useState } from 'react'
+import { XpFeedbackNote } from './xp-feedback'
 
-export function PlanView({ plan }: { plan: WorkoutPlan }) {
-  const { t } = useI18n()
-  const [dayIndex, setDayIndex] = useState(0)
+export function PlanView({
+  plan,
+  log,
+}: {
+  plan: WorkoutPlan
+  /** Workout log for this plan; omitted for plans that can't be logged (e.g. older ones). */
+  log?: ReturnType<typeof useWorkoutLog>
+}) {
+  const { t, tc } = useI18n()
+  // Until the user picks a day, show today's workout.
+  const [picked, setPicked] = useState<number | null>(null)
+  const todayIndex = log?.today?.dayIndex ?? null
+  const dayIndex = picked ?? todayIndex ?? 0
   const day = plan.days[dayIndex] ?? plan.days[0]
+  const dayDone = log?.doneToday.has(dayIndex) ?? false
   const minutes = plan.days[0]?.estimatedMinutes ?? 0
 
   return (
@@ -33,6 +46,9 @@ export function PlanView({ plan }: { plan: WorkoutPlan }) {
               {t('training.weeks', { count: plan.durationWeeks })}
             </Chip>
           </ul>
+          {log?.today && log.today.thisWeek > 0 && (
+            <p className="mt-3 text-sm text-muted">{tc('workout.thisWeek', log.today.thisWeek)}</p>
+          )}
         </div>
       </Card>
 
@@ -49,7 +65,7 @@ export function PlanView({ plan }: { plan: WorkoutPlan }) {
             type="button"
             aria-selected={i === dayIndex}
             onClick={() => {
-              setDayIndex(i)
+              setPicked(i)
             }}
             className={cx(
               'shrink-0 rounded-full px-4 py-2 text-sm font-medium transition-colors',
@@ -58,13 +74,21 @@ export function PlanView({ plan }: { plan: WorkoutPlan }) {
                 : 'bg-surface-2 text-muted hover:bg-line hover:text-fg',
             )}
           >
-            {d.title.split('·')[0]?.trim() ?? d.title}
+            <span className="inline-flex items-center gap-1.5">
+              {log?.doneToday.has(i) && <Check className="size-3.5" strokeWidth={3} aria-hidden />}
+              {d.title.split('·')[0]?.trim() ?? d.title}
+            </span>
           </button>
         ))}
       </div>
 
       {day && (
         <Card role="tabpanel" key={dayIndex} className="animate-rise-in">
+          {log && dayIndex === todayIndex && (
+            <p className="mb-1 text-xs font-semibold tracking-wide text-accent uppercase">
+              {t('workout.today')}
+            </p>
+          )}
           <h3 className="text-lg font-semibold tracking-tight">{day.title}</h3>
           <p className="text-sm text-muted">{day.focus}</p>
 
@@ -104,6 +128,30 @@ export function PlanView({ plan }: { plan: WorkoutPlan }) {
           >
             {day.cooldown}
           </Note>
+
+          {log && (
+            <div className="mt-5 flex flex-col items-start gap-2">
+              {dayDone ? (
+                <span className="inline-flex h-11 items-center gap-2 rounded-full bg-accent-soft px-5 text-[15px] font-medium text-accent">
+                  <Check className="size-4" strokeWidth={3} aria-hidden />
+                  {t('workout.doneToday')}
+                </span>
+              ) : (
+                <Button
+                  loading={log.pendingDay === dayIndex}
+                  disabled={log.pendingDay !== null || log.loading}
+                  onClick={() => {
+                    void log.logDay(dayIndex)
+                  }}
+                >
+                  <Check className="size-4" strokeWidth={3} aria-hidden />
+                  {t('workout.markDayDone')}
+                </Button>
+              )}
+              <XpFeedbackNote feedback={log.feedback} />
+              {log.error && <ErrorText>{log.error}</ErrorText>}
+            </div>
+          )}
         </Card>
       )}
 

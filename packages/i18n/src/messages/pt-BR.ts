@@ -218,7 +218,6 @@ export const ptBR = {
     setsReps: '{sets} × {reps}',
     rest: 'Descanso {seconds}s',
     homeCardTitle: 'Seu plano de treino',
-    homeCardBody: '{days} dias por semana · sessões de {minutes} min',
     homeEmptyBody: 'Um plano feito para o seu objetivo, rotina, equipamentos e fotos.',
     viewPlan: 'Ver plano',
     analysisTitle: 'Análise corporal',
@@ -337,6 +336,29 @@ export const ptBR = {
     best: 'Recorde: {count}',
     keepGoing: 'Volte amanhã para manter a sequência.',
     started: 'Primeiro dia! Volte amanhã para começar sua sequência.',
+  },
+  level: {
+    title: 'Nível {level}',
+    progress: '{xp} / {span} XP',
+    toNext: {
+      one: 'Falta {count} XP para o nível {level}',
+      other: 'Faltam {count} XP para o nível {level}',
+    },
+    hint: 'Ganhe XP treinando, entrando todo dia e refazendo o teste de energia.',
+  },
+  workout: {
+    today: 'Treino de hoje',
+    doneToday: 'Feito hoje',
+    markDone: 'Marcar como feito',
+    markDayDone: 'Marcar este dia como feito',
+    thisWeek: {
+      one: '{count} treino nos últimos 7 dias',
+      other: '{count} treinos nos últimos 7 dias',
+    },
+    xpEarned: '+{xp} XP',
+    levelUp: 'Subiu de nível! Agora você está no nível {level}.',
+    logged: 'Mandou bem! Treino registrado.',
+    loggedNoXp: 'Registrado. O XP de treino de hoje já foi ganho.',
   },
   legal: {
     privacy: 'Política de Privacidade',

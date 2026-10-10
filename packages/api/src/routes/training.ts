@@ -1,4 +1,8 @@
-import { photoUploadRequestSchema, requestPlanSchema } from '@mycoach/core/training'
+import {
+  logWorkoutSchema,
+  photoUploadRequestSchema,
+  requestPlanSchema,
+} from '@mycoach/core/training'
 import { Hono } from 'hono'
 import { z } from 'zod'
 import { rateLimit } from '../middleware/rate-limit'
@@ -26,6 +30,19 @@ export const trainingRoutes = new Hono<AppEnv>()
       return c.json({ planId, status: 'pending' as const }, 202)
     },
   )
+  // Marks a plan day as done today and grants the workout XP (once per local day).
+  .post('/workouts', jsonBody(logWorkoutSchema), async (c) => {
+    const { deps, userId } = c.var
+    const { profile } = await deps.profile.getMe(userId)
+    const { session, created } = await deps.training.logWorkout(
+      userId,
+      c.req.valid('json'),
+      profile.timezone,
+    )
+    // Both writes are idempotent, so a retry after a partial failure completes the award.
+    const xp = await deps.gamification.awardXp(userId, 'workout_logged', profile.timezone)
+    return c.json({ session, xp }, created ? 201 : 200)
+  })
   .delete('/body-scans/:scanId', async (c) => {
     const { scanId } = scanIdParam.parse(c.req.param())
     await c.var.deps.training.deleteBodyScan(c.var.userId, scanId)

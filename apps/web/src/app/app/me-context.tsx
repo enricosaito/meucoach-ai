@@ -2,12 +2,16 @@
 
 import { getApi, unwrap, writeHeaders } from '@/lib/api'
 import { errorMessage, useI18n } from '@/lib/i18n/client'
-import type { Streak } from '@mycoach/core/gamification/contracts'
+import type { LevelProgress, Streak } from '@mycoach/core/gamification/contracts'
 import { targetsForMe, type DailyTargets } from '@mycoach/core/nutrition/contracts'
 import type { Assessment, Me, Profile } from '@mycoach/core/profile/contracts'
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 
-export type MeWithTargets = Me & { targets: DailyTargets | null; streak: Streak }
+export type MeWithTargets = Me & {
+  targets: DailyTargets | null
+  streak: Streak
+  level: LevelProgress
+}
 
 interface MeState {
   me: MeWithTargets | null
@@ -15,6 +19,8 @@ interface MeState {
   reload: () => void
   setProfile: (profile: Profile) => void
   setLatestAssessment: (assessment: Assessment) => void
+  /** Applies the level returned by a write that granted XP. */
+  setLevel: (level: LevelProgress) => void
 }
 
 const MeContext = createContext<MeState | null>(null)
@@ -27,7 +33,7 @@ function withTargets(me: MeWithTargets): MeWithTargets {
 /**
  * Loads the signed-in user once for all app screens, then:
  * 1. saves this device's time zone if it changed (streak days are local calendar days), and
- * 2. checks in today's activity, which returns the up-to-date login streak.
+ * 2. checks in today's activity, which returns the up-to-date login streak and level.
  */
 async function loadMe(): Promise<MeWithTargets> {
   const api = getApi().api.v1.me
@@ -41,8 +47,8 @@ async function loadMe(): Promise<MeWithTargets> {
     me = { ...me, profile }
   }
 
-  const { streak } = await unwrap(api['check-in'].$post({}, { headers: writeHeaders() }))
-  return { ...me, streak }
+  const { streak, level } = await unwrap(api['check-in'].$post({}, { headers: writeHeaders() }))
+  return { ...me, streak, level }
 }
 
 export function MeProvider({ children }: { children: ReactNode }) {
@@ -83,6 +89,9 @@ export function MeProvider({ children }: { children: ReactNode }) {
         },
         setLatestAssessment: (latestAssessment) => {
           setMe((current) => current && withTargets({ ...current, latestAssessment }))
+        },
+        setLevel: (level) => {
+          setMe((current) => current && { ...current, level })
         },
       }}
     >

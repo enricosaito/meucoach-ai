@@ -7,6 +7,7 @@ import { COACH_SUGGESTION_KEYS, greetingKey } from '@/lib/labels'
 import { ArrowRight, ChevronRight, Flame, MessageCircle, Target } from 'lucide-react'
 import { firstName } from '@mycoach/core/profile/contracts'
 import Link from 'next/link'
+import { LevelCard } from './level-card'
 import { useMe } from './me-context'
 import { StreakCard } from './streak-card'
 import { TrainingSummaryCard } from './training-summary-card'
@@ -45,9 +46,11 @@ export function HomeView() {
         </Link>
       </header>
 
+      <TrainingSummaryCard />
+
       <StreakCard streak={me.streak} />
 
-      <TrainingSummaryCard />
+      <LevelCard level={me.level} />
 
       {me.targets && assessment ? (
         <>

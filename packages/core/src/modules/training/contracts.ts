@@ -11,6 +11,7 @@ export {
   PHOTO_CONTENT_TYPES,
   SESSION_MINUTES,
   bodyAnalysisSchema,
+  logWorkoutSchema,
   photoUploadRequestSchema,
   questionnaireSchema,
   requestPlanSchema,
@@ -22,6 +23,7 @@ export {
   type Equipment,
   type Exercise,
   type ExperienceLevel,
+  type LogWorkoutInput,
   type MuscleGroup,
   type PhotoContentType,
   type PhotoUploadRequest,
@@ -38,6 +40,13 @@ export {
   type BodyScanRowLike,
   type WorkoutPlanRowLike,
 } from './domain/mappers'
+export {
+  todayWorkout,
+  toWorkoutSession,
+  type TodayWorkout,
+  type WorkoutSession,
+  type WorkoutSessionRowLike,
+} from './domain/workout-log'
 export {
   BODY_SCAN_STATUSES,
   PLAN_STATUSES,

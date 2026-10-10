@@ -1,4 +1,5 @@
 import type { AiGateway } from '../coaching'
+import { localDay } from '../gamification'
 import { targetsForMe } from '../nutrition/contracts'
 import type { ProfileService } from '../profile'
 import { AppError, noopLogger, type Logger, type AdminClient } from '../../shared'
@@ -16,12 +17,14 @@ import {
   deleteScanRows,
   findPlan,
   findScan,
+  insertWorkoutSession,
   listScanRows,
   requestPlanAtomically,
   updatePlan,
   updateScan,
 } from './data/training-repository'
 import { scanPhotos } from './domain/mappers'
+import { toWorkoutSession, type WorkoutSession } from './domain/workout-log'
 import { normalizeAnalysis, planIssues } from './domain/plan-validation'
 import { buildMockBodyAnalysis, buildTemplatePlan } from './domain/template-plan'
 import { bodyAnalysisPrompt, workoutPlanPrompt } from './prompts'
@@ -29,6 +32,7 @@ import {
   bodyAnalysisSchema,
   workoutPlanSchema,
   type BodyAnalysis,
+  type LogWorkoutInput,
   type PhotoContentType,
   type PhotoUploadRequest,
   type RequestPlanInput,
@@ -302,6 +306,31 @@ export function createTrainingService(deps: {
         rows.map((r) => r.id),
       )
       return rows.length
+    },
+
+    /**
+     * Marks a day of a ready plan as done today (in the user's time zone). Idempotent: logging the
+     * same day twice on one date returns the existing session with `created: false`.
+     */
+    async logWorkout(
+      userId: string,
+      input: LogWorkoutInput,
+      timeZone: string,
+    ): Promise<{ session: WorkoutSession; created: boolean }> {
+      const row = await findPlan(db, userId, input.planId)
+      const plan = row?.status === 'ready' ? workoutPlanSchema.safeParse(row.plan) : null
+      if (!plan?.success) throw new AppError('not_found', 'Plan not found')
+      const day = plan.data.days[input.dayIndex]
+      if (!day) throw new AppError('validation_failed', 'This plan has no such day')
+
+      const result = await insertWorkoutSession(db, {
+        userId,
+        planId: input.planId,
+        dayIndex: input.dayIndex,
+        dayTitle: day.title.slice(0, 200),
+        localDate: localDay(now(), timeZone),
+      })
+      return { session: toWorkoutSession(result.row), created: result.created }
     },
   }
 }

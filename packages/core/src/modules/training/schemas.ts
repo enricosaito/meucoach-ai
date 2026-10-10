@@ -148,3 +148,13 @@ export const workoutPlanSchema = z.object({
   tips: z.array(z.string()).describe('3–5 short practical tips'),
 })
 export type WorkoutPlan = z.infer<typeof workoutPlanSchema>
+
+// ---------------------------------------------------------------------------
+// Workout log
+// ---------------------------------------------------------------------------
+
+export const logWorkoutSchema = z.strictObject({
+  planId: z.uuid(),
+  dayIndex: z.number().int().min(0).max(13),
+})
+export type LogWorkoutInput = z.infer<typeof logWorkoutSchema>
