@@ -10,7 +10,14 @@ export {
   type EnergyEstimate,
   type Sex,
 } from './domain/mifflin-st-jeor'
-export { UNIT_SYSTEMS, feetInchesToCm, poundsToKg, type UnitSystem } from './domain/units'
+export {
+  UNIT_SYSTEMS,
+  cmToFeetInches,
+  feetInchesToCm,
+  kgToPounds,
+  poundsToKg,
+  type UnitSystem,
+} from './domain/units'
 export {
   GOAL_TYPES,
   assessmentInputSchema,

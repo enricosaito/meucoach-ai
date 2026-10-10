@@ -12,6 +12,10 @@ apps/web/                 Next.js 16 (App Router, Tailwind 4). UI only + mounts 
   src/server/             the ONLY web code allowed to construct the API / admin client
   src/lib/                api client, Supabase browser/server clients, hooks
   src/proxy.ts            refreshes the Supabase session cookie, guards pages
+  src/app/app/            signed-in screens: Home, energy/, coach/, profile/ (layout = auth +
+                          MeProvider (GET /me once) + AppShell with header and mobile tab bar)
+  src/components/ui.tsx   design-system primitives; colors are semantic tokens from
+                          globals.css (bg-surface, text-muted, bg-accent…), dark mode automatic
 packages/api/             Hono app: /api/v1 routes + middleware. Framework-agnostic.
 packages/api-client/      typed hono/client wrapper for web and future mobile
 packages/core/src/
