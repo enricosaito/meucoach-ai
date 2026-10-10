@@ -91,6 +91,13 @@ workout first, then awards XP, so a retry after a partial failure completes the 
   index), breaking avatar/photo integration tests: `pnpm db:stop && pnpm db:start` fixes it. The
   reset also wipes the demo user (it is not in `seed.sql`); recreate it with the local admin API.
 - Next 16 allows one `next dev` per app folder; a second session must reuse the running server.
+- Mobile safe areas: on iOS, native tabs force automatic content insets on a tab's first
+  ScrollView (status bar + tab bar), even with `contentInsetAdjustmentBehavior="never"`. Never
+  add `insets.top` there yourself (blank band at the top); use `Screen` in
+  `apps/mobile/src/components/ui.tsx`, which pads per platform. The web preview doesn't show
+  iOS inset bugs: check on the phone.
+- Hermes (iOS) lacks some Intl APIs, e.g. `Intl.PluralRules`; shared packages must not assume
+  them (i18n has a CLDR fallback).
 
 ## Open items (not yet done)
 

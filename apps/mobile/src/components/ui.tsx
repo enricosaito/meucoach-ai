@@ -4,6 +4,7 @@ import { Link } from 'expo-router'
 import type { ReactNode } from 'react'
 import {
   ActivityIndicator,
+  Platform,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -74,11 +75,23 @@ export function Card({ style, children }: { style?: StyleProp<ViewStyle>; childr
 }
 
 /**
- * A scrolling screen. Starts with a header row (title left, avatar linking to Profile right)
+ * Safe-area padding a tab screen must add itself. Each platform handles a different part:
+ * - iOS: native tabs force automatic content-inset adjustment on a tab's first ScrollView, so
+ *   iOS already insets for the status bar and the floating tab bar. Adding them again leaves a
+ *   blank band (the status bar height) at the top.
+ * - Android: native tabs wrap the screen in a SafeAreaView for the bottom (tab bar) only; the top
+ *   is ours.
+ * - Web (dev preview): nothing is automatic; the custom tab bar is 64 px tall.
+ */
+function screenPadding(insets: { top: number; bottom: number }) {
+  if (Platform.OS === 'ios') return { top: space.md, bottom: space.xxl }
+  if (Platform.OS === 'android') return { top: insets.top + space.md, bottom: space.xxl }
+  return { top: insets.top + space.md, bottom: 64 + space.xxl }
+}
+
+/**
+ * A scrolling tab screen. Starts with a header row (title left, avatar linking to Profile right)
  * that scrolls with the content. Screens with their own header (Home) pass neither.
- *
- * Insets are applied once, explicitly: iOS's automatic content-inset adjustment is turned off,
- * otherwise it adds the safe area on top of our padding (a blank band at the top).
  */
 export function Screen({
   children,
@@ -94,16 +107,15 @@ export function Screen({
   refreshing?: boolean
 }) {
   const colors = useColors()
-  const insets = useSafeAreaInsets()
+  const padding = screenPadding(useSafeAreaInsets())
   return (
     <ScrollView
       style={{ flex: 1, backgroundColor: colors.bg }}
-      contentInsetAdjustmentBehavior="never"
+      contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
-        paddingTop: insets.top + space.md,
+        paddingTop: padding.top,
         paddingHorizontal: space.lg,
-        // Room for the floating native tab bar.
-        paddingBottom: insets.bottom + 96,
+        paddingBottom: padding.bottom,
         gap: space.xl,
       }}
       refreshControl={
