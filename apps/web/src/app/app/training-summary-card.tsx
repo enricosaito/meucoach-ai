@@ -33,7 +33,15 @@ export function TrainingSummaryCard() {
   )
 }
 
-function Shell({ label, children }: { label: string; children: React.ReactNode }) {
+function Shell({
+  label,
+  action,
+  children,
+}: {
+  label: string
+  action?: React.ReactNode
+  children: React.ReactNode
+}) {
   return (
     <section className="relative overflow-hidden rounded-3xl bg-fg p-5 text-bg shadow-card sm:p-6">
       <div
@@ -41,10 +49,13 @@ function Shell({ label, children }: { label: string; children: React.ReactNode }
         aria-hidden
       />
       <div className="relative">
-        <p className="inline-flex items-center gap-1.5 text-sm font-medium opacity-70">
-          <Dumbbell className="size-4" aria-hidden />
-          {label}
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <p className="inline-flex items-center gap-1.5 text-sm font-medium opacity-70">
+            <Dumbbell className="size-4" aria-hidden />
+            {label}
+          </p>
+          {action}
+        </div>
         {children}
       </div>
     </section>
@@ -64,7 +75,18 @@ function TodayWorkoutSummary({ ready }: { ready: WorkoutPlanRecord }) {
   const day = days[dayIndex]
 
   return (
-    <Shell label={t('workout.today')}>
+    <Shell
+      label={t('workout.today')}
+      action={
+        <Link
+          href="/app/training"
+          className="-my-1 -mr-2 inline-flex items-center gap-1 rounded-full px-2 py-1 text-sm font-medium opacity-80 transition-opacity hover:opacity-100"
+        >
+          {t('training.viewPlan')}
+          <ArrowRight className="size-4" aria-hidden />
+        </Link>
+      }
+    >
       <h2 className="mt-2 text-2xl font-semibold tracking-tight">{day?.title}</h2>
       <p className="mt-1 text-sm opacity-70">
         {day?.focus} · {t('training.minutes', { count: day?.estimatedMinutes ?? 0 })}
@@ -73,7 +95,7 @@ function TodayWorkoutSummary({ ready }: { ready: WorkoutPlanRecord }) {
         <p className="mt-1 text-sm opacity-70">{tc('workout.thisWeek', thisWeek)}</p>
       )}
 
-      <div className="mt-5 flex flex-wrap items-center gap-2">
+      <div className="mt-5">
         {doneToday ? (
           <span className="inline-flex h-11 items-center gap-2 rounded-full bg-bg/15 px-5 text-[15px] font-medium">
             <Check className="size-4" strokeWidth={3} aria-hidden />
@@ -90,13 +112,6 @@ function TodayWorkoutSummary({ ready }: { ready: WorkoutPlanRecord }) {
             {t('workout.markDone')}
           </Button>
         )}
-        <Link
-          href="/app/training"
-          className="inline-flex h-11 items-center gap-2 rounded-full px-4 text-[15px] font-medium opacity-80 transition-opacity hover:opacity-100"
-        >
-          {t('training.viewPlan')}
-          <ArrowRight className="size-4" aria-hidden />
-        </Link>
       </div>
       <XpFeedbackNote feedback={log.feedback} className="mt-3" />
       {log.error && <ErrorText>{log.error}</ErrorText>}

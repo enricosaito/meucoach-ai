@@ -3,14 +3,12 @@
 import { TargetsCard } from '@/components/targets-card'
 import { Button, Card, ErrorText, Skeleton } from '@/components/ui'
 import { useI18n } from '@/lib/i18n/client'
-import { COACH_SUGGESTION_KEYS, greetingKey } from '@/lib/labels'
-import { ArrowRight, ChevronRight, Flame, MessageCircle, Target } from 'lucide-react'
-import { firstName } from '@mycoach/core/profile/contracts'
+import { COACH_SUGGESTION_KEYS } from '@/lib/labels'
+import { ArrowRight, Flame, MessageCircle } from 'lucide-react'
 import Link from 'next/link'
 import { DietSummaryCard } from './diet-summary-card'
-import { LevelCard } from './level-card'
+import { HomeHeader } from './home-header'
 import { useMe } from './me-context'
-import { StreakCard } from './streak-card'
 import { TrainingSummaryCard } from './training-summary-card'
 
 export function HomeView() {
@@ -34,26 +32,11 @@ export function HomeView() {
 
   return (
     <div className="flex flex-col gap-5 animate-rise-in">
-      <header className="mb-1">
-        <p className="text-[15px] text-muted">{t(greetingKey())},</p>
-        <h1 className="text-3xl font-semibold tracking-tight">{firstName(me.profile)}</h1>
-        <Link
-          href="/app/profile/settings#goal"
-          className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-surface-2 py-1.5 pr-3 pl-2.5 text-sm font-medium transition-colors hover:bg-line"
-        >
-          <Target className="size-4 text-accent" aria-hidden />
-          {goal ? t(`goals.${goal}.label`) : t('goals.setGoal')}
-          <ChevronRight className="size-4 text-muted" aria-hidden />
-        </Link>
-      </header>
+      <HomeHeader me={me} />
 
       <TrainingSummaryCard />
 
       {me.targets && <DietSummaryCard />}
-
-      <StreakCard streak={me.streak} />
-
-      <LevelCard level={me.level} />
 
       {me.targets && assessment ? (
         <>

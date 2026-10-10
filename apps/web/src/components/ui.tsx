@@ -76,7 +76,8 @@ export function SectionTitle({
 
 export function PageHeader({ title, description }: { title: string; description?: ReactNode }) {
   return (
-    <header className="mb-6">
+    // Right padding on phones leaves room for the floating avatar (see AppShell).
+    <header className="mb-5 pr-14 sm:mb-6 sm:pr-0">
       <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
       {description && <p className="mt-1 text-[15px] text-muted">{description}</p>}
     </header>

@@ -108,8 +108,9 @@ export function CoachView() {
   const failed = Boolean(error) && Boolean(sending) && !pending
 
   return (
-    <div className="flex min-h-[calc(100dvh-14rem)] flex-col">
-      <div className="flex-1">
+    <div className="flex min-h-[calc(100dvh-10rem)] flex-col sm:min-h-[calc(100dvh-14rem)]">
+      {/* Top padding on phones keeps the first message clear of the floating avatar. */}
+      <div className="flex-1 pt-12 sm:pt-0">
         {messages === null ? (
           <div
             className="flex flex-col gap-3"

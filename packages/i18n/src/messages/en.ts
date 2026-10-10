@@ -108,6 +108,7 @@ export const en = {
     },
   },
   home: {
+    streakDays: { one: '{count} day', other: '{count} days' },
     dailyEnergy: 'Daily energy',
     retake: 'Retake',
     maintenanceLine: 'Maintenance · {activity}',
@@ -356,17 +357,10 @@ export const en = {
     account: 'Account',
   },
   streak: {
-    title: 'Streak',
     daysInARow: { one: 'day in a row', other: 'days in a row' },
-    best: 'Best: {count}',
-    keepGoing: 'Come back tomorrow to keep it going.',
-    started: 'Day one! Come back tomorrow to build your streak.',
   },
   level: {
     title: 'Level {level}',
-    progress: '{xp} / {span} XP',
-    toNext: { one: '{count} XP to level {level}', other: '{count} XP to level {level}' },
-    hint: 'Earn XP by training, checking in daily and retaking the energy test.',
   },
   workout: {
     today: 'Today’s workout',

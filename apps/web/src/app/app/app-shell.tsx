@@ -1,6 +1,6 @@
 'use client'
 
-import { Avatar, cx, Logo } from '@/components/ui'
+import { Avatar, cx } from '@/components/ui'
 import { avatarUrl } from '@/lib/avatar'
 import { useI18n } from '@/lib/i18n/client'
 import { greetingName } from '@mycoach/core/profile/contracts'
@@ -23,20 +23,21 @@ function isActive(pathname: string, href: string) {
   return href === '/app' ? pathname === '/app' : pathname.startsWith(href)
 }
 
+/**
+ * Mobile-first chrome: no top bar on phones (screens start with their own title and the avatar
+ * floats top-right), a bottom tab bar for navigation. Desktop gets a slim top bar instead.
+ */
 export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
-  const { me } = useMe()
   const { t } = useI18n()
+  // Profile screens have the settings cog in that corner, and the avatar would link to itself.
+  const onProfile = pathname.startsWith('/app/profile')
 
   return (
     <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-20 border-b border-line/70 bg-bg/80 backdrop-blur-xl">
-        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-4 sm:h-16 sm:px-6">
-          <Link href="/app" className="rounded-xl" aria-label={t('nav.homeLink')}>
-            <Logo name={t('common.appName')} />
-          </Link>
-
-          <nav aria-label={t('nav.main')} className="hidden items-center gap-1 sm:flex">
+      <header className="sticky top-0 z-20 hidden border-b border-line/70 bg-bg/80 backdrop-blur-xl sm:block">
+        <div className="mx-auto flex h-14 max-w-3xl items-center justify-between px-6">
+          <nav aria-label={t('nav.main')} className="flex items-center gap-1">
             {NAV.slice(0, 4).map(({ href, label }) => (
               <Link
                 key={href}
@@ -53,22 +54,16 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Link>
             ))}
           </nav>
-
-          <Link
-            href="/app/profile"
-            aria-label={t('nav.profileLink')}
-            className="rounded-full transition-transform active:scale-95"
-          >
-            <Avatar
-              name={me ? greetingName(me.profile) : null}
-              src={avatarUrl(me?.profile.avatarPath)}
-              className="text-sm"
-            />
-          </Link>
+          <ProfileLink />
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-4 pt-6 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-10 sm:pb-16">
+      <main className="relative mx-auto w-full max-w-3xl flex-1 px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom))] sm:px-6 sm:pt-10 sm:pb-16">
+        {!onProfile && (
+          <div className="absolute top-4 right-4 z-10 sm:hidden">
+            <ProfileLink />
+          </div>
+        )}
         {children}
       </main>
 
@@ -98,5 +93,23 @@ export function AppShell({ children }: { children: ReactNode }) {
         </ul>
       </nav>
     </div>
+  )
+}
+
+function ProfileLink() {
+  const { me } = useMe()
+  const { t } = useI18n()
+  return (
+    <Link
+      href="/app/profile"
+      aria-label={t('nav.profileLink')}
+      className="block rounded-full transition-transform active:scale-95"
+    >
+      <Avatar
+        name={me ? greetingName(me.profile) : null}
+        src={avatarUrl(me?.profile.avatarPath)}
+        className="size-10 text-sm"
+      />
+    </Link>
   )
 }

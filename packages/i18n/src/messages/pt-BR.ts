@@ -110,6 +110,7 @@ export const ptBR = {
     },
   },
   home: {
+    streakDays: { one: '{count} dia', other: '{count} dias' },
     dailyEnergy: 'Energia diária',
     retake: 'Refazer',
     maintenanceLine: 'Manutenção · {activity}',
@@ -358,20 +359,10 @@ export const ptBR = {
     account: 'Conta',
   },
   streak: {
-    title: 'Sequência',
     daysInARow: { one: 'dia seguido', other: 'dias seguidos' },
-    best: 'Recorde: {count}',
-    keepGoing: 'Volte amanhã para manter a sequência.',
-    started: 'Primeiro dia! Volte amanhã para começar sua sequência.',
   },
   level: {
     title: 'Nível {level}',
-    progress: '{xp} / {span} XP',
-    toNext: {
-      one: 'Falta {count} XP para o nível {level}',
-      other: 'Faltam {count} XP para o nível {level}',
-    },
-    hint: 'Ganhe XP treinando, entrando todo dia e refazendo o teste de energia.',
   },
   workout: {
     today: 'Treino de hoje',
