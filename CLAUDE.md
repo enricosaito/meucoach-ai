@@ -132,28 +132,29 @@ analysis, AI workout plans generated in a background job, workout log) and `gami
 
 ## Commands
 
-| Command                 | What it does                                                         |
-| ----------------------- | -------------------------------------------------------------------- |
-| `pnpm bootstrap`        | `db:start` + `env:setup` (first run)                                 |
-| `pnpm dev`              | Next.js (web + API) on :3000 + Inngest Dev Server on :8288           |
-| `pnpm mobile`           | Expo dev server (:8081): QR for Expo Go on a phone, `w` for web      |
-| `pnpm db:start`         | Start local Supabase (Docker). Studio :54323, Mailpit inbox :54324   |
-| `pnpm db:stop`          | Stop local Supabase                                                  |
-| `pnpm db:reset`         | Re-apply migrations + seed (demo user), restart storage (local)      |
-| `pnpm db:types`         | Regenerate `packages/db/src/database.types.ts`                       |
-| `pnpm db:push:check`    | PRODUCTION: list pending migrations (dry run)                        |
-| `pnpm db:push`          | PRODUCTION: apply pending migrations                                 |
-| `pnpm db:migrations`    | PRODUCTION: local vs remote migration history                        |
-| `pnpm env:setup`        | Write `apps/web/.env.local` from `.env.example` + `supabase status`  |
-| `pnpm lint`             | ESLint everywhere (incl. module boundaries)                          |
-| `pnpm typecheck`        | `tsc --noEmit` everywhere                                            |
-| `pnpm test`             | Unit tests (Vitest)                                                  |
-| `pnpm test:integration` | API + RLS tests against local Supabase (needs `db:start`)            |
-| `pnpm format`           | Prettier write (`format:check` in CI)                                |
-| `pnpm verify`           | format, lint, typecheck, unit + integration tests (~1 min)           |
-| `pnpm ship`             | PRODUCTION: verify → `db:push` → `git push origin main` (deploys)    |
-| `pnpm health`           | PRODUCTION job pipeline health (`--local` for :3000); exit 1 = stuck |
-| `pnpm inngest:status`   | PRODUCTION Inngest events/runs (key in root `.env.local`)            |
+| Command                 | What it does                                                                 |
+| ----------------------- | ---------------------------------------------------------------------------- |
+| `pnpm bootstrap`        | `db:start` + `env:setup` (first run)                                         |
+| `pnpm dev`              | Next.js (web + API) on :3000 + Inngest Dev Server on :8288                   |
+| `pnpm mobile`           | Expo dev server (:8081, signed in via EXPO_TOKEN): QR for Expo Go            |
+| `pnpm eas <cmd>`        | EAS CLI for apps/mobile with EXPO_TOKEN (e.g. `build --profile development`) |
+| `pnpm db:start`         | Start local Supabase (Docker). Studio :54323, Mailpit inbox :54324           |
+| `pnpm db:stop`          | Stop local Supabase                                                          |
+| `pnpm db:reset`         | Re-apply migrations + seed (demo user), restart storage (local)              |
+| `pnpm db:types`         | Regenerate `packages/db/src/database.types.ts`                               |
+| `pnpm db:push:check`    | PRODUCTION: list pending migrations (dry run)                                |
+| `pnpm db:push`          | PRODUCTION: apply pending migrations                                         |
+| `pnpm db:migrations`    | PRODUCTION: local vs remote migration history                                |
+| `pnpm env:setup`        | Write `apps/web/.env.local` from `.env.example` + `supabase status`          |
+| `pnpm lint`             | ESLint everywhere (incl. module boundaries)                                  |
+| `pnpm typecheck`        | `tsc --noEmit` everywhere                                                    |
+| `pnpm test`             | Unit tests (Vitest)                                                          |
+| `pnpm test:integration` | API + RLS tests against local Supabase (needs `db:start`)                    |
+| `pnpm format`           | Prettier write (`format:check` in CI)                                        |
+| `pnpm verify`           | format, lint, typecheck, unit + integration tests (~1 min)                   |
+| `pnpm ship`             | PRODUCTION: verify → `db:push` → `git push origin main` (deploys)            |
+| `pnpm health`           | PRODUCTION job pipeline health (`--local` for :3000); exit 1 = stuck         |
+| `pnpm inngest:status`   | PRODUCTION Inngest events/runs (key in root `.env.local`)                    |
 
 Before finishing a change run `pnpm verify` (needs `pnpm db:start`). Release with `pnpm ship`, then
 `pnpm health` once Vercel has deployed. Local demo user (seeded): `demo@example.test` /

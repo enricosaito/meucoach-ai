@@ -7,7 +7,8 @@
   },
   "scripts": {
     "dev": "turbo run dev",
-    "mobile": "pnpm --filter @mycoach/mobile start",
+    "mobile": "node scripts/mobile.mjs",
+    "eas": "node scripts/eas.mjs",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",

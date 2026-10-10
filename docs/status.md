@@ -24,7 +24,10 @@ every checkpoint. Last updated: 2026-10-10.
 `apps/mobile` (Expo SDK 57). Done: login, native tabs (Início, Treino, Dieta, Coach, Perfil), Home
 ported (greeting with goal/streak/level chips, today's workout with one-tap logging and XP, diet
 card, targets), read-only Profile with sign-out. Treino, Dieta and Coach show a "coming soon"
-placeholder. Next: link the Expo project (EAS, owner `enricolass`), port Training, Diet, Coach,
+placeholder. Expo project: @enricolass/meucoach (EAS profiles in `apps/mobile/eas.json`;
+the dev build uses the temporary identifier `dev.enricolass.meucoach.dev`; the store identifier is
+unset in `app.config.ts` until the app name/publisher is decided, before the first TestFlight
+upload). Next: port Training, Diet, Coach,
 Settings, the energy test and the plan questionnaire (camera/photos), then freemium with
 RevenueCat (needs a development build, not Expo Go). The web UI is paused (no new features).
 
