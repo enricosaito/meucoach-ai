@@ -7,6 +7,7 @@ import { COACH_SUGGESTION_KEYS, greetingKey } from '@/lib/labels'
 import { ArrowRight, ChevronRight, Flame, MessageCircle, Target } from 'lucide-react'
 import { firstName } from '@mycoach/core/profile/contracts'
 import Link from 'next/link'
+import { DietSummaryCard } from './diet-summary-card'
 import { LevelCard } from './level-card'
 import { useMe } from './me-context'
 import { StreakCard } from './streak-card'
@@ -37,7 +38,7 @@ export function HomeView() {
         <p className="text-[15px] text-muted">{t(greetingKey())},</p>
         <h1 className="text-3xl font-semibold tracking-tight">{firstName(me.profile)}</h1>
         <Link
-          href="/app/profile"
+          href="/app/profile/settings#goal"
           className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-surface-2 py-1.5 pr-3 pl-2.5 text-sm font-medium transition-colors hover:bg-line"
         >
           <Target className="size-4 text-accent" aria-hidden />
@@ -47,6 +48,8 @@ export function HomeView() {
       </header>
 
       <TrainingSummaryCard />
+
+      {me.targets && <DietSummaryCard />}
 
       <StreakCard streak={me.streak} />
 

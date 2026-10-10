@@ -1,54 +1,36 @@
 'use client'
 
+import { TargetsCard } from '@/components/targets-card'
+import { Avatar, buttonClass, Card, cx, Skeleton } from '@/components/ui'
+import { avatarUrl } from '@/lib/avatar'
+import { fetchLatestReadyDietPlan } from '@/lib/diet-data'
+import { useI18n } from '@/lib/i18n/client'
+import { fetchLatestReadyPlan } from '@/lib/training-data'
 import {
-  Avatar,
-  Button,
-  Card,
-  cx,
-  ErrorText,
-  Field,
-  inputClass,
-  SectionTitle,
-  Skeleton,
-} from '@/components/ui'
-import { getApi, unwrap, writeHeaders } from '@/lib/api'
-import { avatarUrl, prepareAvatar, uploadAvatar } from '@/lib/avatar'
-import { errorMessage, useI18n } from '@/lib/i18n/client'
-import { useWrite } from '@/lib/use-write'
-import {
-  GOAL_TYPES,
+  cmToFeetInches,
   greetingName,
-  USERNAME_MAX_LENGTH,
-  type Goals,
-  type Profile,
+  kgToPounds,
+  type Assessment,
+  type UnitSystem,
 } from '@mycoach/core/profile/contracts'
 import {
-  Camera,
-  Check,
   ChevronRight,
   Dumbbell,
   Flame,
-  HeartPulse,
-  Loader2,
-  Scale,
+  Pencil,
+  Ruler,
+  Salad,
   Settings,
-  Trash2,
-  TrendingDown,
-  type LucideIcon,
+  Star,
+  Target,
+  Trophy,
 } from 'lucide-react'
 import Link from 'next/link'
-import { useRef, useState, type FormEvent } from 'react'
-import { useMe } from '../me-context'
+import { useEffect, useState, type ReactNode } from 'react'
+import { useMe, type MeWithTargets } from '../me-context'
+import { GOAL_ICONS } from './settings/profile-settings'
 
-type GoalType = (typeof GOAL_TYPES)[number]
-
-const GOAL_ICONS: Record<GoalType, LucideIcon> = {
-  lose_fat: TrendingDown,
-  maintain: Scale,
-  build_muscle: Dumbbell,
-  improve_health: HeartPulse,
-}
-
+/** Read-only overview of the user. Everything editable lives in Settings (the cog). */
 export function ProfileView() {
   const { me } = useMe()
   const { t } = useI18n()
@@ -60,7 +42,6 @@ export function ProfileView() {
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
             {t('profile.title')}
           </h1>
-          <p className="mt-1 text-[15px] text-muted">{t('profile.description')}</p>
         </div>
         <Link
           href="/app/profile/settings"
@@ -74,277 +55,213 @@ export function ProfileView() {
 
       {me ? (
         <>
-          <IdentityHeader profile={me.profile} />
-          <ProfileForm profile={me.profile} />
-          <Link
-            href="/app/energy"
-            className="flex items-center gap-3 rounded-3xl border border-line bg-surface px-5 py-4 shadow-card transition-colors hover:bg-surface-2"
-          >
-            <span className="grid size-10 place-items-center rounded-2xl bg-energy-soft text-energy">
-              <Flame className="size-5" aria-hidden />
-            </span>
-            <span className="flex-1 font-medium">{t('profile.energyLink')}</span>
-            <ChevronRight className="size-5 text-muted" aria-hidden />
-          </Link>
+          <IdentityCard me={me} />
+          <StatsRow me={me} />
+          <BodyCard assessment={me.latestAssessment} units={me.profile.units} />
+          {me.targets && <TargetsCard targets={me.targets} goal={me.profile.goals.primary} />}
+          <PlansCard />
         </>
       ) : (
         <>
+          <Skeleton className="h-56 rounded-3xl" />
+          <Skeleton className="h-24 rounded-3xl" />
           <Skeleton className="h-48 rounded-3xl" />
-          <Skeleton className="h-[30rem] rounded-3xl" />
         </>
       )}
     </div>
   )
 }
 
-/** Big avatar with a camera button, plus the name the coach uses and the @username. */
-function IdentityHeader({ profile }: { profile: Profile }) {
+function IdentityCard({ me }: { me: MeWithTargets }) {
   const { t } = useI18n()
-  const { setProfile } = useMe()
-  const inputRef = useRef<HTMLInputElement>(null)
-  const [busy, setBusy] = useState(false)
-  const [error, setError] = useState('')
-
-  async function onFile(file: File) {
-    setBusy(true)
-    setError('')
-    try {
-      const blob = await prepareAvatar(file)
-      const api = getApi().api.v1.me.avatar
-      const { path, token } = await unwrap(api['upload-url'].$post({}, { headers: writeHeaders() }))
-      await uploadAvatar(path, token, blob)
-      const result = await unwrap(api.$put({ json: { path } }, { headers: writeHeaders() }))
-      setProfile(result.profile)
-    } catch (e) {
-      setError(e instanceof DOMException ? t('profile.photoError') : errorMessage(t, e))
-    } finally {
-      setBusy(false)
-    }
-  }
-
-  async function onRemove() {
-    setBusy(true)
-    setError('')
-    try {
-      const result = await unwrap(
-        getApi().api.v1.me.avatar.$delete({}, { headers: writeHeaders() }),
-      )
-      setProfile(result.profile)
-    } catch (e) {
-      setError(errorMessage(t, e))
-    } finally {
-      setBusy(false)
-    }
-  }
+  const { profile } = me
+  const goal = profile.goals.primary
+  const GoalIcon = goal ? GOAL_ICONS[goal] : Target
 
   return (
     <Card className="flex flex-col items-center text-center">
-      <div className="relative">
-        <Avatar
-          name={greetingName(profile)}
-          src={avatarUrl(profile.avatarPath)}
-          className="size-24 text-3xl"
-        />
-        <button
-          type="button"
-          onClick={() => inputRef.current?.click()}
-          disabled={busy}
-          aria-label={profile.avatarPath ? t('profile.changePhoto') : t('profile.addPhoto')}
-          className="absolute -right-1 -bottom-1 grid size-9 place-items-center rounded-full border-4 border-surface bg-accent text-accent-fg transition-transform active:scale-90 disabled:opacity-70"
-        >
-          {busy ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
-          ) : (
-            <Camera className="size-4" aria-hidden />
-          )}
-        </button>
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          className="sr-only"
-          tabIndex={-1}
-          onChange={(e) => {
-            const file = e.target.files?.[0]
-            e.target.value = ''
-            if (file) void onFile(file)
-          }}
-        />
-      </div>
+      <Avatar
+        name={greetingName(profile)}
+        src={avatarUrl(profile.avatarPath)}
+        className="size-24 text-3xl"
+      />
       <p className="mt-4 text-xl font-semibold tracking-tight">{greetingName(profile)}</p>
       <p className="text-[15px] text-muted">@{profile.username}</p>
-      {profile.avatarPath && (
-        <button
-          type="button"
-          onClick={() => void onRemove()}
-          disabled={busy}
-          className="mt-2 inline-flex items-center gap-1 rounded-full px-3 py-1 text-sm text-muted hover:bg-surface-2 hover:text-danger disabled:opacity-50"
-        >
-          <Trash2 className="size-3.5" aria-hidden />
-          {t('profile.removePhoto')}
-        </button>
-      )}
-      {error && (
-        <div className="mt-3 w-full">
-          <ErrorText>{error}</ErrorText>
-        </div>
-      )}
+      <p
+        className={cx(
+          'mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium',
+          goal ? 'bg-accent-soft text-accent' : 'bg-surface-2 text-muted',
+        )}
+      >
+        <GoalIcon className="size-4" aria-hidden />
+        {goal ? t(`goals.${goal}.label`) : t('profile.noGoal')}
+      </p>
+      <Link href="/app/profile/settings" className={cx(buttonClass('secondary', 'sm'), 'mt-4')}>
+        <Pencil className="size-4" aria-hidden />
+        {t('profile.editProfile')}
+      </Link>
     </Card>
   )
 }
 
-function ProfileForm({ profile }: { profile: Profile }) {
-  const { t } = useI18n()
-  const { setProfile } = useMe()
-  const [displayName, setDisplayName] = useState(profile.displayName ?? '')
-  const [username, setUsername] = useState(profile.username)
-  const [goal, setGoal] = useState<Goals['primary']>(profile.goals.primary)
-  const [saved, setSaved] = useState(false)
-
-  const normalizedUsername = username.trim().toLowerCase()
-  const dirty =
-    displayName.trim() !== (profile.displayName ?? '') ||
-    normalizedUsername !== profile.username ||
-    goal !== profile.goals.primary
-
-  const save = useWrite((key) =>
-    unwrap(
-      getApi().api.v1.me.profile.$patch(
-        {
-          json: {
-            displayName: displayName.trim() || null,
-            username: normalizedUsername,
-            goals: goal ? { ...profile.goals, primary: goal } : profile.goals,
-          },
-        },
-        { headers: writeHeaders(key) },
-      ),
-    ),
+function StatsRow({ me }: { me: MeWithTargets }) {
+  const { t, formatNumber } = useI18n()
+  const stats: { icon: ReactNode; label: string; value: string }[] = [
+    {
+      icon: <Star className="size-4 text-accent" aria-hidden />,
+      label: t('profile.level'),
+      value: formatNumber(me.level.level),
+    },
+    {
+      icon: <Flame className="size-4 text-energy" aria-hidden />,
+      label: t('profile.streak'),
+      value: formatNumber(me.streak.current),
+    },
+    {
+      icon: <Trophy className="size-4 text-fat" aria-hidden />,
+      label: t('profile.bestStreak'),
+      value: formatNumber(me.streak.longest),
+    },
+  ]
+  return (
+    <dl className="grid grid-cols-3 gap-3">
+      {stats.map((s) => (
+        <Card key={s.label} className="px-4 py-4 sm:px-5">
+          <dt className="flex items-center gap-1.5 text-sm text-muted">
+            {s.icon}
+            {s.label}
+          </dt>
+          <dd className="mt-1 text-2xl font-semibold tracking-tight tabular-nums">{s.value}</dd>
+        </Card>
+      ))}
+    </dl>
   )
+}
 
-  function changed() {
-    save.reset()
-    setSaved(false)
+function BodyCard({ assessment, units }: { assessment: Assessment | null; units: UnitSystem }) {
+  const { t, formatNumber, formatDate } = useI18n()
+
+  if (!assessment) {
+    return (
+      <Link
+        href="/app/energy"
+        className="flex items-center gap-3 rounded-3xl border border-line bg-surface px-5 py-4 shadow-card transition-colors hover:bg-surface-2"
+      >
+        <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-energy-soft text-energy">
+          <Flame className="size-5" aria-hidden />
+        </span>
+        <span className="flex-1 text-[15px]">{t('profile.bodyEmpty')}</span>
+        <ChevronRight className="size-5 text-muted" aria-hidden />
+      </Link>
+    )
   }
 
-  async function onSubmit(event: FormEvent) {
-    event.preventDefault()
-    const result = await save.run()
-    if (result) {
-      setProfile(result.profile)
-      setSaved(true)
-    }
-  }
+  const imperial = units === 'imperial'
+  const { feet, inches } = cmToFeetInches(assessment.heightCm)
+  const rows: [string, string][] = [
+    [
+      t('profile.height'),
+      imperial ? `${String(feet)}′ ${String(inches)}″` : `${formatNumber(assessment.heightCm)} cm`,
+    ],
+    [
+      t('profile.weight'),
+      imperial
+        ? `${formatNumber(kgToPounds(assessment.weightKg))} lb`
+        : `${formatNumber(assessment.weightKg)} kg`,
+    ],
+    [t('profile.age'), t('profile.ageYears', { count: assessment.ageYears })],
+    [t('profile.activityLevel'), t(`activity.${assessment.activityLevel}.label`)],
+  ]
 
   return (
     <Card>
-      <form onSubmit={onSubmit} className="flex flex-col gap-6">
-        <Field
-          label={t('profile.displayName')}
-          htmlFor="display-name"
-          hint={t('profile.displayNameHelp')}
-        >
-          <input
-            id="display-name"
-            className={inputClass}
-            value={displayName}
-            maxLength={40}
-            autoComplete="given-name"
-            placeholder={t('profile.displayNamePlaceholder')}
-            onChange={(e) => {
-              setDisplayName(e.target.value)
-              changed()
-            }}
-          />
-        </Field>
-
-        <Field label={t('profile.username')} htmlFor="username" hint={t('profile.usernameHelp')}>
-          <div className="relative">
-            <span className="pointer-events-none absolute inset-y-0 left-4 flex items-center text-muted">
-              @
-            </span>
-            <input
-              id="username"
-              className={cx(inputClass, 'pl-9')}
-              value={username}
-              maxLength={USERNAME_MAX_LENGTH}
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              autoComplete="username"
-              pattern="[A-Za-z0-9_.]{3,20}"
-              required
-              onChange={(e) => {
-                setUsername(e.target.value.replace(/\s/g, ''))
-                changed()
-              }}
-            />
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="flex items-center gap-2 font-semibold tracking-tight">
+          <Ruler className="size-4 text-accent" aria-hidden />
+          {t('profile.bodyTitle')}
+        </h2>
+        <span className="text-sm text-muted">
+          {t('profile.measuredOn', {
+            date: formatDate(assessment.createdAt, { day: 'numeric', month: 'short' }),
+          })}
+        </span>
+      </div>
+      <dl className="mt-3 grid grid-cols-2 gap-x-4 gap-y-3">
+        {rows.map(([label, value]) => (
+          <div key={label}>
+            <dt className="text-sm text-muted">{label}</dt>
+            <dd className="text-[15px] font-medium">{value}</dd>
           </div>
-        </Field>
+        ))}
+      </dl>
+      <Link
+        href="/app/energy"
+        className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-sm font-medium text-accent"
+      >
+        {t('profile.energyLink')}
+        <ChevronRight className="size-4" aria-hidden />
+      </Link>
+    </Card>
+  )
+}
 
-        <fieldset>
-          <SectionTitle title={t('profile.mainGoal')} description={t('profile.mainGoalHelp')} />
-          <div className="grid grid-cols-2 gap-2.5">
-            {GOAL_TYPES.map((g) => {
-              const Icon = GOAL_ICONS[g]
-              const checked = goal === g
-              return (
-                <label
-                  key={g}
-                  className={cx(
-                    'relative flex cursor-pointer flex-col gap-2 rounded-2xl border p-3.5 transition-[border-color,background-color] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-accent',
-                    checked
-                      ? 'border-accent bg-accent-soft'
-                      : 'border-line bg-surface hover:bg-surface-2',
-                  )}
-                >
-                  <input
-                    type="radio"
-                    name="goal"
-                    value={g}
-                    checked={checked}
-                    onChange={() => {
-                      setGoal(g)
-                      changed()
-                    }}
-                    className="sr-only"
-                  />
-                  <Icon
-                    className={cx('size-5', checked ? 'text-accent' : 'text-muted')}
-                    aria-hidden
-                  />
-                  <span>
-                    <span className="block text-[15px] font-medium">{t(`goals.${g}.label`)}</span>
-                    <span className="block text-xs text-muted">{t(`goals.${g}.description`)}</span>
+function PlansCard() {
+  const { t } = useI18n()
+  const [names, setNames] = useState<{ training: string | null; diet: string | null } | null>(null)
+
+  useEffect(() => {
+    void Promise.all([fetchLatestReadyPlan(), fetchLatestReadyDietPlan()])
+      .then(([training, diet]) => {
+        setNames({ training: training?.plan?.name ?? null, diet: diet?.plan?.name ?? null })
+      })
+      .catch(() => {
+        setNames({ training: null, diet: null })
+      })
+  }, [])
+
+  const rows = [
+    {
+      href: '/app/training',
+      icon: <Dumbbell className="size-5" aria-hidden />,
+      label: t('profile.trainingPlan'),
+      value: names?.training,
+    },
+    {
+      href: '/app/diet',
+      icon: <Salad className="size-5" aria-hidden />,
+      label: t('profile.dietPlan'),
+      value: names?.diet,
+    },
+  ]
+
+  return (
+    <Card>
+      <h2 className="font-semibold tracking-tight">{t('profile.plansTitle')}</h2>
+      <ul className="mt-2 flex flex-col divide-y divide-line">
+        {rows.map((row) => (
+          <li key={row.href}>
+            <Link href={row.href} className="group flex items-center gap-3 py-3">
+              <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-accent-soft text-accent">
+                {row.icon}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-sm text-muted">{row.label}</span>
+                {names ? (
+                  <span className="block truncate font-medium">
+                    {row.value ?? t('profile.noPlan')}
                   </span>
-                  {checked && (
-                    <Check
-                      className="absolute top-3 right-3 size-4 text-accent"
-                      strokeWidth={3}
-                      aria-hidden
-                    />
-                  )}
-                </label>
-              )
-            })}
-          </div>
-        </fieldset>
-
-        <ErrorText>{save.error}</ErrorText>
-
-        <Button type="submit" loading={save.pending} disabled={!dirty && !save.pending}>
-          {saved && !dirty ? (
-            <>
-              <Check className="size-4" aria-hidden />
-              {t('profile.saved')}
-            </>
-          ) : save.pending ? (
-            t('profile.saving')
-          ) : (
-            t('profile.save')
-          )}
-        </Button>
-      </form>
+                ) : (
+                  <Skeleton className="mt-1 h-4 w-32" />
+                )}
+              </span>
+              <ChevronRight
+                className="size-5 shrink-0 text-muted transition-transform group-hover:translate-x-0.5"
+                aria-hidden
+              />
+            </Link>
+          </li>
+        ))}
+      </ul>
     </Card>
   )
 }

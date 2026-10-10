@@ -256,6 +256,107 @@ export type Database = {
           },
         ]
       }
+      diet_plans: {
+        Row: {
+          ai_call_id: string | null
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          inputs: Json
+          model: string | null
+          plan: Json | null
+          prompt_version: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          ai_call_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          inputs: Json
+          model?: string | null
+          plan?: Json | null
+          prompt_version?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          ai_call_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          inputs?: Json
+          model?: string | null
+          plan?: Json | null
+          prompt_version?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'diet_plans_ai_call_id_fkey'
+            columns: ['ai_call_id']
+            isOneToOne: false
+            referencedRelation: 'ai_calls'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'diet_plans_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      diet_profiles: {
+        Row: {
+          allergies: string | null
+          budget: string
+          cooking_time: string
+          created_at: string
+          diet_style: string
+          dislikes: string | null
+          meals_per_day: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allergies?: string | null
+          budget: string
+          cooking_time: string
+          created_at?: string
+          diet_style: string
+          dislikes?: string | null
+          meals_per_day: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allergies?: string | null
+          budget?: string
+          cooking_time?: string
+          created_at?: string
+          diet_style?: string
+          dislikes?: string | null
+          meals_per_day?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'diet_profiles_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       idempotency_keys: {
         Row: {
           created_at: string
@@ -605,6 +706,15 @@ export type Database = {
     Functions: {
       gamification_xp_total: { Args: { p_user_id: string }; Returns: number }
       generate_username: { Args: { base: string }; Returns: string }
+      nutrition_request_diet_plan: {
+        Args: {
+          p_diet_profile: Json
+          p_inputs: Json
+          p_request_id: string
+          p_user_id: string
+        }
+        Returns: string
+      }
       training_request_plan: {
         Args: {
           p_inputs: Json

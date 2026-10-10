@@ -5,7 +5,7 @@ import { avatarUrl } from '@/lib/avatar'
 import { useI18n } from '@/lib/i18n/client'
 import { greetingName } from '@mycoach/core/profile/contracts'
 import type { MessageKey } from '@mycoach/i18n'
-import { Dumbbell, House, MessageCircle, UserRound, type LucideIcon } from 'lucide-react'
+import { Dumbbell, House, MessageCircle, Salad, UserRound, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
@@ -14,6 +14,7 @@ import { useMe } from './me-context'
 const NAV: { href: string; label: MessageKey; icon: LucideIcon }[] = [
   { href: '/app', label: 'nav.home', icon: House },
   { href: '/app/training', label: 'nav.training', icon: Dumbbell },
+  { href: '/app/diet', label: 'nav.diet', icon: Salad },
   { href: '/app/coach', label: 'nav.coach', icon: MessageCircle },
   { href: '/app/profile', label: 'nav.profile', icon: UserRound },
 ]
@@ -36,7 +37,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </Link>
 
           <nav aria-label={t('nav.main')} className="hidden items-center gap-1 sm:flex">
-            {NAV.slice(0, 3).map(({ href, label }) => (
+            {NAV.slice(0, 4).map(({ href, label }) => (
               <Link
                 key={href}
                 href={href}
@@ -75,7 +76,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         aria-label={t('nav.main')}
         className="fixed inset-x-0 bottom-0 z-20 border-t border-line/70 bg-bg/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-xl sm:hidden"
       >
-        <ul className="mx-auto grid h-16 max-w-md grid-cols-4">
+        <ul className="mx-auto grid h-16 max-w-md grid-cols-5">
           {NAV.map(({ href, label, icon: Icon }) => {
             const active = isActive(pathname, href)
             return (

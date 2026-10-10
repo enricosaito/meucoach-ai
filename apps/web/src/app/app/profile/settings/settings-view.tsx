@@ -21,8 +21,9 @@ import Link from 'next/link'
 import { useState, type FormEvent } from 'react'
 import { useMe } from '../../me-context'
 import { PrivacyCard } from '../privacy-card'
+import { GoalSettings, ProfileSettings } from './profile-settings'
 
-/** Settings that aren't part of the core experience: language, units, time zone, privacy. */
+/** Everything the user can change: profile, goal, preferences, privacy and the session. */
 export function SettingsView() {
   const { me } = useMe()
   const { t } = useI18n()
@@ -43,7 +44,18 @@ export function SettingsView() {
         <p className="mt-1 text-[15px] text-muted">{t('settings.description')}</p>
       </div>
 
-      {me ? <PreferencesForm profile={me.profile} /> : <Skeleton className="h-80 rounded-3xl" />}
+      {me ? (
+        <>
+          <ProfileSettings profile={me.profile} />
+          <GoalSettings profile={me.profile} />
+          <PreferencesForm profile={me.profile} />
+        </>
+      ) : (
+        <>
+          <Skeleton className="h-96 rounded-3xl" />
+          <Skeleton className="h-80 rounded-3xl" />
+        </>
+      )}
       <PrivacyCard />
 
       <Card className="flex items-center justify-between gap-4">

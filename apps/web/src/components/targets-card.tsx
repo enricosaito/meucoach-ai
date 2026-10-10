@@ -77,7 +77,10 @@ export function TargetsCard({
         {goal ? (
           t(`targets.why.${goal}`)
         ) : (
-          <Link href="/app/profile" className="font-medium text-accent hover:underline">
+          <Link
+            href="/app/profile/settings#goal"
+            className="font-medium text-accent hover:underline"
+          >
             {t('targets.noGoal')}
           </Link>
         )}

@@ -36,8 +36,8 @@ const privacy: Record<Locale, LegalDocument> = {
           'Conta: e-mail e senha (armazenada de forma criptografada pelo nosso provedor de autenticação).',
           'Perfil: nome de usuário, nome de exibição, foto de perfil (opcional), objetivo, unidades de medida, idioma e fuso horário. A foto de perfil fica em armazenamento acessível por link, com endereço aleatório.',
           'Atividade: os dias em que você abre o app, usados para calcular sua sequência de dias seguidos.',
-          'Dados de saúde e do corpo (dados pessoais sensíveis): sexo, idade, altura, peso e nível de atividade informados no teste de energia; respostas do questionário de treino, incluindo lesões ou limitações; e, se você escolher enviar, fotos de progresso do seu corpo e a análise gerada a partir delas (estimativa de gordura corporal, biotipo e áreas prioritárias).',
-          'Conteúdo que você cria: mensagens trocadas com o coach e planos de treino gerados para você.',
+          'Dados de saúde e do corpo (dados pessoais sensíveis): sexo, idade, altura, peso e nível de atividade informados no teste de energia; respostas do questionário de treino, incluindo lesões ou limitações; respostas do questionário de dieta, incluindo alergias e intolerâncias alimentares; e, se você escolher enviar, fotos de progresso do seu corpo e a análise gerada a partir delas (estimativa de gordura corporal, biotipo e áreas prioritárias).',
+          'Conteúdo que você cria: mensagens trocadas com o coach e planos de treino e de dieta gerados para você.',
           'Dados técnicos: registros de acesso e de uso necessários para segurança e funcionamento (por exemplo, endereço IP, data e hora das requisições).',
         ],
       },
@@ -53,7 +53,7 @@ const privacy: Record<Locale, LegalDocument> = {
       {
         heading: '4. Para que usamos seus dados e com qual base legal',
         paragraphs: [
-          'Prestar o serviço (conta, perfil, metas, plano de treino e coach): execução de contrato (art. 7º, V).',
+          'Prestar o serviço (conta, perfil, metas, planos de treino e dieta e coach): execução de contrato (art. 7º, V).',
           'Tratar dados de saúde e do corpo, incluindo fotos e análise por IA: seu consentimento específico (art. 11, I), que pode ser retirado a qualquer momento.',
           'Segurança, prevenção a fraudes e melhoria do funcionamento: legítimo interesse (art. 7º, IX), respeitando seus direitos.',
           'Cumprir obrigações legais, como a guarda de registros de acesso pelo prazo previsto no Marco Civil da Internet: obrigação legal (art. 7º, II).',
@@ -136,8 +136,8 @@ const privacy: Record<Locale, LegalDocument> = {
           'Account: email and password (stored encrypted by our authentication provider).',
           'Profile: username, display name, profile photo (optional), goal, units, language and time zone. Profile photos are stored at random, unlisted links.',
           'Activity: the days you open the app, used to calculate your daily streak.',
-          'Health and body data (sensitive personal data): sex, age, height, weight and activity level from the energy test; training questionnaire answers, including injuries or limitations; and, if you choose to upload them, progress photos of your body and the analysis generated from them (estimated body fat, body type and priority areas).',
-          'Content you create: messages with the coach and the training plans generated for you.',
+          'Health and body data (sensitive personal data): sex, age, height, weight and activity level from the energy test; training questionnaire answers, including injuries or limitations; diet questionnaire answers, including food allergies and intolerances; and, if you choose to upload them, progress photos of your body and the analysis generated from them (estimated body fat, body type and priority areas).',
+          'Content you create: messages with the coach and the training and diet plans generated for you.',
           'Technical data: access and usage logs needed for security and operation (for example IP address and request times).',
         ],
       },
@@ -153,7 +153,7 @@ const privacy: Record<Locale, LegalDocument> = {
       {
         heading: '4. Why we use your data and the legal basis',
         paragraphs: [
-          'Providing the service (account, profile, targets, training plan and coach): performance of a contract (art. 7, V).',
+          'Providing the service (account, profile, targets, training and diet plans and coach): performance of a contract (art. 7, V).',
           'Processing health and body data, including photos and AI analysis: your specific consent (art. 11, I), which you can withdraw at any time.',
           'Security, fraud prevention and keeping the service working: legitimate interest (art. 7, IX), respecting your rights.',
           'Legal obligations, such as keeping access logs for the period required by Brazil’s Internet Civil Framework: legal obligation (art. 7, II).',
@@ -230,7 +230,7 @@ const terms: Record<Locale, LegalDocument> = {
       {
         heading: '1. O serviço',
         paragraphs: [
-          'O Meu Coach oferece planos de treino personalizados, metas de calorias e macronutrientes, análise opcional de fotos do corpo e um coach virtual, gerados com apoio de inteligência artificial.',
+          'O Meu Coach oferece planos de treino e de dieta personalizados, metas de calorias e macronutrientes, análise opcional de fotos do corpo e um coach virtual, gerados com apoio de inteligência artificial.',
         ],
       },
       {
@@ -299,7 +299,7 @@ const terms: Record<Locale, LegalDocument> = {
       {
         heading: '1. The service',
         paragraphs: [
-          'My Coach provides personalised training plans, calorie and macro targets, optional body photo analysis and a virtual coach, generated with the help of artificial intelligence.',
+          'My Coach provides personalised training and diet plans, calorie and macro targets, optional body photo analysis and a virtual coach, generated with the help of artificial intelligence.',
         ],
       },
       {

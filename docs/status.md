@@ -21,20 +21,22 @@ every checkpoint. Last updated: 2026-10-10.
 
 ## What is built
 
-| Area         | Status                                                                                                                                                    |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Foundation   | Monorepo, Hono API in Next.js, RLS + explicit grants, idempotency, rate limit, CI workflow                                                                |
-| Auth         | Email + password (no sign-up / reset UI yet; users created in the Supabase dashboard)                                                                     |
-| i18n         | `packages/i18n` (pt-BR default, en), plural support, locale saved on profile                                                                              |
-| Profile      | Display name, unique @username, avatar (public bucket), goal; settings page (language, units, time zone, privacy, sign out)                               |
-| Energy       | Mifflin-St Jeor test, history, derived daily targets (`nutrition` module)                                                                                 |
-| Coach chat   | Prompt `coach-chat@2` (language, goal guidance, targets, local time), mock in prod                                                                        |
-| Training     | Questionnaire, consent-gated body photos (private bucket), AI analysis + plan in an Inngest job via the outbox, plan UI, progress photos, delete / revoke |
-| Gamification | Append-only `activity_days` (login streak) + `xp_events` ledger (unique user/reason/source), pure level curve 50·n·(n−1), level card on Home              |
-| Workouts     | `workout_sessions` log (unique user/plan/day/local date), "today's workout" rotation on Home + Training, mark any plan day done                           |
-| Legal        | Privacy Policy + Terms (pt-BR / en), **drafts** with [placeholders]                                                                                       |
+| Area         | Status                                                                                                                                                                                                                                                                                                                         |
+| ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Foundation   | Monorepo, Hono API in Next.js, RLS + explicit grants, idempotency, rate limit, CI workflow                                                                                                                                                                                                                                     |
+| Auth         | Email + password (no sign-up / reset UI yet; users created in the Supabase dashboard)                                                                                                                                                                                                                                          |
+| i18n         | `packages/i18n` (pt-BR default, en), plural support, locale saved on profile                                                                                                                                                                                                                                                   |
+| Profile      | Display name, unique @username, avatar (public bucket), goal; settings page (language, units, time zone, privacy, sign out)                                                                                                                                                                                                    |
+| Energy       | Mifflin-St Jeor test, history, derived daily targets (`nutrition` module)                                                                                                                                                                                                                                                      |
+| Coach chat   | Prompt `coach-chat@2` (language, goal guidance, targets, local time), mock in prod                                                                                                                                                                                                                                             |
+| Diet         | `nutrition` module: questionnaire (meals/day, style, budget, cooking time, allergies, dislikes), AI diet plan (`diet-plan@1`, smart tier) in an Inngest job via the outbox, 2 options per meal, validated so any option combination lands within 12% of kcal and ≥85% of protein; needs the energy test; Dieta tab + Home card |
+| Profile UI   | Profile page is read-only (identity, goal, level/streak, body, targets, plans); everything editable is in Settings (cog)                                                                                                                                                                                                       |
+| Training     | Questionnaire, consent-gated body photos (private bucket), AI analysis + plan in an Inngest job via the outbox, plan UI, progress photos, delete / revoke                                                                                                                                                                      |
+| Gamification | Append-only `activity_days` (login streak) + `xp_events` ledger (unique user/reason/source), pure level curve 50·n·(n−1), level card on Home                                                                                                                                                                                   |
+| Workouts     | `workout_sessions` log (unique user/plan/day/local date), "today's workout" rotation on Home + Training, mark any plan day done                                                                                                                                                                                                |
+| Legal        | Privacy Policy + Terms (pt-BR / en), **drafts** with [placeholders]                                                                                                                                                                                                                                                            |
 
-Tests: ~146 unit (pure domain, prompts, i18n), 56 integration (API + RLS + storage + jobs) against
+Tests: ~236 unit (pure domain, prompts, i18n; the diet template is checked for 80 style × meals × body combinations), 63 integration (API + RLS + storage + jobs) against
 local Supabase.
 
 XP rules (`gamification/domain/levels.ts`): workout 50 (once per local day), daily check-in 5 (once
@@ -91,8 +93,14 @@ workout first, then awards XP, so a retry after a partial failure completes the 
 - [ ] Security advisor (2026-10-10): WARN "Leaked password protection disabled" (Auth settings) and
       INFO "RLS enabled, no policy" on `ai_calls`, `idempotency_keys`, `outbox_events` (intended:
       server-only tables).
-- [ ] Migration `20261012000000_workout_sessions_and_xp` is NOT in production yet: run
-      `supabase db push` before pushing the checkpoint 3 code to `main`.
+- [ ] Migrations `20261012000000_workout_sessions_and_xp` and `20261013000000_diet_plans` are NOT
+      in production yet: run `supabase db push` before pushing to `main`. The CLI on this machine
+      was logged in to an account without the project (403 "login role"); either log in with the
+      owner account (sign out of the other one on supabase.com first) or push with
+      `--db-url` (session pooler connection string + DB password).
+- [ ] Diet: the mock template's portions are only good enough to pass validation (dev/test); real
+      quality depends on the AI. Ideas: diet in the coach's context, swap a single food, weekly
+      variety, grocery list by category.
 - [ ] Legal: fill [placeholders] (company, CNPJ, contacts) and lawyer review.
 - [ ] Age rules mismatch: energy test allows 15+, Terms say 16+ (18+ for photos).
 - [ ] Account deletion (app-store requirement) must also delete storage files (body photos,

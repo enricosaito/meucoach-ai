@@ -6,6 +6,7 @@ import {
   type CoachingService,
 } from '@mycoach/core/coaching'
 import { createGamificationService, type GamificationService } from '@mycoach/core/gamification'
+import { createNutritionService, type NutritionService } from '@mycoach/core/nutrition'
 import { createProfileService, type ProfileService } from '@mycoach/core/profile'
 import type { Logger } from '@mycoach/core/shared'
 import { createTrainingService, type TrainingService } from '@mycoach/core/training'
@@ -28,6 +29,7 @@ export interface AppDeps {
   profile: ProfileService
   coaching: CoachingService
   training: TrainingService
+  nutrition: NutritionService
   gamification: GamificationService
   limits: { perMinute: number; chatPerMinute: number }
   /** Background functions served at /api/inngest. */
@@ -65,6 +67,12 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
     profile,
     logger: logger.child({ module: 'training' }),
   })
+  const nutrition = createNutritionService({
+    db,
+    gateway,
+    profile,
+    logger: logger.child({ module: 'nutrition' }),
+  })
 
   return {
     logger,
@@ -77,9 +85,10 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
     profile,
     coaching: createCoachingService({ db, gateway, profile }),
     training,
+    nutrition,
     gamification: createGamificationService({ db }),
     limits: { perMinute: env.RATE_LIMIT_PER_MINUTE, chatPerMinute: env.CHAT_RATE_LIMIT_PER_MINUTE },
-    jobFunctions: createJobFunctions({ db, training, logger }),
+    jobFunctions: createJobFunctions({ db, training, nutrition, logger }),
     nudgeOutbox: async () => {
       try {
         await inngest.send(outboxDispatchRequested.create({}))

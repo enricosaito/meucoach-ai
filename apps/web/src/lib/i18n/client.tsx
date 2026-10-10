@@ -45,6 +45,7 @@ const KNOWN_ERROR_CODES = new Set([
   'unauthorized',
   'idempotency_in_progress',
   'username_taken',
+  'energy_test_required',
 ])
 
 /** A user-facing, translated message for any error thrown by the API client. */

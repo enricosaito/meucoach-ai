@@ -16,8 +16,9 @@ apps/web/                 Next.js 16 (App Router, Tailwind 4). UI only + mounts 
   src/server/             the ONLY web code allowed to construct the API / admin client
   src/lib/                api client, Supabase browser/server clients, hooks
   src/proxy.ts            refreshes the Supabase session cookie, guards pages
-  src/app/app/            signed-in screens: Home, training/, coach/, energy/, profile/ (+
-                          profile/settings for non-core preferences). Layout = auth + MeProvider
+  src/app/app/            signed-in screens: Home, training/, diet/, coach/, energy/, profile/
+                          (read-only overview) + profile/settings (EVERYTHING the user edits:
+                          photo, name, @username, goal, language, units, privacy). Layout = auth + MeProvider
                           (GET /me, time-zone sync, daily check-in) + AppShell (header, tab bar)
   src/components/ui.tsx   design-system primitives; colors are semantic tokens from
                           globals.css (bg-surface, text-muted, bg-accent…), dark mode automatic
@@ -40,11 +41,12 @@ docs/                     decisions and checklists (e.g. mobile-permissions.md)
 ```
 
 Modules today: `profile` (profile, locale, consents, Mifflin-St Jeor energy test), `nutrition`
-(daily calorie and macro targets, pure and derived, never stored), `coaching` (AI gateway with
-`fast`/`smart` model tiers, coach chat) and `training` (questionnaire, body-photo scans with AI
-analysis, AI workout plans generated in a background job) and `gamification` (append-only
-`activity_days` log, login streaks; XP and workout logging next). Planned: `billing` (freemium
-entitlements).
+(daily calorie and macro targets, pure and derived, never stored; diet questionnaire and AI diet
+plans generated in a background job, validated against the targets), `coaching` (AI gateway with
+`fast`/`smart` model tiers, coach chat), `training` (questionnaire, body-photo scans with AI
+analysis, AI workout plans generated in a background job, workout log) and `gamification`
+(append-only `activity_days` and `xp_events`, login streaks, levels). Planned: `billing`
+(freemium entitlements).
 
 ## Non-negotiable rules
 

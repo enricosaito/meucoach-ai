@@ -202,7 +202,7 @@ function AssessmentForm({
               units: imperial ? t('energy.imperial') : t('energy.metric'),
             })}{' '}
             ·{' '}
-            <Link href="/app/profile" className="font-medium text-accent hover:underline">
+            <Link href="/app/profile/settings" className="font-medium text-accent hover:underline">
               {t('energy.change')}
             </Link>
           </>

@@ -9,6 +9,7 @@ import { rateLimit } from './middleware/rate-limit'
 import { requestId } from './middleware/request-id'
 import { chatRoutes } from './routes/chat'
 import { meRoutes } from './routes/me'
+import { nutritionRoutes } from './routes/nutrition'
 import { trainingRoutes } from './routes/training'
 import type { AppEnv } from './types'
 
@@ -23,6 +24,7 @@ function protectedRoutes() {
     .route('/me', meRoutes)
     .route('/chat', chatRoutes)
     .route('/training', trainingRoutes)
+    .route('/nutrition', nutritionRoutes)
 }
 
 function v1Routes() {

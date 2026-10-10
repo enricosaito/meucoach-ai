@@ -1,13 +1,21 @@
+import type { NutritionService } from '@mycoach/core/nutrition'
 import type { TrainingService } from '@mycoach/core/training'
 import type { Logger } from '@mycoach/core/shared'
 import type { AdminClient } from '@mycoach/db'
 import { inngest } from '../client'
-import { outboxDispatchRequested, planRequested, planRequestedSchema } from '../events'
+import {
+  dietPlanRequested,
+  dietPlanRequestedSchema,
+  outboxDispatchRequested,
+  planRequested,
+  planRequestedSchema,
+} from '../events'
 import { dispatchOutbox } from '../outbox'
 
 export interface JobDeps {
   db: AdminClient
   training: TrainingService
+  nutrition: NutritionService
   logger: Logger
 }
 
@@ -73,5 +81,30 @@ export function createJobFunctions(deps: JobDeps) {
     },
   )
 
-  return [outboxDispatcher, generateWorkoutPlan]
+  const generateDietPlan = inngest.createFunction(
+    {
+      id: 'generate-diet-plan',
+      triggers: [dietPlanRequested],
+      retries: 3,
+      concurrency: { key: 'event.data.userId', limit: 1 },
+      onFailure: async ({ event, error }) => {
+        const { userId, planId, requestId } = dietPlanRequestedSchema.parse(event.data.event.data)
+        deps.logger.error({ err: error, planId, requestId }, 'diet plan generation failed')
+        await deps.nutrition.markDietPlanFailed(userId, planId, error.message)
+      },
+    },
+    async ({ event, step }) => {
+      const { userId, planId, requestId } = event.data
+      const logger = deps.logger.child({ job: 'generate-diet-plan', planId, requestId })
+      // One step: the service skips plans that are already ready, so a retry never calls the AI
+      // for a finished plan.
+      await step.run('generate-diet', () =>
+        deps.nutrition.generateDietPlan(userId, planId, { requestId }),
+      )
+      logger.info({}, 'diet plan ready')
+      return { status: 'ready' }
+    },
+  )
+
+  return [outboxDispatcher, generateWorkoutPlan, generateDietPlan]
 }
