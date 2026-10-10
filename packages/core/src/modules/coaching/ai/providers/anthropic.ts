@@ -8,6 +8,7 @@ import type {
   ProviderStructuredRequest,
   ProviderStructuredResult,
 } from '../types'
+import { supportsServerFallback } from '../model-features'
 
 function toContentBlocks(parts: ContentPart[]): Anthropic.ContentBlockParam[] {
   return parts.map((part) =>
@@ -35,9 +36,12 @@ export function createAnthropicProvider(options: { apiKey: string }): AiProvider
         messages: request.messages,
         // Chat is latency-sensitive and simple: low effort keeps cost and latency down.
         output_config: { effort: 'low' },
-        // On a safety refusal, transparently retry on the API's default fallback model.
-        betas: ['server-side-fallback-2026-07-01'],
-        fallbacks: 'default',
+        // On a safety refusal, transparently retry on the API's default fallback model, where
+        // the model supports it (Haiku doesn't; its refusals surface as `refused`).
+        ...(supportsServerFallback(request.model) && {
+          betas: ['server-side-fallback-2026-07-01'],
+          fallbacks: 'default' as const,
+        }),
       })
 
       const text = response.content
