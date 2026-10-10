@@ -54,8 +54,15 @@ Done (2026-10-10):
   Escuro, per device). Plate-colored level badge, bold orange "Feito hoje", knurling texture on
   celebrations. Copy is already in the brand voice; a full copy pass was deferred.
 
-Next, in order: **Coach chat on mobile** (the core feature; the API, gateway and `coach-chat@2`
-prompt already exist; a new prompt version should carry the BRAND.md voice), then **Dieta**, the
+- **Coach chat on mobile** (2026-10-10, shipped): Coach tab hub (intro, ask bar, suggestions,
+  recent messages) and a full-screen chat (`/chat`, own header, keyboard-aware composer, typing
+  dots, retry with the same Idempotency-Key, `?q=` to send a question). Production runs real AI:
+  `AI_PROVIDER=anthropic`, `AI_MODEL_FAST=claude-haiku-5-5` for chat (cheap testing),
+  `AI_MODEL_SMART` unset (plans/photos on Opus 5.5). Haiku has no server-side refusal fallback;
+  the provider sends `fallbacks` only to models that support it.
+
+Next, in order: **coach voice** (new `coach-chat` prompt version with the BRAND.md voice; consider
+plan/workout context in the chat), then **Dieta**, the
 **energy test** (the wizard's energy hint has no link until then); then
 **freemium** with RevenueCat (needs an EAS development build, not Expo Go). The web UI is paused
 (no new features).
