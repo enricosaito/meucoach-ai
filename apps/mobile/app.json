@@ -33,6 +33,14 @@
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
         }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O Meu Coach usa suas fotos para a foto de perfil e as fotos de progresso.",
+          "cameraPermission": "O Meu Coach usa a câmera para tirar fotos de progresso.",
+          "microphonePermission": false
+        }
       ]
     ],
     "experiments": {

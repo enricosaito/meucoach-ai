@@ -10,8 +10,10 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   View,
   type StyleProp,
+  type TextInputProps,
   type TextStyle,
   type ViewStyle,
 } from 'react-native'
@@ -302,5 +304,95 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
+  },
+})
+
+export function Input({
+  label,
+  hint,
+  prefix,
+  ...props
+}: TextInputProps & { label: string; hint?: string; prefix?: string }) {
+  const colors = useColors()
+  return (
+    <View style={{ gap: 6 }}>
+      <Txt variant="label">{label}</Txt>
+      <View
+        style={[inputStyles.box, { backgroundColor: colors.surface, borderColor: colors.line }]}
+      >
+        {prefix && <Txt muted>{prefix}</Txt>}
+        <TextInput
+          placeholderTextColor={colors.muted}
+          {...props}
+          style={[inputStyles.input, { color: colors.fg }]}
+        />
+      </View>
+      {hint && (
+        <Txt variant="caption" muted>
+          {hint}
+        </Txt>
+      )}
+    </View>
+  )
+}
+
+/** A row of mutually exclusive options (like iOS segmented controls). */
+export function Segmented<T extends string>({
+  value,
+  options,
+  onChange,
+}: {
+  value: T
+  options: { value: T; label: string }[]
+  onChange: (value: T) => void
+}) {
+  const colors = useColors()
+  return (
+    <View style={[inputStyles.segmented, { backgroundColor: colors.surface2 }]}>
+      {options.map((option) => {
+        const selected = option.value === value
+        return (
+          <Pressable
+            key={option.value}
+            accessibilityRole="radio"
+            accessibilityState={{ selected }}
+            onPress={() => {
+              onChange(option.value)
+            }}
+            style={[
+              inputStyles.segment,
+              selected && { backgroundColor: colors.surface, borderColor: colors.line },
+            ]}
+          >
+            <Txt variant="label" style={{ fontWeight: selected ? '600' : '400' }} muted={!selected}>
+              {option.label}
+            </Txt>
+          </Pressable>
+        )
+      })}
+    </View>
+  )
+}
+
+const inputStyles = StyleSheet.create({
+  box: {
+    height: 52,
+    borderRadius: radius.md,
+    borderWidth: 1,
+    paddingHorizontal: space.lg,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  input: { flex: 1, fontSize: 16, height: '100%' },
+  segmented: { flexDirection: 'row', borderRadius: radius.md, padding: 3, gap: 3 },
+  segment: {
+    flex: 1,
+    height: 40,
+    borderRadius: radius.sm,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: StyleSheet.hairlineWidth,
+    borderColor: 'transparent',
   },
 })

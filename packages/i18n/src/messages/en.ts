@@ -370,7 +370,6 @@ export const en = {
   },
   settings: {
     version: 'Version {version}',
-    comingSoon: 'Profile, goal, language and privacy settings are coming to the app soon.',
     title: 'Settings',
     description: 'Your profile, goal, language, units and privacy.',
     profileSection: 'Profile',

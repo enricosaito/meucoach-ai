@@ -71,3 +71,15 @@ export async function fetchActivityDays(since: string): Promise<string[]> {
   if (error) throw error
   return data.map((row) => row.day)
 }
+
+/** Whether the user currently consents to storing and analysing body photos (LGPD). */
+export async function hasPhotoConsent(): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('consents')
+    .select('version')
+    .eq('kind', 'body_photos')
+    .is('revoked_at', null)
+    .maybeSingle()
+  if (error) throw error
+  return data !== null
+}

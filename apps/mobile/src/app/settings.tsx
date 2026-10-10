@@ -1,20 +1,26 @@
 import Constants from 'expo-constants'
-import { ChevronRight, Info, LogOut } from 'lucide-react-native'
+import { ChevronRight, LogOut } from 'lucide-react-native'
 import type { ReactNode } from 'react'
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native'
-import { Card, Txt } from '../components/ui'
+import { GoalSection } from '../components/settings/goal-section'
+import { PreferencesSection } from '../components/settings/preferences-section'
+import { PrivacySection } from '../components/settings/privacy-section'
+import { ProfileSection } from '../components/settings/profile-section'
+import { Skeleton, Txt } from '../components/ui'
 import { haptics } from '../lib/haptics'
 import { useI18n } from '../lib/i18n'
+import { useMe } from '../lib/me'
 import { supabase } from '../lib/supabase'
 import { radius, space, useColors } from '../theme'
 
 /**
- * Settings, opened from the cog on Profile (native push with a back button). Today: account and
- * app info; the profile, goal, language and privacy editors are ported next.
+ * Settings, opened from the cog on Profile (native push with a back button): everything the user
+ * can change, same sections as the web Settings.
  */
 export default function SettingsScreen() {
   const { t } = useI18n()
   const colors = useColors()
+  const { me } = useMe()
   const version = Constants.expoConfig?.version ?? '—'
 
   function confirmSignOut() {
@@ -37,14 +43,21 @@ export default function SettingsScreen() {
     <ScrollView
       style={{ flex: 1, backgroundColor: colors.bg }}
       contentInsetAdjustmentBehavior="automatic"
+      automaticallyAdjustKeyboardInsets
+      keyboardDismissMode="interactive"
+      keyboardShouldPersistTaps="handled"
       contentContainerStyle={styles.content}
     >
-      <Card style={{ flexDirection: 'row', gap: space.md, alignItems: 'center' }}>
-        <Info size={18} color={colors.muted} />
-        <Txt muted style={{ flex: 1 }}>
-          {t('settings.comingSoon')}
-        </Txt>
-      </Card>
+      {me ? (
+        <>
+          <ProfileSection profile={me.profile} />
+          <GoalSection profile={me.profile} />
+          <PreferencesSection profile={me.profile} />
+        </>
+      ) : (
+        <Skeleton height={420} />
+      )}
+      <PrivacySection />
 
       <View style={{ gap: space.sm }}>
         <Txt variant="caption" muted style={styles.sectionLabel}>

@@ -373,7 +373,6 @@ export const ptBR = {
   },
   settings: {
     version: 'Versão {version}',
-    comingSoon: 'Perfil, objetivo, idioma e privacidade chegam ao app em breve.',
     title: 'Configurações',
     description: 'Seu perfil, objetivo, idioma, unidades e privacidade.',
     profileSection: 'Perfil',

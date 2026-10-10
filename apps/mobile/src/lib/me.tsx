@@ -1,4 +1,5 @@
 import type { LevelProgress } from '@mycoach/core/gamification/contracts'
+import { targetsForMe } from '@mycoach/core/nutrition/contracts'
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react'
 import { api, unwrap, writeHeaders } from './api'
 import { errorMessage, useI18n } from './i18n'
@@ -29,6 +30,8 @@ interface MeState {
   error: string
   reload: () => Promise<void>
   setLevel: (level: LevelProgress) => void
+  /** Applies a profile returned by a write (name, goal, language…). */
+  setProfile: (profile: Me['profile']) => void
 }
 
 const MeContext = createContext<MeState | null>(null)
@@ -69,6 +72,17 @@ export function MeProvider({ children }: { children: ReactNode }) {
         reload,
         setLevel: (level) => {
           setMe((current) => current && { ...current, level })
+        },
+        setProfile: (profile) => {
+          // Targets depend on the goal: re-derive them with the same pure function as the API.
+          setMe(
+            (current) =>
+              current && {
+                ...current,
+                profile,
+                targets: targetsForMe({ profile, latestAssessment: current.latestAssessment }),
+              },
+          )
         },
       }}
     >
