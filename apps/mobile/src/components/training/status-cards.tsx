@@ -48,16 +48,13 @@ export function EmptyPlanCard() {
         </View>
 
         <View style={[styles.steps, { backgroundColor: colors.surface2 }]}>
-          {steps.map(({ icon: Icon, label }, i) => (
+          {steps.map(({ icon: Icon, label }) => (
             <View key={label} style={styles.stepRow}>
               <View style={[styles.stepIcon, { backgroundColor: colors.surface }]}>
                 <Icon size={16} color={colors.accent} />
               </View>
               <Txt variant="label" style={{ flex: 1 }}>
                 {label}
-              </Txt>
-              <Txt variant="caption" muted style={{ fontVariant: ['tabular-nums'] }}>
-                {i + 1}/3
               </Txt>
             </View>
           ))}
