@@ -3,3 +3,4 @@ pnpm-lock.yaml
 .turbo
 node_modules
 supabase/.temp
+.claude/settings.local.json
