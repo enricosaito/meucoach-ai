@@ -20,6 +20,7 @@ import {
   type NativeScrollEvent,
   type NativeSyntheticEvent,
 } from 'react-native'
+import { DoneBadge } from '../done-badge'
 import { haptics } from '../../lib/haptics'
 import { useI18n } from '../../lib/i18n'
 import type { useWorkoutLog } from '../../lib/use-workout-log'
@@ -367,12 +368,7 @@ function DayCard({
       </Note>
 
       {done ? (
-        <View style={[styles.doneBadge, { backgroundColor: colors.accentSoft }]}>
-          <Check size={16} color={colors.accentIcon} strokeWidth={3} />
-          <Txt variant="label" color="accentText">
-            {t('workout.doneToday')}
-          </Txt>
-        </View>
+        <DoneBadge />
       ) : (
         <Button
           onPress={() => {
@@ -523,14 +519,6 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  doneBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: space.sm,
-    height: 48,
-    borderRadius: radius.full,
   },
   tip: { flexDirection: 'row', gap: space.sm },
   bullet: { width: 6, height: 6, borderRadius: 3, marginTop: 8 },

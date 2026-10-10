@@ -41,10 +41,26 @@ export default function LoginScreen() {
     }
   }
 
-  const input = [
+  // Same look as the shared Input: elevated field, orange border while focused.
+  const [focused, setFocused] = useState<'email' | 'password' | null>(null)
+  const input = (field: 'email' | 'password') => [
     styles.input,
-    { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary },
+    {
+      backgroundColor: colors.surfaceElevated,
+      borderColor: focused === field ? colors.accentIcon : colors.border,
+      color: colors.textPrimary,
+    },
   ]
+  const fieldProps = (field: 'email' | 'password') => ({
+    selectionColor: colors.accentIcon,
+    cursorColor: colors.accentIcon,
+    onFocus: () => {
+      setFocused(field)
+    },
+    onBlur: () => {
+      setFocused((current) => (current === field ? null : current))
+    },
+  })
 
   return (
     <KeyboardAvoidingView
@@ -66,7 +82,8 @@ export default function LoginScreen() {
         <View style={{ gap: space.md }}>
           <Txt variant="label">{t('auth.email')}</Txt>
           <TextInput
-            style={input}
+            {...fieldProps('email')}
+            style={input('email')}
             value={email}
             onChangeText={setEmail}
             placeholder={t('auth.emailPlaceholder')}
@@ -80,7 +97,8 @@ export default function LoginScreen() {
           <Txt variant="label">{t('auth.password')}</Txt>
           <View>
             <TextInput
-              style={[input, { paddingRight: 52 }]}
+              {...fieldProps('password')}
+              style={[input('password'), { paddingRight: 52 }]}
               value={password}
               onChangeText={setPassword}
               secureTextEntry={!showPassword}
@@ -128,7 +146,7 @@ const styles = StyleSheet.create({
   input: {
     height: 52,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth: 1.5,
     paddingHorizontal: space.lg,
     fontSize: 16,
     ...font('ui', 500),

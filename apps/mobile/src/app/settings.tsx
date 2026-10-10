@@ -2,6 +2,7 @@ import Constants from 'expo-constants'
 import { ChevronRight, LogOut } from 'lucide-react-native'
 import type { ReactNode } from 'react'
 import { Alert, Platform, Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { AppearanceSection } from '../components/settings/appearance-section'
 import { GoalSection } from '../components/settings/goal-section'
 import { PreferencesSection } from '../components/settings/preferences-section'
 import { PrivacySection } from '../components/settings/privacy-section'
@@ -53,6 +54,7 @@ export default function SettingsScreen() {
           <ProfileSection profile={me.profile} />
           <GoalSection profile={me.profile} />
           <PreferencesSection profile={me.profile} />
+          <AppearanceSection />
         </>
       ) : (
         <Skeleton height={420} />

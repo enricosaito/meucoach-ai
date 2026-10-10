@@ -8,6 +8,7 @@ import { Link, useFocusEffect } from 'expo-router'
 import { ArrowRight, Check, ChevronRight, Dumbbell, Flame, Salad } from 'lucide-react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
+import { DoneBadge } from '../../components/done-badge'
 import { MacroTiles } from '../../components/home/macro-tiles'
 import { StoryCard } from '../../components/home/story-card'
 import { StreakCelebration } from '../../components/home/streak-celebration'
@@ -227,12 +228,7 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
         </Txt>
       </View>
       {doneToday ? (
-        <View style={[styles.doneBadge, { backgroundColor: colors.accentSoft }]}>
-          <Check size={16} color={colors.accentIcon} strokeWidth={3} />
-          <Txt variant="label" color="accentText">
-            {t('workout.doneToday')}
-          </Txt>
-        </View>
+        <DoneBadge />
       ) : (
         <Button
           onPress={() => {
@@ -310,13 +306,5 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  doneBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: space.sm,
-    height: 48,
-    borderRadius: radius.full,
   },
 })

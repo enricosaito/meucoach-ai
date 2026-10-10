@@ -1,3 +1,4 @@
+import { plateForLevel } from '@mycoach/brand'
 import { addDays, localDay } from '@mycoach/core/gamification/contracts'
 import { cmToFeetInches, greetingName, kgToPounds } from '@mycoach/core/profile/contracts'
 import { LinearGradient } from 'expo-linear-gradient'
@@ -5,13 +6,14 @@ import { Link } from 'expo-router'
 import { Check, Flame, Ruler, Settings, Star, Target } from 'lucide-react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
+import { Knurling } from '../../components/knurling'
 import { ProgressRing } from '../../components/progress-ring'
 import { Avatar, Card, Screen, Skeleton, Txt } from '../../components/ui'
 import { fetchActivityDays, fetchRecentSessions } from '../../lib/data'
 import { haptics } from '../../lib/haptics'
 import { useI18n } from '../../lib/i18n'
 import { useMe, type Me } from '../../lib/me'
-import { radius, space, useColors } from '../../theme'
+import { plates, radius, space, useColors } from '../../theme'
 
 /** Read-only overview (Sweatcoin-style). Everything editable lives behind the cog. */
 export default function ProfileScreen() {
@@ -61,6 +63,8 @@ function Hero({ me }: { me: Me }) {
   const colors = useColors()
   const { profile, level, streak } = me
   const goal = profile.goals.primary
+  const levelPlate = plateForLevel(level.level)
+  const plate = plates[levelPlate]
   const stats = [
     { value: formatNumber(level.level), label: t('profile.level') },
     { value: formatNumber(streak.current), label: t('profile.streak') },
@@ -74,19 +78,31 @@ function Hero({ me }: { me: Me }) {
         locations={[0, 0.85]}
         style={StyleSheet.absoluteFill}
       />
+      <Knurling color={colors.textPrimary} opacity={0.05} />
+      {/* Fade the texture out towards the stats (8-digit hex: same color, alpha 0 to 1). */}
+      <LinearGradient
+        colors={[`${colors.surface}00`, colors.surface]}
+        locations={[0.15, 0.7]}
+        style={StyleSheet.absoluteFill}
+        pointerEvents="none"
+      />
       <View>
         <View style={[styles.avatarRing, { borderColor: colors.accent }]}>
           <Avatar name={greetingName(profile)} path={profile.avatarPath} size={112} />
         </View>
-        {/* Level badge (Sweatcoin's corner badge). */}
+        {/* Level badge: a bumper plate that gets heavier as you level up. */}
         <View
           style={[
             styles.levelBadge,
-            { backgroundColor: colors.accent, borderColor: colors.surface },
+            {
+              backgroundColor: plate.color,
+              // The 5 kg plate is chalk, which would vanish on a light surface.
+              borderColor: levelPlate === 'kg5' ? colors.border : colors.surface,
+            },
           ]}
         >
-          <Star size={12} color={colors.onAccent} fill={colors.onAccent} />
-          <Txt variant="caption" style={{ color: colors.onAccent, fontWeight: '800' }}>
+          <Star size={12} color={plate.on} fill={plate.on} />
+          <Txt variant="number" style={{ color: plate.on, fontSize: 13, lineHeight: 16 }}>
             {formatNumber(level.level)}
           </Txt>
         </View>

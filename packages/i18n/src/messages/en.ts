@@ -398,6 +398,11 @@ export const en = {
     preferences: 'Preferences',
     save: 'Save preferences',
     account: 'Account',
+    appearance: 'Appearance',
+    appearanceHelp: 'Saved on this device.',
+    appearanceSystem: 'System',
+    appearanceLight: 'Light',
+    appearanceDark: 'Dark',
   },
   streak: {
     daysInARow: { one: 'day in a row', other: 'days in a row' },

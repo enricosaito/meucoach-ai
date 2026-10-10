@@ -5,6 +5,7 @@ import { Modal, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { haptics } from '../../lib/haptics'
 import { Appear } from '../appear'
+import { Knurling } from '../knurling'
 import { useI18n } from '../../lib/i18n'
 import { space, useColors } from '../../theme'
 import { Button, Txt } from '../ui'
@@ -51,6 +52,7 @@ export function StreakCelebration({ streak, onClose }: { streak: Streak; onClose
           },
         ]}
       >
+        <Knurling color={colors.textPrimary} opacity={0.05} cell={12} />
         <View style={styles.center}>
           <Appear variant="pop">
             <Flame size={120} color={colors.accent} fill={colors.accent} strokeWidth={1.5} />

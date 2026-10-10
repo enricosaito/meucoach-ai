@@ -400,6 +400,11 @@ export const ptBR = {
     preferences: 'Preferências',
     save: 'Salvar preferências',
     account: 'Conta',
+    appearance: 'Aparência',
+    appearanceHelp: 'Salvo neste aparelho.',
+    appearanceSystem: 'Sistema',
+    appearanceLight: 'Claro',
+    appearanceDark: 'Escuro',
   },
   streak: {
     daysInARow: { one: 'dia seguido', other: 'dias seguidos' },

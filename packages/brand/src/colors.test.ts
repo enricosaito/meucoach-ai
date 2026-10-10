@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
-import { dark, light, plates, type ColorTokens } from './colors'
+import { dark, light, plateForLevel, plates, type ColorTokens } from './colors'
 import { contrastRatio } from './contrast'
 
 const AA_TEXT = 4.5
@@ -105,5 +105,19 @@ describe('web globals.css mirrors the tokens', () => {
   it.each(Object.entries(WEB_VARS))('%s', (name, token) => {
     expect(read(lightBlock, name), `light ${name}`).toBe(light[token].toUpperCase())
     expect(read(darkBlock, name), `dark ${name}`).toBe(dark[token].toUpperCase())
+  })
+})
+
+describe('plateForLevel', () => {
+  it('gets heavier as the level goes up', () => {
+    expect([1, 2, 3, 5, 7, 10, 40].map(plateForLevel)).toEqual([
+      'kg5',
+      'kg5',
+      'kg10',
+      'kg15',
+      'kg20',
+      'kg25',
+      'kg25',
+    ])
   })
 })

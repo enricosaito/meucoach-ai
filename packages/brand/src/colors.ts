@@ -132,3 +132,15 @@ export const dark: ColorTokens = {
   overlay: 'rgba(28, 31, 36, 0.6)',
   onOverlay: palette.white,
 }
+
+/**
+ * The plate on a level badge: the bar gets heavier as you level up (5 kg chalk at the start,
+ * then 10 green, 15 yellow, 20 blue, 25 red from level 10).
+ */
+export function plateForLevel(level: number): Plate {
+  if (level >= 10) return 'kg25'
+  if (level >= 7) return 'kg20'
+  if (level >= 5) return 'kg15'
+  if (level >= 3) return 'kg10'
+  return 'kg5'
+}

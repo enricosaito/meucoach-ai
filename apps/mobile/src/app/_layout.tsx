@@ -4,24 +4,27 @@ import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
+import { AppearanceProvider, useAppearance } from '../lib/appearance'
 import { useBrandFonts } from '../lib/fonts'
 import { font } from '../lib/typography'
 import { I18nProvider, useI18n } from '../lib/i18n'
 import { MeProvider } from '../lib/me'
 import { SessionProvider, useSession } from '../lib/session'
-import { useColors } from '../theme'
+import { useColors, useScheme } from '../theme'
 
 void SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
   return (
-    <I18nProvider>
-      <SessionProvider>
-        <MeProvider>
-          <RootStack />
-        </MeProvider>
-      </SessionProvider>
-    </I18nProvider>
+    <AppearanceProvider>
+      <I18nProvider>
+        <SessionProvider>
+          <MeProvider>
+            <RootStack />
+          </MeProvider>
+        </SessionProvider>
+      </I18nProvider>
+    </AppearanceProvider>
   )
 }
 
@@ -29,9 +32,11 @@ export default function RootLayout() {
 function RootStack() {
   const { session, ready: sessionReady } = useSession()
   const fontsReady = useBrandFonts()
-  const ready = sessionReady && fontsReady
+  const appearance = useAppearance()
+  const ready = sessionReady && fontsReady && appearance.ready
   const { t } = useI18n()
   const colors = useColors()
+  const scheme = useScheme()
 
   useEffect(() => {
     if (ready) void SplashScreen.hideAsync()
@@ -51,7 +56,7 @@ function RootStack() {
 
   return (
     <>
-      <StatusBar style="auto" />
+      <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
       <Stack
         screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
       >
