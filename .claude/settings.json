@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm lint*)",
+      "Bash(pnpm typecheck*)",
+      "Bash(pnpm test*)",
+      "Bash(pnpm verify*)",
+      "Bash(pnpm format*)",
+      "Bash(pnpm health*)",
+      "Bash(pnpm inngest:status*)",
+      "Bash(pnpm db:start)",
+      "Bash(pnpm db:stop)",
+      "Bash(pnpm db:reset)",
+      "Bash(pnpm db:types)",
+      "Bash(pnpm db:push:check)",
+      "Bash(pnpm db:migrations)",
+      "Bash(pnpm exec prettier *)",
+      "Bash(pnpm exec vitest *)",
+      "Bash(pnpm exec eslint *)",
+      "Bash(git status*)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git show*)",
+      "Bash(git branch*)",
+      "Bash(git fetch*)",
+      "Bash(docker ps*)",
+      "Bash(docker logs *)",
+      "Bash(supabase status*)",
+      "mcp__supabase__get_advisors",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__list_migrations",
+      "mcp__supabase__list_extensions",
+      "mcp__supabase__query_logs",
+      "mcp__supabase__search_docs",
+      "mcp__supabase__get_project_url",
+      "mcp__plugin_vercel_vercel__get_runtime_logs",
+      "mcp__plugin_vercel_vercel__get_runtime_errors",
+      "mcp__plugin_vercel_vercel__list_deployments",
+      "mcp__plugin_vercel_vercel__get_deployment"
+    ],
+    "ask": [
+      "Bash(pnpm db:push)",
+      "Bash(pnpm ship*)",
+      "Bash(git push*)",
+      "Bash(supabase db push*)",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__apply_migration"
+    ]
+  }
+}

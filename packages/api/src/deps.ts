@@ -12,7 +12,13 @@ import type { Logger } from '@mycoach/core/shared'
 import { createTrainingService, type TrainingService } from '@mycoach/core/training'
 import type { AdminClient } from '@mycoach/db'
 import { createAdminClient } from '@mycoach/db/admin'
-import { createJobFunctions, inngest, outboxDispatchRequested } from '@mycoach/jobs'
+import {
+  createJobFunctions,
+  getJobHealth,
+  inngest,
+  outboxDispatchRequested,
+  type JobHealth,
+} from '@mycoach/jobs'
 import { createSupabaseAuthVerifier, type AuthVerifier } from './auth/auth-verifier'
 import type { ApiEnv } from './env'
 import type { IdempotencyStore } from './idempotency/idempotency-store'
@@ -39,6 +45,8 @@ export interface AppDeps {
    * fails, the cron still delivers the event within a minute.
    */
   nudgeOutbox: () => Promise<void>
+  /** Health of the background pipeline (public, aggregates only). */
+  jobHealth: () => Promise<JobHealth>
 }
 
 export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {}): AppDeps {
@@ -96,6 +104,7 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
         logger.warn({ err: error }, 'outbox nudge failed; the cron will deliver the event')
       }
     },
+    jobHealth: () => getJobHealth(db),
     ...overrides,
   }
 }

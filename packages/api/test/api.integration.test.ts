@@ -34,6 +34,41 @@ describe('platform', () => {
     expect(res.headers.get('x-request-id')).toBeTruthy()
   })
 
+  it('GET /health/jobs is public and reports the pipeline from the database', async () => {
+    const res = await app.request('/api/v1/health/jobs')
+    const body = (await res.json()) as { status: string; problems: string[] }
+    expect(res.status).toBe(body.status === 'ok' ? 200 : 503)
+    expect(body).toMatchObject({
+      pendingOutbox: expect.any(Number) as number,
+      oldestPendingOutboxSeconds: expect.any(Number) as number,
+      stuckWorkoutPlans: expect.any(Number) as number,
+      stuckDietPlans: expect.any(Number) as number,
+    })
+  })
+
+  it('GET /health/jobs returns 503 when jobs are stuck', async () => {
+    const stuck = testApp({
+      jobHealth: () =>
+        Promise.resolve({
+          status: 'degraded',
+          problems: ['outbox not dispatched'],
+          pendingOutbox: 3,
+          oldestPendingOutboxSeconds: 900,
+          lastDispatchedAt: null,
+          stuckWorkoutPlans: 0,
+          stuckDietPlans: 0,
+        }),
+    })
+    const res = await stuck.request('/api/v1/health/jobs')
+    expect(res.status).toBe(503)
+    expect(await res.json()).toMatchObject({ status: 'degraded' })
+  })
+
+  it('the job health function is not callable by clients', async () => {
+    const { error } = await user.client.rpc('ops_job_health', {})
+    expect(error).not.toBeNull()
+  })
+
   it('propagates a caller-supplied request id', async () => {
     const res = await app.request('/api/v1/health', { headers: { 'x-request-id': 'trace-123' } })
     expect(res.headers.get('x-request-id')).toBe('trace-123')

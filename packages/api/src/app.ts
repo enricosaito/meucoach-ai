@@ -28,9 +28,16 @@ function protectedRoutes() {
 }
 
 function v1Routes() {
-  return new Hono<AppEnv>()
-    .get('/health', (c) => c.json({ status: 'ok' as const, time: new Date().toISOString() }))
-    .route('/', protectedRoutes())
+  return (
+    new Hono<AppEnv>()
+      .get('/health', (c) => c.json({ status: 'ok' as const, time: new Date().toISOString() }))
+      // Background pipeline health for uptime monitors: 503 when jobs are stuck. Aggregates only.
+      .get('/health/jobs', async (c) => {
+        const health = await c.var.deps.jobHealth()
+        return c.json(health, health.status === 'ok' ? 200 : 503)
+      })
+      .route('/', protectedRoutes())
+  )
 }
 
 /**

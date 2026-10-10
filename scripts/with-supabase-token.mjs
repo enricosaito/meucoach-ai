@@ -7,35 +7,17 @@
 //
 // Usage: node scripts/with-supabase-token.mjs db push --dry-run
 import { spawnSync } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
-import { dirname, join } from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { loadEnvFile, repoRoot } from './lib/env-file.mjs'
 
-const root = join(dirname(fileURLToPath(import.meta.url)), '..')
-const file = join(root, '.env.supabase.local')
-
-if (!existsSync(file)) {
-  console.error(
-    'Missing .env.supabase.local with SUPABASE_ACCESS_TOKEN=... (see scripts/with-supabase-token.mjs).',
-  )
-  process.exit(1)
-}
-
-const env = { ...process.env }
-for (const line of readFileSync(file, 'utf8').split(/\r?\n/)) {
-  const match = /^\s*([A-Z_][A-Z0-9_]*)\s*=\s*(.*?)\s*$/.exec(line)
-  if (match?.[1] && !line.trimStart().startsWith('#')) {
-    env[match[1]] = match[2]?.replace(/^(['"])(.*)\1$/, '$2') ?? ''
-  }
-}
-if (!env.SUPABASE_ACCESS_TOKEN) {
-  console.error('.env.supabase.local has no SUPABASE_ACCESS_TOKEN.')
-  process.exit(1)
-}
+const vars = loadEnvFile(
+  '.env.supabase.local',
+  'SUPABASE_ACCESS_TOKEN',
+  'Add SUPABASE_ACCESS_TOKEN=... (see scripts/with-supabase-token.mjs).',
+)
 
 const result = spawnSync('supabase', process.argv.slice(2), {
-  cwd: root,
-  env,
+  cwd: repoRoot,
+  env: { ...process.env, ...vars },
   stdio: 'inherit',
   shell: process.platform === 'win32',
 })

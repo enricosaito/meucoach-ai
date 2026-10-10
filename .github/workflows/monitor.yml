@@ -1,0 +1,27 @@
+name: Production monitor
+
+# Fails (and GitHub emails the repo owner) when production's background jobs are stuck:
+# outbox events not dispatched to Inngest, or plans unfinished after 15 minutes.
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  job-health:
+    name: Background jobs
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: GET /api/v1/health/jobs
+        run: |
+          status=$(curl -sS -o body.json -w '%{http_code}' --max-time 30 \
+            https://meucoach-ai.vercel.app/api/v1/health/jobs || echo 000)
+          cat body.json || true
+          echo
+          if [ "$status" != "200" ]; then
+            echo "::error::Background jobs unhealthy (HTTP $status). See docs/status.md."
+            exit 1
+          fi

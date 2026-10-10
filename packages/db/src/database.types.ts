@@ -715,6 +715,7 @@ export type Database = {
         }
         Returns: string
       }
+      ops_job_health: { Args: { p_stuck_after?: string }; Returns: Json }
       training_request_plan: {
         Args: {
           p_inputs: Json

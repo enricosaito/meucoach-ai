@@ -1,4 +1,5 @@
 export { inngest } from './client'
 export { dietPlanRequested, outboxDispatchRequested, planRequested } from './events'
 export { createJobFunctions, type JobDeps } from './functions'
+export { assessJobHealth, getJobHealth, MAX_OUTBOX_AGE_SECONDS, type JobHealth } from './health'
 export { dispatchOutbox, type OutboxEvent, type SendEvents } from './outbox'
