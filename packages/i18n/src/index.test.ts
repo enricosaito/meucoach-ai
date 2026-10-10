@@ -1,5 +1,12 @@
-import { describe, expect, it } from 'vitest'
-import { createTranslator, DEFAULT_LOCALE, isLocale, resolveLocale } from './index'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import {
+  createTranslator,
+  DEFAULT_LOCALE,
+  isLocale,
+  LOCALES,
+  pluralCategory,
+  resolveLocale,
+} from './index'
 import { en } from './messages/en'
 import { ptBR } from './messages/pt-BR'
 
@@ -79,5 +86,37 @@ describe('plurals', () => {
     expect(createTranslator('pt-BR').tc('streak.daysInARow', 5)).toBe('dias seguidos')
     expect(createTranslator('en').tc('streak.daysInARow', 1)).toBe('day in a row')
     expect(createTranslator('en').tc('streak.daysInARow', 2)).toBe('days in a row')
+  })
+})
+
+/** Like Hermes on iOS: the rest of Intl works, PluralRules doesn't exist. */
+function withoutPluralRules() {
+  vi.stubGlobal(
+    'Intl',
+    Object.assign(Object.create(Intl) as typeof Intl, { PluralRules: undefined }),
+  )
+}
+
+describe('plurals without Intl.PluralRules (Hermes on iOS)', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  const SAMPLES = [0, 1, 1.5, 2, 5, 10, 21, 100, 1000]
+
+  it('the fallback matches Intl.PluralRules for every locale', () => {
+    const real = Object.fromEntries(LOCALES.map((l) => [l, SAMPLES.map(pluralCategory(l))]))
+    withoutPluralRules()
+    for (const locale of LOCALES) {
+      expect(SAMPLES.map(pluralCategory(locale))).toEqual(real[locale])
+    }
+  })
+
+  it('createTranslator works and pluralises', () => {
+    withoutPluralRules()
+    const pt = createTranslator('pt-BR')
+    expect(pt.tc('home.streakDays', 1)).toBe('1 dia')
+    expect(pt.tc('home.streakDays', 3)).toBe('3 dias')
+    expect(createTranslator('en').tc('home.streakDays', 1)).toBe('1 day')
   })
 })

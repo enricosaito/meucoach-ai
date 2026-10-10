@@ -86,16 +86,33 @@ export interface Translator {
   formatDate: (value: string | Date, options?: Intl.DateTimeFormatOptions) => string
 }
 
+type PluralCategory = 'one' | 'other'
+
+/**
+ * CLDR cardinal rules for our locales, for runtimes without Intl.PluralRules (Hermes on iOS).
+ * en: "one" for exactly 1. pt: "one" when the integer part is 0 or 1 (0, 1, 1.5).
+ */
+const FALLBACK_PLURALS: Record<Locale, (n: number) => PluralCategory> = {
+  en: (n) => (n === 1 ? 'one' : 'other'),
+  'pt-BR': (n) => (Math.trunc(Math.abs(n)) <= 1 ? 'one' : 'other'),
+}
+
+export function pluralCategory(locale: Locale): (n: number) => PluralCategory {
+  if (typeof Intl.PluralRules !== 'function') return FALLBACK_PLURALS[locale]
+  const rules = new Intl.PluralRules(locale)
+  return (n) => (rules.select(n) === 'one' ? 'one' : 'other')
+}
+
 /** Pure, framework-agnostic translator. Usable on the server, in the browser and in React Native. */
 export function createTranslator(locale: Locale): Translator {
   const messages = CATALOGS[locale]
   const numberFormat = new Intl.NumberFormat(locale)
-  const pluralRules = new Intl.PluralRules(locale)
+  const plural = pluralCategory(locale)
   return {
     locale,
     t: (key, params) => interpolate(lookup(messages, key) ?? lookup(en, key) ?? key, params),
     tc: (key, count, params) => {
-      const category = pluralRules.select(count) === 'one' ? 'one' : 'other'
+      const category = plural(count)
       const path = `${key}.${category}`
       return interpolate(lookup(messages, path) ?? lookup(en, path) ?? key, {
         count: numberFormat.format(count),
