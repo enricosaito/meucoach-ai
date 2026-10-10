@@ -36,6 +36,7 @@ import { env } from '../../lib/env'
 import { haptics } from '../../lib/haptics'
 import { errorMessage, useI18n } from '../../lib/i18n'
 import { useMe } from '../../lib/me'
+import { font } from '../../lib/typography'
 import { radius, space, useColors } from '../../theme'
 import { Appear } from '../appear'
 import { Button, Card, ErrorText, Segmented, Skeleton, Txt } from '../ui'
@@ -650,6 +651,7 @@ const styles = StyleSheet.create({
     paddingTop: space.md,
     paddingBottom: space.md,
     fontSize: 16,
+    ...font('ui', 500),
     textAlignVertical: 'top',
   },
   slots: { flexDirection: 'row', gap: space.sm },

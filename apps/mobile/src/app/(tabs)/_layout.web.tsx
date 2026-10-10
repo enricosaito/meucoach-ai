@@ -10,6 +10,7 @@ import {
 import { forwardRef } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useI18n } from '../../lib/i18n'
+import { font } from '../../lib/typography'
 import { useColors } from '../../theme'
 
 /**
@@ -52,7 +53,7 @@ const TabButton = forwardRef<View, TabTriggerSlotProps & { icon: LucideIcon; lab
     return (
       <Pressable ref={ref} {...props} style={styles.tab}>
         <Icon size={22} color={color} strokeWidth={isFocused ? 2.4 : 1.9} />
-        <Text style={{ color, fontSize: 11, fontWeight: '500' }}>{label}</Text>
+        <Text style={[font('ui', 600), { color, fontSize: 11 }]}>{label}</Text>
       </Pressable>
     )
   },

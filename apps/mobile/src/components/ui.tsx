@@ -1,3 +1,4 @@
+import type { TypeVariant } from '@mycoach/brand'
 import { greetingName } from '@mycoach/core/profile/contracts'
 import { Image } from 'expo-image'
 import { Link } from 'expo-router'
@@ -21,44 +22,46 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { avatarUrl } from '../lib/avatar'
 import { useI18n } from '../lib/i18n'
 import { useMe } from '../lib/me'
+import { font, tabular, textStyles, weightToFont } from '../lib/typography'
 import { radius, space, useColors, type Colors } from '../theme'
 
 // ---------------------------------------------------------------------------
 // Text
 // ---------------------------------------------------------------------------
 
-const TEXT_VARIANTS = {
-  display: { fontSize: 30, fontWeight: '700', letterSpacing: -0.6 },
-  title: { fontSize: 24, fontWeight: '700', letterSpacing: -0.4 },
-  heading: { fontSize: 18, fontWeight: '600', letterSpacing: -0.2 },
-  body: { fontSize: 15, fontWeight: '400' },
-  label: { fontSize: 14, fontWeight: '500' },
-  caption: { fontSize: 13, fontWeight: '400' },
-} satisfies Record<string, TextStyle>
-
+/**
+ * All text goes through Txt: a variant from the brand type scale, a semantic color, optional
+ * tabular figures. A `fontWeight` in `style` picks the matching face of the variant's font.
+ */
 export function Txt({
   variant = 'body',
   color,
   muted,
+  tabularNums,
   style,
   children,
   numberOfLines,
 }: {
-  variant?: keyof typeof TEXT_VARIANTS
+  variant?: TypeVariant
   color?: keyof Colors
   muted?: boolean
+  /** Align digits (lists, logs, stats). Display number styles already have it. */
+  tabularNums?: boolean
   style?: StyleProp<TextStyle>
   children: ReactNode
   numberOfLines?: number
 }) {
   const colors = useColors()
+  const { fontWeight, ...rest } = StyleSheet.flatten(style) ?? {}
   return (
     <Text
       numberOfLines={numberOfLines}
       style={[
-        TEXT_VARIANTS[variant],
+        textStyles[variant],
         { color: colors[color ?? (muted ? 'textSecondary' : 'textPrimary')] },
-        style,
+        tabularNums && tabular,
+        rest,
+        weightToFont(variant, fontWeight),
       ]}
     >
       {children}
@@ -200,7 +203,7 @@ export function Avatar({
       {src ? (
         <Image source={{ uri: src }} style={{ width: size, height: size }} contentFit="cover" />
       ) : (
-        <Text style={{ color: colors.accentText, fontWeight: '600', fontSize: size * 0.36 }}>
+        <Text style={[font('display', 800), { color: colors.accentText, fontSize: size * 0.34 }]}>
           {initials}
         </Text>
       )}
@@ -252,7 +255,11 @@ export function Button({
       ]}
     >
       {loading ? <ActivityIndicator size="small" color={fg} /> : icon}
-      <Text style={{ color: fg, fontSize: 15, fontWeight: '600' }}>{children}</Text>
+      <Text
+        style={[textStyles.label, font('ui', 700), { color: fg, fontSize: 16, lineHeight: 22 }]}
+      >
+        {children}
+      </Text>
       {!loading && trailingIcon}
     </Pressable>
   )
@@ -400,7 +407,7 @@ const inputStyles = StyleSheet.create({
     alignItems: 'center',
     gap: 2,
   },
-  input: { flex: 1, fontSize: 16, height: '100%' },
+  input: { flex: 1, fontSize: 16, height: '100%', ...font('ui', 500) },
   segmented: { flexDirection: 'row', borderRadius: radius.md, padding: 3, gap: 3 },
   segment: {
     flex: 1,

@@ -121,7 +121,7 @@ function TopRow({ me }: { me: Me }) {
     <View style={styles.topRow}>
       <View style={{ flex: 1 }}>
         <Txt muted>{t(greetingKey())},</Txt>
-        <Txt variant="display" numberOfLines={1}>
+        <Txt variant="displayL" numberOfLines={1}>
           {firstName(me.profile)}
         </Txt>
       </View>

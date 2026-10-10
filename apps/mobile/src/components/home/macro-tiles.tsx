@@ -56,7 +56,7 @@ export function MacroTiles({ targets }: { targets: DailyTargets }) {
               >
                 <Icon size={18} color={colors[m.color]} />
               </ProgressRing>
-              <Txt variant="caption" muted style={{ fontSize: 11 }}>
+              <Txt variant="caption" muted>
                 {t('home.ofCalories', {
                   percent: formatNumber(share, { style: 'percent', maximumFractionDigits: 0 }),
                 })}

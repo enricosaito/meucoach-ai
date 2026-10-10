@@ -4,6 +4,8 @@ import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
+import { useBrandFonts } from '../lib/fonts'
+import { font } from '../lib/typography'
 import { I18nProvider, useI18n } from '../lib/i18n'
 import { MeProvider } from '../lib/me'
 import { SessionProvider, useSession } from '../lib/session'
@@ -25,7 +27,9 @@ export default function RootLayout() {
 
 /** Signed-out users only see the login screen; signed-in users only see the tabs. */
 function RootStack() {
-  const { session, ready } = useSession()
+  const { session, ready: sessionReady } = useSession()
+  const fontsReady = useBrandFonts()
+  const ready = sessionReady && fontsReady
   const { t } = useI18n()
   const colors = useColors()
 
@@ -39,7 +43,8 @@ function RootStack() {
   const pushed = {
     headerShown: true,
     headerTintColor: colors.accentText,
-    headerTitleStyle: { color: colors.textPrimary },
+    headerTitleStyle: { color: colors.textPrimary, ...font('ui', 700) },
+    headerBackTitleStyle: font('ui', 500),
     headerStyle: { backgroundColor: colors.background },
     headerShadowVisible: false,
   }

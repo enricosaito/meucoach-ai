@@ -56,7 +56,9 @@ export function StreakCelebration({ streak, onClose }: { streak: Streak; onClose
             <Flame size={120} color={colors.accent} fill={colors.accent} strokeWidth={1.5} />
           </Appear>
           <Appear delay={150} style={styles.center}>
-            <Txt style={styles.number}>{formatNumber(current)}</Txt>
+            <Txt variant="displayXL" color="accentText" style={styles.number}>
+              {formatNumber(current)}
+            </Txt>
             <Txt variant="title">{tc('celebrate.days', current)}</Txt>
           </Appear>
           <Appear delay={300} style={styles.days}>
@@ -95,7 +97,7 @@ export function StreakCelebration({ streak, onClose }: { streak: Streak; onClose
 const styles = StyleSheet.create({
   screen: { flex: 1, paddingHorizontal: space.xxl, justifyContent: 'space-between' },
   center: { alignItems: 'center', gap: space.lg },
-  number: { fontSize: 96, fontWeight: '800', letterSpacing: -3, lineHeight: 104 },
+  number: { fontSize: 96, lineHeight: 104, letterSpacing: -3 },
   days: { flexDirection: 'row', gap: space.sm },
   dot: {
     width: DOT,

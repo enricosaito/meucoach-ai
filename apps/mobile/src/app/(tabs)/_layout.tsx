@@ -1,6 +1,7 @@
 import { NativeTabs } from 'expo-router/unstable-native-tabs'
 import type { ImageSourcePropType } from 'react-native'
 import { useI18n } from '../../lib/i18n'
+import { font } from '../../lib/typography'
 import { useColors } from '../../theme'
 
 /**
@@ -20,7 +21,10 @@ export default function TabsLayout() {
   const { t } = useI18n()
   const colors = useColors()
   return (
-    <NativeTabs tintColor={colors.accentText} labelStyle={{ color: colors.textSecondary }}>
+    <NativeTabs
+      tintColor={colors.accentText}
+      labelStyle={{ color: colors.textSecondary, ...font('ui', 600) }}
+    >
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{t('nav.home')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={ICONS.home} renderingMode="template" />

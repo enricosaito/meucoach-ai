@@ -66,7 +66,7 @@ export function WeekHero({
             color={colors.accentIcon}
             trackColor={colors.border}
           >
-            <Txt style={styles.bigNumber}>
+            <Txt variant="displayXL">
               {t('home.weekGoal', {
                 done: formatNumber(trainedDays),
                 target: formatNumber(target),
@@ -145,7 +145,6 @@ const styles = StyleSheet.create({
   },
   ringWrap: { alignItems: 'center' },
   center: { alignItems: 'center' },
-  bigNumber: { fontSize: 44, fontWeight: '700', letterSpacing: -1.2 },
   noPlan: { textAlign: 'center', paddingHorizontal: space.xxl },
   pills: { flexDirection: 'row', justifyContent: 'space-around', alignSelf: 'stretch' },
   pillCol: { alignItems: 'center', gap: 6 },

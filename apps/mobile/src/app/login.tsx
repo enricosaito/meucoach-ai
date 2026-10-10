@@ -13,6 +13,7 @@ import { LogoMark } from '../components/logo'
 import { Button, ErrorText, Txt } from '../components/ui'
 import { useI18n } from '../lib/i18n'
 import { supabase } from '../lib/supabase'
+import { font } from '../lib/typography'
 import { radius, space, useColors } from '../theme'
 
 /** Email + password sign-in (same accounts as the web app). */
@@ -58,7 +59,7 @@ export default function LoginScreen() {
       >
         <LogoMark size={52} />
         <View style={{ gap: space.xs }}>
-          <Txt variant="display">{t('auth.welcome')}</Txt>
+          <Txt variant="displayL">{t('auth.welcome')}</Txt>
           <Txt muted>{t('auth.subtitle')}</Txt>
         </View>
 
@@ -129,6 +130,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: space.lg,
     fontSize: 16,
+    ...font('ui', 500),
   },
   eye: { position: 'absolute', right: 16, top: 16 },
 })

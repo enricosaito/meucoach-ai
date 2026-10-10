@@ -109,7 +109,9 @@ function Hero({ me }: { me: Me }) {
       <View style={styles.stats}>
         {stats.map((s) => (
           <View key={s.label} style={styles.stat}>
-            <Txt style={styles.statValue}>{s.value}</Txt>
+            <Txt variant="displayL" tabularNums style={styles.statValue}>
+              {s.value}
+            </Txt>
             <Txt variant="caption" muted>
               {s.label}
             </Txt>
@@ -297,7 +299,7 @@ const styles = StyleSheet.create({
   },
   stats: { flexDirection: 'row', alignSelf: 'stretch', marginTop: space.sm },
   stat: { flex: 1, alignItems: 'center', gap: 2 },
-  statValue: { fontSize: 26, fontWeight: '700', letterSpacing: -0.5 },
+  statValue: { fontSize: 24, lineHeight: 30 },
   daysRow: { flexDirection: 'row', justifyContent: 'space-between' },
   dayCol: { alignItems: 'center', gap: 6 },
   legend: { flexDirection: 'row', gap: space.lg },
