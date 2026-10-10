@@ -36,7 +36,9 @@
   "devDependencies": {
     "@mycoach/api": "workspace:*",
     "@mycoach/db": "workspace:*",
+    "@resvg/resvg-js": "2.6.2",
     "@types/react": "19.3.0",
+    "lucide-static": "1.54.0",
     "typescript": "~6.0.3"
   },
   "scripts": {
@@ -44,7 +46,8 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "typecheck": "tsc --noEmit",
-    "doctor": "expo-doctor"
+    "doctor": "expo-doctor",
+    "tab-icons": "node scripts/tab-icons.mjs"
   },
   "private": true,
   "expo": {

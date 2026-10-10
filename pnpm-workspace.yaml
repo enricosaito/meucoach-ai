@@ -4,6 +4,8 @@ packages:
 minimumReleaseAgeExclude:
   - '@anthropic-ai/sdk@0.133.0'
   - lucide-react@1.54.0
+  - lucide-react-native@1.54.0
+  - lucide-static@1.54.0
 # Dependencies whose install scripts may run (true) or are deliberately skipped (false).
 allowBuilds:
   unrs-resolver: false
