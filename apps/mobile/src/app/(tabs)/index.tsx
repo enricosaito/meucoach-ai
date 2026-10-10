@@ -28,6 +28,7 @@ import { haptics } from '../../lib/haptics'
 import { useI18n } from '../../lib/i18n'
 import { useMe, type Me } from '../../lib/me'
 import { useWorkoutLog } from '../../lib/use-workout-log'
+import { workoutTitle } from '../../lib/workout-names'
 import { radius, space, useColors } from '../../theme'
 
 function greetingKey(date = new Date()): MessageKey {
@@ -220,7 +221,7 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
         </Link>
       </View>
       <View style={{ gap: 2 }}>
-        <Txt variant="title">{day?.title}</Txt>
+        <Txt variant="title">{day ? workoutTitle(t, dayIndex, day.title) : null}</Txt>
         <Txt muted>
           {day?.focus} · {t('training.minutes', { count: day?.estimatedMinutes ?? 0 })}
         </Txt>

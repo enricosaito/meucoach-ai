@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { haptics } from '../../lib/haptics'
 import { useI18n } from '../../lib/i18n'
+import { workoutTitle } from '../../lib/workout-names'
 import { radius, space, useColors } from '../../theme'
 import { Card, Txt } from '../ui'
 
@@ -45,7 +46,7 @@ export function WorkoutHistory({
             <Check size={14} color={colors.accent} strokeWidth={3} />
           </View>
           <Txt numberOfLines={1} style={{ flex: 1, fontWeight: '500' }}>
-            {session.dayTitle}
+            {workoutTitle(t, session.dayIndex, session.dayTitle)}
           </Txt>
           <Txt variant="caption" muted>
             {session.localDate === todayDate

@@ -25,6 +25,9 @@ export function useWorkoutLog(ready: WorkoutPlanRecord | null) {
   const [pendingDay, setPendingDay] = useState<number | null>(null)
   const [error, setError] = useState('')
   const [feedback, setFeedback] = useState<XpFeedback | null>(null)
+  // Which plan day the feedback or error belongs to (screens with several days show it once).
+  const [lastLoggedDay, setLastLoggedDay] = useState<number | null>(null)
+  const [errorDay, setErrorDay] = useState<number | null>(null)
   // One idempotency key per day being logged, reused if the user retries after a failure.
   const keys = useRef(new Map<number, string>())
 
@@ -48,6 +51,7 @@ export function useWorkoutLog(ready: WorkoutPlanRecord | null) {
       keys.current.set(dayIndex, key)
       setPendingDay(dayIndex)
       setError('')
+      setErrorDay(dayIndex)
       try {
         const { session, xp } = await unwrap(
           api.training.workouts.$post(
@@ -60,6 +64,7 @@ export function useWorkoutLog(ready: WorkoutPlanRecord | null) {
         setSessions((current) => [session, ...(current ?? []).filter((s) => s.id !== session.id)])
         setLevel(xp.progress)
         setFeedback({ awarded: xp.awarded, leveledUp: xp.leveledUp, level: xp.progress.level })
+        setLastLoggedDay(dayIndex)
       } catch (e) {
         setError(errorMessage(t, e))
       } finally {
@@ -78,6 +83,8 @@ export function useWorkoutLog(ready: WorkoutPlanRecord | null) {
     pendingDay,
     error,
     feedback,
+    lastLoggedDay,
+    errorDay,
     reload,
   }
 }
