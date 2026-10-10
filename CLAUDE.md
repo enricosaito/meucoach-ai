@@ -5,6 +5,9 @@ Brazilian Portuguese (default) and English. **Modular monolith** in a pnpm + Tur
 strict everywhere. Built to scale to 100k+ users and to add an Expo app (`apps/mobile`) later, so
 everything below `apps/` must stay client-agnostic.
 
+**Start here:** [docs/status.md](docs/status.md) has the current state, deploy procedure, known gotchas,
+open items and the next checkpoint. Keep it updated at the end of each checkpoint.
+
 ## Layout
 
 ```
