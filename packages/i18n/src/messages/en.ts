@@ -186,6 +186,10 @@ export const en = {
     suggestion1: 'How much protein should I eat each day?',
     suggestion2: 'How should I split my macros on training days?',
     suggestion3: 'What’s a simple weekly workout plan for me?',
+    recent: 'Recent conversation',
+    continue: 'Continue the conversation',
+    suggestionsTitle: 'Try asking',
+    aiNotice: 'Your coach uses AI and can make mistakes. For pain or injuries, see a professional.',
   },
   profile: {
     highlights: 'Highlights',

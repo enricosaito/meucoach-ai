@@ -70,6 +70,8 @@ function RootStack() {
             name="new-plan"
             options={{ ...pushed, title: t('meta.newPlan'), headerBackTitle: t('nav.training') }}
           />
+          {/* Own header (back, coach avatar, typing status) so the composer can hug the keyboard. */}
+          <Stack.Screen name="chat" />
         </Stack.Protected>
         <Stack.Protected guard={session === null}>
           <Stack.Screen name="login" />

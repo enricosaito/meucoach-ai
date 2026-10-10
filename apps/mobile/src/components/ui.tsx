@@ -41,6 +41,7 @@ export function Txt({
   style,
   children,
   numberOfLines,
+  selectable,
 }: {
   variant?: TypeVariant
   color?: keyof Colors
@@ -50,12 +51,15 @@ export function Txt({
   style?: StyleProp<TextStyle>
   children: ReactNode
   numberOfLines?: number
+  /** Lets the user select and copy the text (e.g. coach replies). */
+  selectable?: boolean
 }) {
   const colors = useColors()
   const { fontWeight, ...rest } = StyleSheet.flatten(style) ?? {}
   return (
     <Text
       numberOfLines={numberOfLines}
+      selectable={selectable}
       style={[
         textStyles[variant],
         { color: colors[color ?? (muted ? 'textSecondary' : 'textPrimary')] },

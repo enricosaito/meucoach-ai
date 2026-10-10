@@ -206,7 +206,7 @@ function PlanHeader({ plan, log }: { plan: WorkoutPlan; log: WorkoutLog }) {
         variant="secondary"
         onPress={() => {
           haptics.tap()
-          router.push('/coach')
+          router.push('/chat')
         }}
         icon={<ShiningSparkles size={16} color={colors.accentIcon} />}
         style={{ alignSelf: 'stretch' }}

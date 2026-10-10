@@ -189,6 +189,10 @@ export const ptBR = {
     suggestion1: 'Quanta proteína devo comer por dia?',
     suggestion2: 'Como devo dividir meus macros nos dias de treino?',
     suggestion3: 'Qual seria um plano de treino semanal simples para mim?',
+    recent: 'Conversa recente',
+    continue: 'Continuar conversa',
+    suggestionsTitle: 'Experimente perguntar',
+    aiNotice: 'Seu coach usa IA e pode errar. Em caso de dor ou lesão, procure um profissional.',
   },
   profile: {
     highlights: 'Destaques',

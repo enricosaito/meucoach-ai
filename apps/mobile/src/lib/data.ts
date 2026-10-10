@@ -1,3 +1,4 @@
+import type { ChatMessage } from '@mycoach/core/coaching/contracts'
 import { toDietPlanRecord, type DietPlanRecord } from '@mycoach/core/nutrition/contracts'
 import {
   questionnaireSchema,
@@ -114,4 +115,20 @@ export async function hasPhotoConsent(): Promise<boolean> {
     .maybeSingle()
   if (error) throw error
   return data !== null
+}
+
+/** The latest chat messages, oldest first (the coach conversation is one thread per user). */
+export async function fetchChatHistory(limit = 50): Promise<ChatMessage[]> {
+  const { data, error } = await supabase
+    .from('chat_messages')
+    .select('id, role, content, created_at')
+    .order('created_at', { ascending: false })
+    .limit(limit)
+  if (error) throw error
+  return data.reverse().map((row) => ({
+    id: row.id,
+    role: row.role === 'assistant' ? 'assistant' : 'user',
+    content: row.content,
+    createdAt: row.created_at,
+  }))
 }
