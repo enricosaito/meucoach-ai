@@ -14,7 +14,7 @@ import {
   Skeleton,
 } from '@/components/ui'
 import { getApi, unwrap, writeHeaders } from '@/lib/api'
-import { GOAL_LABELS } from '@/lib/labels'
+import { useI18n } from '@/lib/i18n/client'
 import { useWrite } from '@/lib/use-write'
 import {
   GOAL_TYPES,
@@ -22,6 +22,7 @@ import {
   type Profile,
   type UnitSystem,
 } from '@mycoach/core/profile/contracts'
+import { LOCALES, type Locale } from '@mycoach/i18n'
 import {
   Check,
   Dumbbell,
@@ -45,20 +46,21 @@ const GOAL_ICONS: Record<GoalType, LucideIcon> = {
 
 export function ProfileView() {
   const { me } = useMe()
+  const { t } = useI18n()
 
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader title="Profile" description="Your coach uses this to tailor its advice." />
-      {me ? <ProfileForm profile={me.profile} /> : <Skeleton className="h-[36rem] rounded-3xl" />}
+      <PageHeader title={t('profile.title')} description={t('profile.description')} />
+      {me ? <ProfileForm profile={me.profile} /> : <Skeleton className="h-[40rem] rounded-3xl" />}
       <Card className="flex items-center justify-between gap-4">
         <div>
-          <h2 className="font-semibold tracking-tight">Sign out</h2>
-          <p className="text-sm text-muted">You can sign back in any time.</p>
+          <h2 className="font-semibold tracking-tight">{t('auth.signOutTitle')}</h2>
+          <p className="text-sm text-muted">{t('auth.signOutDescription')}</p>
         </div>
         <form action="/auth/signout" method="post">
           <Button type="submit" variant="secondary" size="sm">
             <LogOut className="size-4" aria-hidden />
-            Sign out
+            {t('auth.signOut')}
           </Button>
         </form>
       </Card>
@@ -67,9 +69,12 @@ export function ProfileView() {
 }
 
 function ProfileForm({ profile }: { profile: Profile }) {
+  const { t } = useI18n()
+  // Saving a new language updates the profile; MeProvider then switches the UI to match.
   const { setProfile } = useMe()
   const [displayName, setDisplayName] = useState(profile.displayName ?? '')
   const [units, setUnits] = useState<UnitSystem>(profile.units)
+  const [locale, setLocaleChoice] = useState<Locale>(profile.locale)
   const [goal, setGoal] = useState<Goals['primary']>(profile.goals.primary)
   const [saved, setSaved] = useState(false)
   const browserTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone
@@ -77,6 +82,7 @@ function ProfileForm({ profile }: { profile: Profile }) {
   const dirty =
     displayName.trim() !== (profile.displayName ?? '') ||
     units !== profile.units ||
+    locale !== profile.locale ||
     goal !== profile.goals.primary ||
     browserTimeZone !== profile.timezone
 
@@ -87,6 +93,7 @@ function ProfileForm({ profile }: { profile: Profile }) {
           json: {
             displayName: displayName.trim() || null,
             units,
+            locale,
             timezone: browserTimeZone,
             goals: goal ? { ...profile.goals, primary: goal } : profile.goals,
           },
@@ -116,14 +123,14 @@ function ProfileForm({ profile }: { profile: Profile }) {
         <div className="flex items-center gap-4">
           <Avatar name={displayName || null} className="size-14 text-lg" />
           <div className="min-w-0 flex-1">
-            <Field label="Name" htmlFor="display-name">
+            <Field label={t('profile.name')} htmlFor="display-name">
               <input
                 id="display-name"
                 className={inputClass}
                 value={displayName}
                 maxLength={80}
                 autoComplete="given-name"
-                placeholder="What should your coach call you?"
+                placeholder={t('profile.namePlaceholder')}
                 onChange={(e) => {
                   setDisplayName(e.target.value)
                   changed()
@@ -134,7 +141,7 @@ function ProfileForm({ profile }: { profile: Profile }) {
         </div>
 
         <fieldset>
-          <SectionTitle title="Main goal" description="Pick the one that matters most right now." />
+          <SectionTitle title={t('profile.mainGoal')} description={t('profile.mainGoalHelp')} />
           <div className="grid grid-cols-2 gap-2.5">
             {GOAL_TYPES.map((g) => {
               const Icon = GOAL_ICONS[g]
@@ -165,8 +172,8 @@ function ProfileForm({ profile }: { profile: Profile }) {
                     aria-hidden
                   />
                   <span>
-                    <span className="block text-[15px] font-medium">{GOAL_LABELS[g].label}</span>
-                    <span className="block text-xs text-muted">{GOAL_LABELS[g].description}</span>
+                    <span className="block text-[15px] font-medium">{t(`goals.${g}.label`)}</span>
+                    <span className="block text-xs text-muted">{t(`goals.${g}.description`)}</span>
                   </span>
                   {checked && (
                     <Check
@@ -181,22 +188,34 @@ function ProfileForm({ profile }: { profile: Profile }) {
           </div>
         </fieldset>
 
-        <Field label="Units" hint="Used in the energy test.">
+        <Field label={t('language.label')} hint={t('profile.languageHelp')}>
           <Segmented
-            label="Units"
+            label={t('language.label')}
+            value={locale}
+            onChange={(value) => {
+              setLocaleChoice(value)
+              changed()
+            }}
+            options={LOCALES.map((l) => ({ value: l, label: t(`language.${l}`) }))}
+          />
+        </Field>
+
+        <Field label={t('profile.units')} hint={t('profile.unitsHelp')}>
+          <Segmented
+            label={t('profile.units')}
             value={units}
             onChange={(value) => {
               setUnits(value)
               changed()
             }}
             options={[
-              { value: 'metric', label: 'Metric · kg, cm' },
-              { value: 'imperial', label: 'Imperial · lb, ft' },
+              { value: 'metric', label: t('profile.unitsMetric') },
+              { value: 'imperial', label: t('profile.unitsImperial') },
             ]}
           />
         </Field>
 
-        <Field label="Time zone" hint="Detected from this device. Saved with your profile.">
+        <Field label={t('profile.timezone')} hint={t('profile.timezoneHelp')}>
           <div className={cx(inputClass, 'flex items-center bg-surface-2 text-muted')}>
             {browserTimeZone.replaceAll('_', ' ')}
           </div>
@@ -208,12 +227,12 @@ function ProfileForm({ profile }: { profile: Profile }) {
           {saved && !dirty ? (
             <>
               <Check className="size-4" aria-hidden />
-              Saved
+              {t('profile.saved')}
             </>
           ) : save.pending ? (
-            'Saving…'
+            t('profile.saving')
           ) : (
-            'Save changes'
+            t('profile.save')
           )}
         </Button>
       </form>

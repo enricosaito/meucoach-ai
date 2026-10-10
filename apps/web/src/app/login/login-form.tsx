@@ -1,6 +1,7 @@
 'use client'
 
 import { Button, ErrorText, Field, inputClass } from '@/components/ui'
+import { useI18n } from '@/lib/i18n/client'
 import { getSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { Eye, EyeOff } from 'lucide-react'
 import { useRouter } from 'next/navigation'
@@ -8,6 +9,7 @@ import { useState, type FormEvent } from 'react'
 
 export function LoginForm() {
   const router = useRouter()
+  const { t } = useI18n()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -25,8 +27,8 @@ export function LoginForm() {
     if (signInError) {
       setError(
         signInError.code === 'invalid_credentials'
-          ? 'That email and password don’t match. Check them and try again.'
-          : signInError.message,
+          ? t('auth.invalidCredentials')
+          : t('errors.generic'),
       )
       setPending(false)
       return
@@ -38,7 +40,7 @@ export function LoginForm() {
 
   return (
     <form onSubmit={onSubmit} className="flex flex-col gap-4">
-      <Field label="Email" htmlFor="email">
+      <Field label={t('auth.email')} htmlFor="email">
         <input
           id="email"
           className={inputClass}
@@ -46,7 +48,7 @@ export function LoginForm() {
           name="email"
           autoComplete="email"
           inputMode="email"
-          placeholder="you@example.com"
+          placeholder={t('auth.emailPlaceholder')}
           required
           autoFocus
           value={email}
@@ -56,7 +58,7 @@ export function LoginForm() {
           }}
         />
       </Field>
-      <Field label="Password" htmlFor="password">
+      <Field label={t('auth.password')} htmlFor="password">
         <div className="relative">
           <input
             id="password"
@@ -76,7 +78,7 @@ export function LoginForm() {
             onClick={() => {
               setShowPassword((v) => !v)
             }}
-            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
             aria-pressed={showPassword}
             className="absolute inset-y-0 right-1.5 my-auto grid size-9 place-items-center rounded-full text-muted transition-colors hover:bg-surface-2 hover:text-fg"
           >
@@ -90,7 +92,7 @@ export function LoginForm() {
       </Field>
       <ErrorText>{error}</ErrorText>
       <Button type="submit" loading={pending} className="mt-2 w-full">
-        {pending ? 'Signing in…' : 'Sign in'}
+        {pending ? t('auth.submitting') : t('auth.submit')}
       </Button>
     </form>
   )

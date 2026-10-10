@@ -32,11 +32,11 @@ export function LogoMark({ className = 'size-8' }: { className?: string }) {
   )
 }
 
-export function Logo() {
+export function Logo({ name }: { name: string }) {
   return (
     <span className="inline-flex items-center gap-2 text-[17px] font-semibold tracking-tight">
       <LogoMark />
-      My Coach
+      {name}
     </span>
   )
 }

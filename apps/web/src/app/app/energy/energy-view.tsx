@@ -1,5 +1,6 @@
 'use client'
 
+import { TargetsCard } from '@/components/targets-card'
 import {
   Button,
   Card,
@@ -13,7 +14,7 @@ import {
   Skeleton,
 } from '@/components/ui'
 import { getApi, unwrap, writeHeaders } from '@/lib/api'
-import { ACTIVITY_LABELS, formatDate, formatKcal } from '@/lib/labels'
+import { useI18n } from '@/lib/i18n/client'
 import { useWrite } from '@/lib/use-write'
 import {
   ACTIVITY_LEVELS,
@@ -33,13 +34,11 @@ import { useMe } from '../me-context'
 
 export function EnergyView() {
   const { me } = useMe()
+  const { t } = useI18n()
 
   return (
     <div className="flex flex-col gap-5">
-      <PageHeader
-        title="Energy"
-        description="How many calories your body uses each day, estimated with the Mifflin-St Jeor equation."
-      />
+      <PageHeader title={t('energy.title')} description={t('energy.description')} />
       {me ? (
         <EnergyContent units={me.profile.units} latest={me.latestAssessment} />
       ) : (
@@ -53,15 +52,16 @@ export function EnergyView() {
 }
 
 function EnergyContent({ units, latest }: { units: UnitSystem; latest: Assessment | null }) {
-  const { setLatestAssessment } = useMe()
+  const { me, setLatestAssessment } = useMe()
   const resultRef = useRef<HTMLDivElement>(null)
   const [justUpdated, setJustUpdated] = useState(false)
 
   return (
     <>
       {latest && (
-        <div ref={resultRef} className="scroll-mt-24">
+        <div ref={resultRef} className="flex scroll-mt-24 flex-col gap-5">
           <ResultCard assessment={latest} highlight={justUpdated} />
+          {me?.targets && <TargetsCard targets={me.targets} goal={me.profile.goals.primary} />}
         </div>
       )}
       <AssessmentForm
@@ -80,6 +80,7 @@ function EnergyContent({ units, latest }: { units: UnitSystem; latest: Assessmen
 }
 
 function ResultCard({ assessment, highlight }: { assessment: Assessment; highlight: boolean }) {
+  const { t, formatNumber, formatDate } = useI18n()
   return (
     <Card
       key={assessment.id}
@@ -93,12 +94,12 @@ function ResultCard({ assessment, highlight }: { assessment: Assessment; highlig
         <div className="flex items-center justify-between gap-3">
           <p className="inline-flex items-center gap-1.5 text-sm font-medium text-muted">
             <Flame className="size-4 text-energy" aria-hidden />
-            Your result
+            {t('energy.yourResult')}
           </p>
           {highlight ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent-strong">
               <Check className="size-3.5" aria-hidden />
-              Updated
+              {t('energy.updated')}
             </span>
           ) : (
             <span className="text-xs text-muted">{formatDate(assessment.createdAt)}</span>
@@ -107,26 +108,24 @@ function ResultCard({ assessment, highlight }: { assessment: Assessment; highlig
 
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
           <div>
-            <p className="text-sm text-muted">Maintenance (TDEE)</p>
+            <p className="text-sm text-muted">{t('energy.tdee')}</p>
             <p className="mt-1 flex items-baseline gap-1.5">
               <span className="text-5xl font-semibold tracking-tight tabular-nums">
-                {formatKcal(assessment.tdeeKcal)}
+                {formatNumber(assessment.tdeeKcal)}
               </span>
-              <span className="text-muted">kcal/day</span>
+              <span className="text-muted">{t('common.kcalPerDay')}</span>
             </p>
-            <p className="mt-1 text-sm text-muted">
-              Calories to keep your weight steady at your activity level.
-            </p>
+            <p className="mt-1 text-sm text-muted">{t('energy.tdeeHelp')}</p>
           </div>
           <div className="sm:border-l sm:border-line sm:pl-4">
-            <p className="text-sm text-muted">At rest (BMR)</p>
+            <p className="text-sm text-muted">{t('energy.bmr')}</p>
             <p className="mt-1 flex items-baseline gap-1.5">
               <span className="text-3xl font-semibold tracking-tight tabular-nums">
-                {formatKcal(assessment.bmrKcal)}
+                {formatNumber(assessment.bmrKcal)}
               </span>
-              <span className="text-muted">kcal/day</span>
+              <span className="text-muted">{t('common.kcalPerDay')}</span>
             </p>
-            <p className="mt-1 text-sm text-muted">What your body burns doing nothing at all.</p>
+            <p className="mt-1 text-sm text-muted">{t('energy.bmrHelp')}</p>
           </div>
         </div>
       </div>
@@ -143,6 +142,7 @@ function AssessmentForm({
   latest: Assessment | null
   onSaved: (assessment: Assessment) => void
 }) {
+  const { t } = useI18n()
   const imperial = units === 'imperial'
   const initialFeetInches = latest ? cmToFeetInches(latest.heightCm) : null
 
@@ -193,35 +193,38 @@ function AssessmentForm({
   return (
     <Card>
       <SectionTitle
-        title={latest ? 'Update your numbers' : 'Your details'}
+        title={latest ? t('energy.updateTitle') : t('energy.detailsTitle')}
         description={
           <>
-            Using {imperial ? 'imperial' : 'metric'} units ·{' '}
+            {t('energy.usingUnits', {
+              units: imperial ? t('energy.imperial') : t('energy.metric'),
+            })}{' '}
+            ·{' '}
             <Link href="/app/profile" className="font-medium text-accent hover:underline">
-              change
+              {t('energy.change')}
             </Link>
           </>
         }
       />
       <form onSubmit={onSubmit} className="flex flex-col gap-5">
-        <Field label="Sex">
+        <Field label={t('energy.sex')}>
           <Segmented
-            label="Sex"
+            label={t('energy.sex')}
             value={sex}
             onChange={update(setSex)}
             options={[
-              { value: 'female', label: 'Female' },
-              { value: 'male', label: 'Male' },
+              { value: 'female', label: t('energy.female') },
+              { value: 'male', label: t('energy.male') },
             ]}
           />
         </Field>
 
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Age" htmlFor="age">
+          <Field label={t('energy.age')} htmlFor="age">
             <NumberInput
               id="age"
               inputMode="numeric"
-              unit="years"
+              unit={t('energy.years')}
               min={15}
               max={100}
               step={1}
@@ -232,7 +235,7 @@ function AssessmentForm({
               }}
             />
           </Field>
-          <Field label="Weight" htmlFor="weight">
+          <Field label={t('energy.weight')} htmlFor="weight">
             <NumberInput
               id="weight"
               unit={imperial ? 'lb' : 'kg'}
@@ -249,10 +252,10 @@ function AssessmentForm({
         </div>
 
         {imperial ? (
-          <Field label="Height">
+          <Field label={t('energy.height')}>
             <div className="grid grid-cols-2 gap-3">
               <NumberInput
-                aria-label="Height, feet"
+                aria-label={t('energy.heightFeet')}
                 inputMode="numeric"
                 unit="ft"
                 min={3}
@@ -264,7 +267,7 @@ function AssessmentForm({
                 }}
               />
               <NumberInput
-                aria-label="Height, inches"
+                aria-label={t('energy.heightInches')}
                 inputMode="numeric"
                 unit="in"
                 min={0}
@@ -277,7 +280,7 @@ function AssessmentForm({
             </div>
           </Field>
         ) : (
-          <Field label="Height" htmlFor="height">
+          <Field label={t('energy.height')} htmlFor="height">
             <NumberInput
               id="height"
               unit="cm"
@@ -294,7 +297,7 @@ function AssessmentForm({
         )}
 
         <fieldset className="flex flex-col gap-1.5">
-          <legend className="mb-1.5 text-sm font-medium">How active are you?</legend>
+          <legend className="mb-1.5 text-sm font-medium">{t('energy.activityQuestion')}</legend>
           <div className="flex flex-col gap-2">
             {ACTIVITY_LEVELS.map((level) => {
               const checked = activityLevel === level
@@ -320,10 +323,10 @@ function AssessmentForm({
                   />
                   <span className="flex-1">
                     <span className="block text-[15px] font-medium">
-                      {ACTIVITY_LABELS[level].label}
+                      {t(`activity.${level}.label`)}
                     </span>
                     <span className="block text-sm text-muted">
-                      {ACTIVITY_LABELS[level].description}
+                      {t(`activity.${level}.description`)}
                     </span>
                   </span>
                   <span
@@ -344,11 +347,15 @@ function AssessmentForm({
         <ErrorText>{save.error}</ErrorText>
 
         <Button type="submit" loading={save.pending} className="w-full">
-          {save.pending ? 'Calculating…' : latest ? 'Recalculate' : 'Calculate my energy'}
+          {save.pending
+            ? t('energy.calculating')
+            : latest
+              ? t('energy.recalculate')
+              : t('energy.calculate')}
         </Button>
         <p className="-mt-2 flex items-start gap-1.5 text-xs text-muted">
           <Info className="mt-px size-3.5 shrink-0" aria-hidden />
-          An estimate for healthy adults. It can be off for athletes or during pregnancy.
+          {t('energy.disclaimer')}
         </p>
       </form>
     </Card>

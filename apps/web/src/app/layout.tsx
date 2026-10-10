@@ -1,12 +1,17 @@
+import { I18nProvider } from '@/lib/i18n/client'
+import { getLocale, getTranslator } from '@/lib/i18n/server'
 import type { Metadata, Viewport } from 'next'
 import { Geist } from 'next/font/google'
 import './globals.css'
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
 
-export const metadata: Metadata = {
-  title: { default: 'My Coach', template: '%s · My Coach' },
-  description: 'Your personal fitness and nutrition coach',
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator()
+  return {
+    title: { default: t('common.appName'), template: `%s · ${t('common.appName')}` },
+    description: t('meta.description'),
+  }
 }
 
 export const viewport: Viewport = {
@@ -19,10 +24,13 @@ export const viewport: Viewport = {
   ],
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale()
   return (
-    <html lang="en" className={geist.variable}>
-      <body className="min-h-dvh font-sans">{children}</body>
+    <html lang={locale} className={geist.variable}>
+      <body className="min-h-dvh font-sans">
+        <I18nProvider locale={locale}>{children}</I18nProvider>
+      </body>
     </html>
   )
 }

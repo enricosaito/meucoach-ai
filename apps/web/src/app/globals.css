@@ -18,6 +18,7 @@
   --accent-soft: #e2f3e8;
   --energy: #e8630a;
   --energy-soft: #fdeedf;
+  --fat: #6d5bd0;
   --danger: #c4321e;
   --danger-soft: #fbe7e3;
   --ring: rgb(21 146 79 / 0.35);
@@ -40,6 +41,7 @@
     --accent-soft: #15301f;
     --energy: #ff8a3d;
     --energy-soft: #33200f;
+    --fat: #a597ff;
     --danger: #ff7a66;
     --danger-soft: #3a1712;
     --ring: rgb(60 199 117 / 0.4);
@@ -63,6 +65,7 @@
   --color-accent-soft: var(--accent-soft);
   --color-energy: var(--energy);
   --color-energy-soft: var(--energy-soft);
+  --color-fat: var(--fat);
   --color-danger: var(--danger);
   --color-danger-soft: var(--danger-soft);
   --color-ring: var(--ring);

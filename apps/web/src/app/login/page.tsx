@@ -1,17 +1,24 @@
+import { LanguageSwitch } from '@/components/language-switch'
 import { Logo, LogoMark } from '@/components/ui'
-import { Flame, MessageCircle, Target } from 'lucide-react'
+import { getTranslator } from '@/lib/i18n/server'
+import type { MessageKey } from '@mycoach/i18n'
+import { Flame, MessageCircle, Target, type LucideIcon } from 'lucide-react'
 import type { Metadata } from 'next'
 import { LoginForm } from './login-form'
 
-export const metadata: Metadata = { title: 'Sign in' }
+export async function generateMetadata(): Promise<Metadata> {
+  const { t } = await getTranslator()
+  return { title: t('meta.signIn') }
+}
 
-const HIGHLIGHTS = [
-  { icon: Flame, text: 'Know exactly how much energy your body uses' },
-  { icon: Target, text: 'Advice shaped around your goal' },
-  { icon: MessageCircle, text: 'A coach that answers any time' },
+const HIGHLIGHTS: { icon: LucideIcon; text: MessageKey }[] = [
+  { icon: Flame, text: 'auth.highlightEnergy' },
+  { icon: Target, text: 'auth.highlightGoal' },
+  { icon: MessageCircle, text: 'auth.highlightCoach' },
 ]
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const { t } = await getTranslator()
   return (
     <div className="grid min-h-dvh lg:grid-cols-2">
       <aside className="relative hidden overflow-hidden bg-accent p-12 text-accent-fg lg:flex lg:flex-col lg:justify-between">
@@ -25,11 +32,11 @@ export default function LoginPage() {
         />
         <span className="relative inline-flex items-center gap-2 text-lg font-semibold">
           <LogoMark className="size-9 bg-accent-fg text-accent" />
-          My Coach
+          {t('common.appName')}
         </span>
         <div className="relative">
           <h2 className="max-w-md text-4xl leading-tight font-semibold tracking-tight">
-            Small, steady steps. Coached the whole way.
+            {t('auth.heroTitle')}
           </h2>
           <ul className="mt-8 flex flex-col gap-4">
             {HIGHLIGHTS.map(({ icon: Icon, text }) => (
@@ -37,20 +44,23 @@ export default function LoginPage() {
                 <span className="grid size-9 place-items-center rounded-xl bg-white/15">
                   <Icon className="size-5" aria-hidden />
                 </span>
-                {text}
+                {t(text)}
               </li>
             ))}
           </ul>
         </div>
       </aside>
 
-      <main className="flex flex-col justify-center px-6 py-12 sm:px-12">
+      <main className="relative flex flex-col justify-center px-6 py-12 sm:px-12">
+        <LanguageSwitch className="absolute top-5 right-5 sm:top-6 sm:right-8" />
         <div className="mx-auto w-full max-w-sm animate-rise-in">
           <div className="lg:hidden">
-            <Logo />
+            <Logo name={t('common.appName')} />
           </div>
-          <h1 className="mt-10 text-3xl font-semibold tracking-tight lg:mt-0">Welcome back</h1>
-          <p className="mt-1.5 text-[15px] text-muted">Sign in to continue with your coach.</p>
+          <h1 className="mt-10 text-3xl font-semibold tracking-tight lg:mt-0">
+            {t('auth.welcome')}
+          </h1>
+          <p className="mt-1.5 text-[15px] text-muted">{t('auth.subtitle')}</p>
           <div className="mt-8">
             <LoginForm />
           </div>

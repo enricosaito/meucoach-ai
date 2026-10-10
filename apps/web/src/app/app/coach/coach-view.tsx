@@ -2,7 +2,8 @@
 
 import { cx, ErrorText, LogoMark, Skeleton } from '@/components/ui'
 import { getApi, unwrap, writeHeaders } from '@/lib/api'
-import { COACH_SUGGESTIONS } from '@/lib/labels'
+import { useI18n } from '@/lib/i18n/client'
+import { COACH_SUGGESTION_KEYS } from '@/lib/labels'
 import { getSupabaseBrowserClient } from '@/lib/supabase-browser'
 import { useWrite } from '@/lib/use-write'
 import { CHAT_MESSAGE_MAX_LENGTH, type ChatMessage } from '@mycoach/core/coaching/contracts'
@@ -21,6 +22,7 @@ export function CoachView() {
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const bottomRef = useRef<HTMLDivElement>(null)
   const startedFromQuery = useRef(false)
+  const { t } = useI18n()
 
   // Reads go directly to Supabase (RLS: own rows only). Writes go through the API.
   useEffect(() => {
@@ -109,7 +111,11 @@ export function CoachView() {
     <div className="flex min-h-[calc(100dvh-14rem)] flex-col">
       <div className="flex-1">
         {messages === null ? (
-          <div className="flex flex-col gap-3" aria-busy aria-label="Loading conversation">
+          <div
+            className="flex flex-col gap-3"
+            aria-busy
+            aria-label={t('coach.loadingConversation')}
+          >
             <Skeleton className="h-16 w-3/4" />
             <Skeleton className="ml-auto h-10 w-1/2" />
             <Skeleton className="h-24 w-4/5" />
@@ -142,7 +148,7 @@ export function CoachView() {
               className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-soft"
             >
               <RotateCw className="size-4" aria-hidden />
-              Try again
+              {t('common.tryAgain')}
             </button>
           </div>
         )}
@@ -155,13 +161,13 @@ export function CoachView() {
       >
         <div className="flex items-end gap-2 rounded-[26px] border border-line bg-surface p-1.5 pl-4 shadow-card transition-[border-color,box-shadow] focus-within:border-accent focus-within:ring-4 focus-within:ring-ring">
           <label htmlFor="coach-input" className="sr-only">
-            Message your coach
+            {t('coach.inputLabel')}
           </label>
           <textarea
             id="coach-input"
             ref={inputRef}
             rows={1}
-            placeholder="Ask your coach anything…"
+            placeholder={t('coach.placeholder')}
             value={draft}
             maxLength={CHAT_MESSAGE_MAX_LENGTH}
             onChange={(e) => {
@@ -173,7 +179,7 @@ export function CoachView() {
           <button
             type="submit"
             disabled={!draft.trim() || pending || Boolean(sending)}
-            aria-label="Send"
+            aria-label={t('coach.send')}
             className="grid size-10 shrink-0 place-items-center rounded-full bg-accent text-accent-fg transition-[background-color,transform,opacity] hover:bg-accent-strong active:scale-90 disabled:opacity-30"
           >
             <ArrowUp className="size-5" strokeWidth={2.5} aria-hidden />
@@ -217,8 +223,9 @@ function Bubble({
 }
 
 function TypingIndicator() {
+  const { t } = useI18n()
   return (
-    <li className="flex gap-2.5 animate-rise-in" aria-label="Coach is typing">
+    <li className="flex gap-2.5 animate-rise-in" aria-label={t('coach.typing')}>
       <LogoMark className="size-7" />
       <div className="flex items-center gap-1 rounded-3xl rounded-tl-lg border border-line bg-surface px-4 py-3.5">
         {[0, 1, 2].map((i) => (
@@ -234,24 +241,23 @@ function TypingIndicator() {
 }
 
 function EmptyState({ onPick }: { onPick: (question: string) => void }) {
+  const { t } = useI18n()
   return (
     <div className="flex flex-col items-center px-2 pt-6 text-center animate-rise-in sm:pt-12">
       <LogoMark className="size-14" />
-      <h1 className="mt-4 text-2xl font-semibold tracking-tight">Your coach</h1>
-      <p className="mt-1 max-w-sm text-[15px] text-muted">
-        Ask about training, nutrition, sleep or habits. Answers use your profile and energy test.
-      </p>
+      <h1 className="mt-4 text-2xl font-semibold tracking-tight">{t('coach.title')}</h1>
+      <p className="mt-1 max-w-sm text-[15px] text-muted">{t('coach.intro')}</p>
       <div className="mt-6 flex w-full max-w-md flex-col gap-2">
-        {COACH_SUGGESTIONS.map((question) => (
+        {COACH_SUGGESTION_KEYS.map((key) => (
           <button
-            key={question}
+            key={key}
             type="button"
             onClick={() => {
-              onPick(question)
+              onPick(t(key))
             }}
             className="rounded-2xl border border-line bg-surface px-4 py-3 text-left text-[15px] transition-[background-color,transform] hover:bg-surface-2 active:scale-[0.99]"
           >
-            {question}
+            {t(key)}
           </button>
         ))}
       </div>
