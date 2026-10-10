@@ -44,6 +44,7 @@ const KNOWN_ERROR_CODES = new Set([
   'validation_failed',
   'unauthorized',
   'idempotency_in_progress',
+  'username_taken',
 ])
 
 /** A user-facing, translated message for any error thrown by the API client. */

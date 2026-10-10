@@ -34,7 +34,8 @@ const privacy: Record<Locale, LegalDocument> = {
         heading: '2. Dados que coletamos',
         paragraphs: [
           'Conta: e-mail e senha (armazenada de forma criptografada pelo nosso provedor de autenticação).',
-          'Perfil: nome, objetivo, unidades de medida, idioma e fuso horário.',
+          'Perfil: nome de usuário, nome de exibição, foto de perfil (opcional), objetivo, unidades de medida, idioma e fuso horário. A foto de perfil fica em armazenamento acessível por link, com endereço aleatório.',
+          'Atividade: os dias em que você abre o app, usados para calcular sua sequência de dias seguidos.',
           'Dados de saúde e do corpo (dados pessoais sensíveis): sexo, idade, altura, peso e nível de atividade informados no teste de energia; respostas do questionário de treino, incluindo lesões ou limitações; e, se você escolher enviar, fotos de progresso do seu corpo e a análise gerada a partir delas (estimativa de gordura corporal, biotipo e áreas prioritárias).',
           'Conteúdo que você cria: mensagens trocadas com o coach e planos de treino gerados para você.',
           'Dados técnicos: registros de acesso e de uso necessários para segurança e funcionamento (por exemplo, endereço IP, data e hora das requisições).',
@@ -133,7 +134,8 @@ const privacy: Record<Locale, LegalDocument> = {
         heading: '2. Data we collect',
         paragraphs: [
           'Account: email and password (stored encrypted by our authentication provider).',
-          'Profile: name, goal, units, language and time zone.',
+          'Profile: username, display name, profile photo (optional), goal, units, language and time zone. Profile photos are stored at random, unlisted links.',
+          'Activity: the days you open the app, used to calculate your daily streak.',
           'Health and body data (sensitive personal data): sex, age, height, weight and activity level from the energy test; training questionnaire answers, including injuries or limitations; and, if you choose to upload them, progress photos of your body and the analysis generated from them (estimated body fat, body type and priority areas).',
           'Content you create: messages with the coach and the training plans generated for you.',
           'Technical data: access and usage logs needed for security and operation (for example IP address and request times).',

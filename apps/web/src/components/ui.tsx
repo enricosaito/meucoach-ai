@@ -251,7 +251,16 @@ export function Skeleton({ className }: { className?: string }) {
   return <div className={cx('animate-pulse rounded-2xl bg-surface-2', className)} />
 }
 
-export function Avatar({ name, className }: { name: string | null; className?: string }) {
+export function Avatar({
+  name,
+  src,
+  className,
+}: {
+  name: string | null
+  /** Public image URL; falls back to initials. */
+  src?: string | null
+  className?: string
+}) {
   const initials =
     (name ?? '')
       .split(/\s+/)
@@ -262,12 +271,17 @@ export function Avatar({ name, className }: { name: string | null; className?: s
   return (
     <span
       className={cx(
-        'inline-grid size-9 place-items-center rounded-full bg-accent-soft text-sm font-semibold text-accent-strong',
+        'inline-grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-accent-soft font-semibold text-accent-strong',
         className,
       )}
       aria-hidden
     >
-      {initials}
+      {src ? (
+        // eslint-disable-next-line @next/next/no-img-element -- small avatar from Supabase storage
+        <img src={src} alt="" className="size-full rounded-full object-cover" />
+      ) : (
+        initials
+      )}
     </span>
   )
 }

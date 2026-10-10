@@ -1,7 +1,9 @@
 'use client'
 
 import { Avatar, cx, Logo } from '@/components/ui'
+import { avatarUrl } from '@/lib/avatar'
 import { useI18n } from '@/lib/i18n/client'
+import { greetingName } from '@mycoach/core/profile/contracts'
 import type { MessageKey } from '@mycoach/i18n'
 import { Dumbbell, House, MessageCircle, UserRound, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
@@ -56,7 +58,11 @@ export function AppShell({ children }: { children: ReactNode }) {
             aria-label={t('nav.profileLink')}
             className="rounded-full transition-transform active:scale-95"
           >
-            <Avatar name={me?.profile.displayName ?? null} />
+            <Avatar
+              name={me ? greetingName(me.profile) : null}
+              src={avatarUrl(me?.profile.avatarPath)}
+              className="text-sm"
+            />
           </Link>
         </div>
       </header>

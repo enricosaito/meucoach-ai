@@ -13,8 +13,9 @@ apps/web/                 Next.js 16 (App Router, Tailwind 4). UI only + mounts 
   src/server/             the ONLY web code allowed to construct the API / admin client
   src/lib/                api client, Supabase browser/server clients, hooks
   src/proxy.ts            refreshes the Supabase session cookie, guards pages
-  src/app/app/            signed-in screens: Home, energy/, coach/, profile/ (layout = auth +
-                          MeProvider (GET /me once) + AppShell with header and mobile tab bar)
+  src/app/app/            signed-in screens: Home, training/, coach/, energy/, profile/ (+
+                          profile/settings for non-core preferences). Layout = auth + MeProvider
+                          (GET /me, time-zone sync, daily check-in) + AppShell (header, tab bar)
   src/components/ui.tsx   design-system primitives; colors are semantic tokens from
                           globals.css (bg-surface, text-muted, bg-accent…), dark mode automatic
 packages/api/             Hono app: /api/v1 routes + middleware. Framework-agnostic.
@@ -38,8 +39,9 @@ docs/                     decisions and checklists (e.g. mobile-permissions.md)
 Modules today: `profile` (profile, locale, consents, Mifflin-St Jeor energy test), `nutrition`
 (daily calorie and macro targets, pure and derived, never stored), `coaching` (AI gateway with
 `fast`/`smart` model tiers, coach chat) and `training` (questionnaire, body-photo scans with AI
-analysis, AI workout plans generated in a background job). Planned: `gamification` (XP, streaks,
-workout logging) and `billing` (freemium entitlements).
+analysis, AI workout plans generated in a background job) and `gamification` (append-only
+`activity_days` log, login streaks; XP and workout logging next). Planned: `billing` (freemium
+entitlements).
 
 ## Non-negotiable rules
 
