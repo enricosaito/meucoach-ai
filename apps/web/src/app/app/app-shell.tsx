@@ -3,7 +3,7 @@
 import { Avatar, cx, Logo } from '@/components/ui'
 import { useI18n } from '@/lib/i18n/client'
 import type { MessageKey } from '@mycoach/i18n'
-import { Flame, House, MessageCircle, UserRound, type LucideIcon } from 'lucide-react'
+import { Dumbbell, House, MessageCircle, UserRound, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
@@ -11,7 +11,7 @@ import { useMe } from './me-context'
 
 const NAV: { href: string; label: MessageKey; icon: LucideIcon }[] = [
   { href: '/app', label: 'nav.home', icon: House },
-  { href: '/app/energy', label: 'nav.energy', icon: Flame },
+  { href: '/app/training', label: 'nav.training', icon: Dumbbell },
   { href: '/app/coach', label: 'nav.coach', icon: MessageCircle },
   { href: '/app/profile', label: 'nav.profile', icon: UserRound },
 ]

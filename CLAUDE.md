@@ -20,6 +20,7 @@ apps/web/                 Next.js 16 (App Router, Tailwind 4). UI only + mounts 
 packages/api/             Hono app: /api/v1 routes + middleware. Framework-agnostic.
 packages/api-client/      typed hono/client wrapper for web and future mobile
 packages/i18n/            translations (en = source, pt-BR) + framework-agnostic translator
+packages/jobs/            Inngest client, typed events, outbox dispatcher, background functions
 packages/core/src/
   shared/                 AppError, Logger interface, db helpers (no domain logic)
   modules/<module>/
@@ -27,16 +28,18 @@ packages/core/src/
     contracts.ts          client-safe public API (Zod schemas, constants, DTO types, pure fns)
     domain/               pure business rules + *.test.ts (no I/O)
     data/                 repositories (Supabase queries), only place that touches tables
-    schemas.ts, types.ts, service.ts, prompts/ (coaching), ai/ (coaching)
+    schemas.ts, types.ts, service.ts, prompts/ (versioned AI prompts), ai/ (coaching only)
 packages/db/              Supabase client factories + generated types (database.types.ts)
 packages/config/          shared tsconfig, ESLint (incl. module boundaries), Prettier
 supabase/migrations/      SQL migrations, the only source of schema truth
+docs/                     decisions and checklists (e.g. mobile-permissions.md)
 ```
 
-Modules today: `profile` (profile, locale, Mifflin-St Jeor energy test), `nutrition` (daily calorie
-and macro targets, pure and derived, never stored) and `coaching` (AI gateway, coach chat).
-Planned: `training` (AI workout plans), `gamification` (XP, streaks), `billing` (freemium
-entitlements), plus `packages/jobs` (Inngest) and an outbox.
+Modules today: `profile` (profile, locale, consents, Mifflin-St Jeor energy test), `nutrition`
+(daily calorie and macro targets, pure and derived, never stored), `coaching` (AI gateway with
+`fast`/`smart` model tiers, coach chat) and `training` (questionnaire, body-photo scans with AI
+analysis, AI workout plans generated in a background job). Planned: `gamification` (XP, streaks,
+workout logging) and `billing` (freemium entitlements).
 
 ## Non-negotiable rules
 
@@ -67,7 +70,9 @@ entitlements), plus `packages/jobs` (Inngest) and an outbox.
 7. **AI calls only through the gateway** (`createAiGateway` in `coaching`). Never import an AI SDK
    anywhere else. Every call is recorded in `ai_calls` (model, prompt version, tokens, cost,
    latency, status, request ID). Local dev and tests use the `mock` provider.
-8. **Prompts are versioned files** (`coaching/prompts/<name>.v<N>.ts` exporting `version`).
+8. **Prompts are versioned files** (`<module>/prompts/<name>.v<N>.ts` exporting `version`), owned
+   by the module that owns the feature (coach chat in `coaching`, plans and photo analysis in
+   `training`). AI calls pick a tier (`fast` chat, `smart` plans/vision), never a model.
    Never edit a shipped version; add `v2` and switch `prompts/index.ts`. Store the version with
    results.
 9. **Pure domain logic is separate from data access.** Business rules live in `domain/` as pure,
@@ -76,10 +81,12 @@ entitlements), plus `packages/jobs` (Inngest) and an outbox.
     (middleware replays the stored response for retries). Clients reuse the key when retrying the
     same write (`useWrite` in web). Persist multi-row writes atomically (single statement or a
     Postgres function) so retries never leave partial state.
-11. **Slow/expensive work belongs in background jobs** (Inngest, not yet added), never in the HTTP
-    request. The coach chat reply is the deliberate exception (interactive). Jobs must be
-    idempotent and safe to retry. When you add them, use an outbox table written in the same
-    transaction as the data change.
+11. **Slow/expensive work belongs in background jobs** (Inngest, `packages/jobs`), never in the
+    HTTP request. The coach chat reply is the deliberate exception (interactive). Write an
+    `outbox_events` row in the SAME transaction as the data change (a Postgres function, e.g.
+    `training_request_plan`); the dispatcher (cron + a nudge from the API) forwards it to Inngest
+    with the outbox id as event id. Every step must be idempotent and safe to retry (check
+    status before calling the AI; never call the AI twice for the same row).
 12. **Derived data is recomputable.** Use append-only logs as the source of truth (e.g.
     `metabolic_assessments`, future `xp_events`); totals/levels/streaks are derived.
 13. **Validate everything with Zod** from `packages/core` (`jsonBody(schema)` in routes). Errors
@@ -92,6 +99,12 @@ entitlements), plus `packages/jobs` (Inngest) and an outbox.
     `formatNumber` / `formatDate`, never hard-code separators. API error `message`s stay English
     for logs; clients translate by `error.code`. The user's language is `profiles.locale`
     (default `pt-BR`); AI prompts must make the model reply in it.
+16. **Sensitive data needs explicit, versioned consent (LGPD).** Body photos and health data are
+    sensitive. Photo uploads require an active `consents` row (`CONSENT_VERSIONS`); revoking it
+    must delete the data (`ON_REVOKE` in `routes/me.ts`). Photos live in the private `body-photos`
+    bucket under `{userId}/...`, are uploaded only via signed URLs from the API, resized and
+    EXIF-stripped on the client, and shown only via short-lived signed URLs. Any new sensitive data
+    must be reflected in the Privacy Policy (`apps/web/src/content/legal.ts`).
 
 ## API conventions (`packages/api`)
 
@@ -107,7 +120,7 @@ entitlements), plus `packages/jobs` (Inngest) and an outbox.
 | Command                 | What it does                                                        |
 | ----------------------- | ------------------------------------------------------------------- |
 | `pnpm bootstrap`        | `db:start` + `env:setup` (first run)                                |
-| `pnpm dev`              | Next.js dev server (web + API) on http://localhost:3000             |
+| `pnpm dev`              | Next.js (web + API) on :3000 + Inngest Dev Server on :8288          |
 | `pnpm db:start`         | Start local Supabase (Docker). Studio :54323, Mailpit inbox :54324  |
 | `pnpm db:stop`          | Stop local Supabase                                                 |
 | `pnpm db:reset`         | Re-apply all migrations + `supabase/seed.sql` (wipes local data)    |

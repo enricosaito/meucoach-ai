@@ -4,6 +4,7 @@ import { getTranslator } from '@/lib/i18n/server'
 import type { MessageKey } from '@mycoach/i18n'
 import { Flame, MessageCircle, Target, type LucideIcon } from 'lucide-react'
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { LoginForm } from './login-form'
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -64,6 +65,14 @@ export default async function LoginPage() {
           <div className="mt-8">
             <LoginForm />
           </div>
+          <p className="mt-8 flex justify-center gap-4 text-xs text-muted">
+            <Link href="/terms" className="hover:text-fg">
+              {t('legal.terms')}
+            </Link>
+            <Link href="/privacy" className="hover:text-fg">
+              {t('legal.privacy')}
+            </Link>
+          </p>
         </div>
       </main>
     </div>

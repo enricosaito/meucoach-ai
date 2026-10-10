@@ -100,6 +100,18 @@ const buttonSizes = {
   icon: 'size-11',
 }
 
+/** Button styling for links that navigate (never nest a <button> inside a <Link>). */
+export function buttonClass(
+  variant: keyof typeof buttonVariants = 'primary',
+  size: keyof typeof buttonSizes = 'md',
+) {
+  return cx(
+    'inline-flex items-center justify-center gap-2 rounded-full font-medium transition-[background-color,color,transform,opacity] duration-150 select-none active:scale-[0.97]',
+    buttonVariants[variant],
+    buttonSizes[size],
+  )
+}
+
 export function Button({
   variant = 'primary',
   size = 'md',

@@ -7,6 +7,7 @@ import { COACH_SUGGESTION_KEYS, greetingKey } from '@/lib/labels'
 import { ArrowRight, ChevronRight, Flame, MessageCircle, Target } from 'lucide-react'
 import Link from 'next/link'
 import { useMe } from './me-context'
+import { TrainingSummaryCard } from './training-summary-card'
 
 export function HomeView() {
   const { me, error, reload } = useMe()
@@ -44,6 +45,8 @@ export function HomeView() {
           <ChevronRight className="size-4 text-muted" aria-hidden />
         </Link>
       </header>
+
+      <TrainingSummaryCard />
 
       {me.targets && assessment ? (
         <>

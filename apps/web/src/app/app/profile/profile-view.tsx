@@ -34,6 +34,7 @@ import {
 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 import { useMe } from '../me-context'
+import { PrivacyCard } from './privacy-card'
 
 type GoalType = (typeof GOAL_TYPES)[number]
 
@@ -52,6 +53,7 @@ export function ProfileView() {
     <div className="flex flex-col gap-5">
       <PageHeader title={t('profile.title')} description={t('profile.description')} />
       {me ? <ProfileForm profile={me.profile} /> : <Skeleton className="h-[40rem] rounded-3xl" />}
+      <PrivacyCard />
       <Card className="flex items-center justify-between gap-4">
         <div>
           <h2 className="font-semibold tracking-tight">{t('auth.signOutTitle')}</h2>

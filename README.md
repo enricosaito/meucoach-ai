@@ -1,13 +1,16 @@
 # My Coach
 
-Personal fitness and nutrition coach. This repo currently has the foundation plus one working
-flow:
+Personal training coach for the Brazilian market (Portuguese and English). What works today:
 
 - **Email + password sign-in** (Supabase Auth). A profile is created automatically for each new
   user.
-- **Profile** (name, goal, units, time zone).
-- **Energy test (Mifflin-St Jeor)**: BMR and TDEE, stored as an append-only history.
-- **AI coach chat** that knows your profile and latest test. It uses a free mock AI by default.
+- **Profile** (name, goal, units, language, time zone) and an **energy test** (Mifflin-St Jeor)
+  with **daily calorie and macro targets**.
+- **AI workout plans**: a short questionnaire plus optional progress photos (front/side/back).
+  Photos are analysed by AI (body-fat range, body type, priority areas) with explicit consent,
+  and the plan is generated in a background job (Inngest).
+- **AI coach chat** that knows your profile, targets and plan. The app runs on a free mock AI by
+  default.
 
 Architecture and contribution rules live in [CLAUDE.md](CLAUDE.md).
 
@@ -37,7 +40,9 @@ the Supabase images, which takes a few minutes.
    sign-up page yet.
 2. Open http://localhost:3000. You'll be redirected to `/login`.
 3. Sign in with that email and password.
-4. On `/app`: save your profile, take the energy test, and ask the coach a question.
+4. On `/app`: set your goal, take the energy test, then go to **Training** and create a plan
+   (add photos or skip them). Watch the job run in the Inngest Dev Server at
+   http://localhost:8288. Then ask the coach a question.
 
 Other local URLs: Supabase Studio at http://127.0.0.1:54323 and the API at
 http://localhost:3000/api/v1/health.
@@ -71,13 +76,23 @@ Local dev uses `AI_PROVIDER=mock`: deterministic answers, no API costs, and an a
 ```bash
 AI_PROVIDER=anthropic
 ANTHROPIC_API_KEY=sk-ant-...
-# optional, defaults to claude-opus-5-5
-AI_MODEL=
+# optional overrides: fast = chat (default claude-sonnet-5-5),
+# smart = workout plans + photo analysis (default claude-opus-5-5)
+AI_MODEL_FAST=
+AI_MODEL_SMART=
 ```
 
 Restart `pnpm dev`. The API refuses to start with `AI_PROVIDER=anthropic` and no key. Every call,
 mock or real, is logged in the `ai_calls` table with tokens, estimated cost, latency and prompt
 version. You can inspect it in Studio.
+
+## Background jobs (Inngest)
+
+Plan generation runs as an Inngest function. Locally, `pnpm dev` starts the Inngest Dev Server
+(`INNGEST_DEV=1`, dashboard at http://localhost:8288) next to Next.js. In production, install
+the Inngest integration from the Vercel Marketplace (it sets `INNGEST_EVENT_KEY` and
+`INNGEST_SIGNING_KEY`) and do **not** set `INNGEST_DEV`. Without it, plan requests are saved but
+stay pending.
 
 ## Environment variables
 

@@ -2,7 +2,7 @@ import { createServerClient } from '@mycoach/db/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 import { publicEnv } from './lib/public-env'
 
-const PUBLIC_PATHS = ['/login', '/auth']
+const PUBLIC_PATHS = ['/login', '/auth', '/privacy', '/terms']
 
 /**
  * Refreshes the Supabase session cookie on every page request and redirects signed-out users

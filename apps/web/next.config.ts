@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     '@mycoach/core',
     '@mycoach/db',
     '@mycoach/i18n',
+    '@mycoach/jobs',
   ],
   serverExternalPackages: ['pino'],
 }
