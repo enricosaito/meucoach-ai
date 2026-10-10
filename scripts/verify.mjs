@@ -7,6 +7,8 @@ import { join } from 'node:path'
 import { repoRoot } from './lib/env-file.mjs'
 
 const STEPS = [
+  // Same check Vercel and CI run (frozen lockfile): a package.json change without the lockfile.
+  ['lockfile', 'pnpm install --frozen-lockfile --lockfile-only --ignore-scripts'],
   ['format', 'pnpm format:check'],
   ['lint', 'pnpm lint'],
   ['typecheck', 'pnpm typecheck'],

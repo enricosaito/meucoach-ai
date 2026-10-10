@@ -184,6 +184,9 @@ importers:
       '@mycoach/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@mycoach/brand':
+        specifier: workspace:*
+        version: link:../../packages/brand
       '@mycoach/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -308,6 +311,9 @@ importers:
       '@mycoach/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@mycoach/brand':
+        specifier: workspace:*
+        version: link:../../packages/brand
       '@mycoach/core':
         specifier: workspace:*
         version: link:../../packages/core
@@ -534,6 +540,10 @@ importers:
         version: 6.0.3
 
   packages/i18n:
+    dependencies:
+      '@mycoach/brand':
+        specifier: workspace:*
+        version: link:../brand
     devDependencies:
       '@mycoach/config':
         specifier: workspace:*
