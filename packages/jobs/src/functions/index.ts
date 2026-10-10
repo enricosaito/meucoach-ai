@@ -1,0 +1,77 @@
+import type { TrainingService } from '@mycoach/core/training'
+import type { Logger } from '@mycoach/core/shared'
+import type { AdminClient } from '@mycoach/db'
+import { inngest } from '../client'
+import { outboxDispatchRequested, planRequested, planRequestedSchema } from '../events'
+import { dispatchOutbox } from '../outbox'
+
+export interface JobDeps {
+  db: AdminClient
+  training: TrainingService
+  logger: Logger
+}
+
+/**
+ * All background functions. Every step is idempotent: Inngest retries failed steps, and a step
+ * that already succeeded is not re-run.
+ */
+export function createJobFunctions(deps: JobDeps) {
+  const outboxDispatcher = inngest.createFunction(
+    {
+      id: 'outbox-dispatcher',
+      triggers: [{ cron: '* * * * *' }, outboxDispatchRequested],
+      concurrency: { limit: 1 },
+    },
+    async ({ step }) => {
+      const count = await step.run('dispatch', () =>
+        dispatchOutbox(
+          deps.db,
+          async (events) => {
+            await inngest.send(events)
+          },
+          deps.logger.child({ job: 'outbox-dispatcher' }),
+        ),
+      )
+      return { dispatched: count }
+    },
+  )
+
+  const generateWorkoutPlan = inngest.createFunction(
+    {
+      id: 'generate-workout-plan',
+      triggers: [planRequested],
+      retries: 3,
+      // One generation at a time per user; plans for different users run in parallel.
+      concurrency: { key: 'event.data.userId', limit: 1 },
+      onFailure: async ({ event, error }) => {
+        const { userId, planId, requestId } = planRequestedSchema.parse(event.data.event.data)
+        deps.logger.error({ err: error, planId, requestId }, 'workout plan generation failed')
+        await deps.training.markPlanFailed(userId, planId, error.message)
+      },
+    },
+    async ({ event, step }) => {
+      const { userId, planId, requestId } = event.data
+      const logger = deps.logger.child({ job: 'generate-workout-plan', planId, requestId })
+
+      const job = await step.run('load', () => deps.training.getPlanJob(userId, planId))
+      if (!job) {
+        logger.info({}, 'plan already generated, nothing to do')
+        return { status: 'skipped' }
+      }
+
+      const analysis = job.bodyScanId
+        ? await step.run('analyze-body-scan', () =>
+            deps.training.analyzeBodyScan(userId, job.bodyScanId ?? '', job.inputs, { requestId }),
+          )
+        : null
+
+      await step.run('generate-plan', () =>
+        deps.training.generatePlan(userId, planId, analysis, { requestId }),
+      )
+      logger.info({ withAnalysis: analysis !== null }, 'workout plan ready')
+      return { status: 'ready' }
+    },
+  )
+
+  return [outboxDispatcher, generateWorkoutPlan]
+}

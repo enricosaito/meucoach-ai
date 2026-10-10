@@ -1,4 +1,6 @@
+import { inngest } from '@mycoach/jobs'
 import { Hono } from 'hono'
+import { serve } from 'inngest/hono'
 import type { AppDeps } from './deps'
 import { requireAuth } from './middleware/auth'
 import { handleError, handleNotFound } from './middleware/error-handler'
@@ -7,6 +9,7 @@ import { rateLimit } from './middleware/rate-limit'
 import { requestId } from './middleware/request-id'
 import { chatRoutes } from './routes/chat'
 import { meRoutes } from './routes/me'
+import { trainingRoutes } from './routes/training'
 import type { AppEnv } from './types'
 
 /** Authenticated routes: auth → per-user rate limit → idempotency (for mutations). */
@@ -19,6 +22,7 @@ function protectedRoutes() {
     )
     .route('/me', meRoutes)
     .route('/chat', chatRoutes)
+    .route('/training', trainingRoutes)
 }
 
 function v1Routes() {
@@ -41,6 +45,13 @@ export function createApp(deps: AppDeps) {
   app.use(requestId)
   app.onError(handleError)
   app.notFound(handleNotFound)
+  // Inngest calls this endpoint to run background functions. Requests are verified with the
+  // signing key (not user auth); in local dev the Inngest Dev Server calls it.
+  app.on(
+    ['GET', 'PUT', 'POST'],
+    '/inngest',
+    serve({ client: inngest, functions: deps.jobFunctions }),
+  )
   return app.route('/v1', v1Routes())
 }
 

@@ -8,7 +8,14 @@ import {
   type AssessmentRow,
 } from './data/assessment-repository'
 import { findProfile, updateProfileRow, type ProfileRow } from './data/profile-repository'
-import { goalsSchema, type AssessmentInput, type UpdateProfileInput } from './schemas'
+import { findActiveConsent, insertConsent, revokeActiveConsent } from './data/consent-repository'
+import {
+  CONSENT_VERSIONS,
+  goalsSchema,
+  type AssessmentInput,
+  type ConsentKind,
+  type UpdateProfileInput,
+} from './schemas'
 import type { Assessment, CoachingContext, Me, Profile } from './types'
 
 function toProfile(row: ProfileRow): Profile {
@@ -100,6 +107,25 @@ export function createProfileService(deps: { db: AdminClient }) {
         timezone: profile.timezone,
         latestAssessment,
       }
+    },
+
+    async hasActiveConsent(userId: string, kind: ConsentKind): Promise<boolean> {
+      const consent = await findActiveConsent(db, userId, kind)
+      return consent !== null && consent.version >= CONSENT_VERSIONS[kind]
+    },
+
+    /** Records explicit consent for the current version of the consent text. */
+    async grantConsent(userId: string, kind: ConsentKind, version: number): Promise<void> {
+      if (version !== CONSENT_VERSIONS[kind]) {
+        throw new AppError('conflict', 'Consent text has changed. Review it and try again.')
+      }
+      const existing = await findActiveConsent(db, userId, kind)
+      if (existing && existing.version < version) await revokeActiveConsent(db, userId, kind)
+      await insertConsent(db, userId, kind, version)
+    },
+
+    async revokeConsent(userId: string, kind: ConsentKind): Promise<void> {
+      await revokeActiveConsent(db, userId, kind)
     },
   }
 }

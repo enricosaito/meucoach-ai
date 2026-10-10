@@ -16,6 +16,8 @@
     "@hono/zod-validator": "0.9.1",
     "@mycoach/core": "workspace:*",
     "@mycoach/db": "workspace:*",
+    "@mycoach/jobs": "workspace:*",
+    "inngest": "4.22.0",
     "hono": "4.13.13",
     "pino": "10.4.0",
     "zod": "4.6.5"

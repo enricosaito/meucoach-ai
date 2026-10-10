@@ -19,11 +19,15 @@ export {
   type UnitSystem,
 } from './domain/units'
 export {
+  CONSENT_KINDS,
+  CONSENT_VERSIONS,
   GOAL_TYPES,
   assessmentInputSchema,
+  grantConsentSchema,
   goalsSchema,
   updateProfileSchema,
   type AssessmentInput,
+  type ConsentKind,
   type Goals,
   type UpdateProfileInput,
 } from './schemas'

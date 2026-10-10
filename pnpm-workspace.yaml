@@ -7,3 +7,5 @@ minimumReleaseAgeExclude:
 # Dependencies whose install scripts may run (true) or are deliberately skipped (false).
 allowBuilds:
   unrs-resolver: false
+  protobufjs: false
+  inngest-cli: true

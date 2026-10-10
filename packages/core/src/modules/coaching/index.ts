@@ -7,14 +7,18 @@ export {
   type AiCallRecord,
   type AiCallRecorder,
   type AiGateway,
+  type GatewayStructuredInput,
+  type GatewayStructuredResult,
 } from './ai/gateway'
-export { DEFAULT_ANTHROPIC_MODEL } from './ai/providers/anthropic'
 export {
+  AI_MODEL_TIERS,
   AI_PROVIDER_NAMES,
+  DEFAULT_MODELS,
   createAiProvider,
+  type AiModelTier,
   type AiProviderConfig,
   type AiProviderName,
 } from './ai/registry'
-export type { AiProvider, ChatTurn } from './ai/types'
+export type { AiProvider, ChatTurn, ContentPart, ImageMediaType } from './ai/types'
 export { createAiCallRecorder } from './data/ai-calls-repository'
 export { COACH_CHAT_FEATURE, createCoachingService, type CoachingService } from './service'

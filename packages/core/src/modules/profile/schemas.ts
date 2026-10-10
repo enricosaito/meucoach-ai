@@ -40,3 +40,13 @@ export const assessmentInputSchema = z.strictObject({
   activityLevel: z.enum(ACTIVITY_LEVELS),
 })
 export type AssessmentInput = z.infer<typeof assessmentInputSchema>
+
+export const CONSENT_KINDS = ['body_photos'] as const
+export type ConsentKind = (typeof CONSENT_KINDS)[number]
+
+/** Bump when the consent text changes materially; users must then consent again. */
+export const CONSENT_VERSIONS: Readonly<Record<ConsentKind, number>> = { body_photos: 1 }
+
+export const grantConsentSchema = z.strictObject({
+  version: z.number().int().positive(),
+})

@@ -22,7 +22,9 @@ describe('parseApiEnv', () => {
   })
 
   it('treats empty optional values as unset', () => {
-    expect(parseApiEnv({ ...valid, AI_MODEL: '', ANTHROPIC_API_KEY: '' }).AI_MODEL).toBeUndefined()
+    expect(
+      parseApiEnv({ ...valid, AI_MODEL_SMART: '', ANTHROPIC_API_KEY: '' }).AI_MODEL_SMART,
+    ).toBeUndefined()
   })
 
   it('reports missing required variables', () => {

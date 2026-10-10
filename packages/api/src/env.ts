@@ -10,7 +10,9 @@ export const apiEnvSchema = z
     NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(1),
     SUPABASE_SECRET_KEY: z.string().min(1),
     AI_PROVIDER: z.enum(AI_PROVIDER_NAMES).default('mock'),
-    AI_MODEL: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    // Model overrides per tier (defaults: fast = claude-sonnet-5-5, smart = claude-opus-5-5).
+    AI_MODEL_FAST: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    AI_MODEL_SMART: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     AI_MOCK_DELAY_MS: z.coerce.number().int().min(0).default(400),
     ANTHROPIC_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     LOG_LEVEL: z

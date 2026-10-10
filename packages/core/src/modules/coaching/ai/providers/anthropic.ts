@@ -1,18 +1,35 @@
 import Anthropic from '@anthropic-ai/sdk'
-import type { AiProvider, ProviderChatRequest, ProviderChatResult } from '../types'
+import { zodOutputFormat } from '@anthropic-ai/sdk/helpers/zod'
+import type {
+  AiProvider,
+  ContentPart,
+  ProviderChatRequest,
+  ProviderChatResult,
+  ProviderStructuredRequest,
+  ProviderStructuredResult,
+} from '../types'
 
-export const DEFAULT_ANTHROPIC_MODEL = 'claude-opus-5-5'
+function toContentBlocks(parts: ContentPart[]): Anthropic.ContentBlockParam[] {
+  return parts.map((part) =>
+    part.type === 'text'
+      ? { type: 'text', text: part.text }
+      : {
+          type: 'image',
+          source: { type: 'base64', media_type: part.mediaType, data: part.base64 },
+        },
+  )
+}
 
 /** Real Claude provider. Only constructed when AI_PROVIDER=anthropic and an API key is set. */
-export function createAnthropicProvider(options: { apiKey: string; model?: string }): AiProvider {
+export function createAnthropicProvider(options: { apiKey: string }): AiProvider {
   const client = new Anthropic({ apiKey: options.apiKey })
-  const model = options.model ?? DEFAULT_ANTHROPIC_MODEL
 
   return {
     name: 'anthropic',
+
     async chat(request: ProviderChatRequest): Promise<ProviderChatResult> {
       const response = await client.beta.messages.create({
-        model,
+        model: request.model,
         max_tokens: request.maxTokens,
         system: request.system,
         messages: request.messages,
@@ -34,6 +51,29 @@ export function createAnthropicProvider(options: { apiKey: string; model?: strin
         inputTokens: response.usage.input_tokens,
         outputTokens: response.usage.output_tokens,
         refused: response.stop_reason === 'refusal',
+      }
+    },
+
+    async structured<T>(
+      request: ProviderStructuredRequest<T>,
+    ): Promise<ProviderStructuredResult<T>> {
+      const response = await client.messages.parse({
+        model: request.model,
+        max_tokens: request.maxTokens,
+        system: request.system,
+        messages: [{ role: 'user', content: toContentBlocks(request.content) }],
+        output_config: {
+          effort: request.effort,
+          format: zodOutputFormat(request.schema),
+        },
+      })
+      const refused = response.stop_reason === 'refusal'
+      return {
+        data: refused ? null : (response.parsed_output ?? null),
+        model: response.model,
+        inputTokens: response.usage.input_tokens,
+        outputTokens: response.usage.output_tokens,
+        refused,
       }
     },
   }

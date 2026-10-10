@@ -1,4 +1,10 @@
-import type { AiProvider, ProviderChatRequest, ProviderChatResult } from '../types'
+import type {
+  AiProvider,
+  ProviderChatRequest,
+  ProviderChatResult,
+  ProviderStructuredRequest,
+  ProviderStructuredResult,
+} from '../types'
 
 // A canned, deterministic "coach". It never calls a model: it echoes the question, quotes numbers
 // it finds in the system prompt, adds one fixed tip, and answers in the language the prompt asks for.
@@ -76,6 +82,23 @@ export function createMockProvider(options: { delayMs?: number } = {}): AiProvid
         model: 'mock',
         inputTokens: approxTokens(input),
         outputTokens: approxTokens(text),
+        refused: false,
+      }
+    },
+
+    async structured<T>(
+      request: ProviderStructuredRequest<T>,
+    ): Promise<ProviderStructuredResult<T>> {
+      if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs))
+      // Validate the canned result like a real one, so schema drift shows up in local dev.
+      const data = request.schema.parse(request.mock())
+      const imageCount = request.content.filter((part) => part.type === 'image').length
+      const text = request.content.map((part) => (part.type === 'text' ? part.text : '')).join('\n')
+      return {
+        data,
+        model: 'mock',
+        inputTokens: approxTokens(request.system + text) + imageCount * 1500,
+        outputTokens: approxTokens(JSON.stringify(data)),
         refused: false,
       }
     },

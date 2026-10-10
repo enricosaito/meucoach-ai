@@ -7,8 +7,10 @@ import {
 } from '@mycoach/core/coaching'
 import { createProfileService, type ProfileService } from '@mycoach/core/profile'
 import type { Logger } from '@mycoach/core/shared'
+import { createTrainingService, type TrainingService } from '@mycoach/core/training'
 import type { AdminClient } from '@mycoach/db'
 import { createAdminClient } from '@mycoach/db/admin'
+import { createJobFunctions, inngest, outboxDispatchRequested } from '@mycoach/jobs'
 import { createSupabaseAuthVerifier, type AuthVerifier } from './auth/auth-verifier'
 import type { ApiEnv } from './env'
 import type { IdempotencyStore } from './idempotency/idempotency-store'
@@ -24,7 +26,15 @@ export interface AppDeps {
   idempotency: IdempotencyStore
   profile: ProfileService
   coaching: CoachingService
+  training: TrainingService
   limits: { perMinute: number; chatPerMinute: number }
+  /** Background functions served at /api/inngest. */
+  jobFunctions: ReturnType<typeof createJobFunctions>
+  /**
+   * Asks the outbox dispatcher to run now instead of waiting for its cron. Best effort: if this
+   * fails, the cron still delivers the event within a minute.
+   */
+  nudgeOutbox: () => Promise<void>
 }
 
 export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {}): AppDeps {
@@ -38,11 +48,20 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
     provider: createAiProvider({
       provider: env.AI_PROVIDER,
       anthropicApiKey: env.ANTHROPIC_API_KEY,
-      model: env.AI_MODEL,
       mockDelayMs: env.AI_MOCK_DELAY_MS,
     }),
+    models: {
+      ...(env.AI_MODEL_FAST && { fast: env.AI_MODEL_FAST }),
+      ...(env.AI_MODEL_SMART && { smart: env.AI_MODEL_SMART }),
+    },
     recordCall: createAiCallRecorder(db),
     logger: logger.child({ component: 'ai-gateway' }),
+  })
+  const training = createTrainingService({
+    db,
+    gateway,
+    profile,
+    logger: logger.child({ module: 'training' }),
   })
 
   return {
@@ -55,7 +74,16 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
     idempotency: createSupabaseIdempotencyStore(db),
     profile,
     coaching: createCoachingService({ db, gateway, profile }),
+    training,
     limits: { perMinute: env.RATE_LIMIT_PER_MINUTE, chatPerMinute: env.CHAT_RATE_LIMIT_PER_MINUTE },
+    jobFunctions: createJobFunctions({ db, training, logger }),
+    nudgeOutbox: async () => {
+      try {
+        await inngest.send(outboxDispatchRequested.create({}))
+      } catch (error) {
+        logger.warn({ err: error }, 'outbox nudge failed; the cron will deliver the event')
+      }
+    },
     ...overrides,
   }
 }

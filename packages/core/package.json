@@ -10,7 +10,9 @@
     "./coaching": "./src/modules/coaching/index.ts",
     "./coaching/contracts": "./src/modules/coaching/contracts.ts",
     "./nutrition": "./src/modules/nutrition/index.ts",
-    "./nutrition/contracts": "./src/modules/nutrition/contracts.ts"
+    "./nutrition/contracts": "./src/modules/nutrition/contracts.ts",
+    "./training": "./src/modules/training/index.ts",
+    "./training/contracts": "./src/modules/training/contracts.ts"
   },
   "scripts": {
     "lint": "eslint .",

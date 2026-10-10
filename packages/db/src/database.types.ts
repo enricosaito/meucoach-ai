@@ -87,6 +87,69 @@ export type Database = {
           },
         ]
       }
+      body_scans: {
+        Row: {
+          ai_call_id: string | null
+          analysis: Json | null
+          back_path: string | null
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          front_path: string | null
+          id: string
+          model: string | null
+          prompt_version: string | null
+          side_path: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          ai_call_id?: string | null
+          analysis?: Json | null
+          back_path?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          front_path?: string | null
+          id: string
+          model?: string | null
+          prompt_version?: string | null
+          side_path?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          ai_call_id?: string | null
+          analysis?: Json | null
+          back_path?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          front_path?: string | null
+          id?: string
+          model?: string | null
+          prompt_version?: string | null
+          side_path?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'body_scans_ai_call_id_fkey'
+            columns: ['ai_call_id']
+            isOneToOne: false
+            referencedRelation: 'ai_calls'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'body_scans_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           ai_call_id: string | null
@@ -125,6 +188,41 @@ export type Database = {
           },
           {
             foreignKeyName: 'chat_messages_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      consents: {
+        Row: {
+          granted_at: string
+          id: string
+          kind: string
+          revoked_at: string | null
+          user_id: string
+          version: number
+        }
+        Insert: {
+          granted_at?: string
+          id?: string
+          kind: string
+          revoked_at?: string | null
+          user_id: string
+          version: number
+        }
+        Update: {
+          granted_at?: string
+          id?: string
+          kind?: string
+          revoked_at?: string | null
+          user_id?: string
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'consents_user_id_fkey'
             columns: ['user_id']
             isOneToOne: false
             referencedRelation: 'profiles'
@@ -223,6 +321,30 @@ export type Database = {
           },
         ]
       }
+      outbox_events: {
+        Row: {
+          created_at: string
+          dispatched_at: string | null
+          id: string
+          payload: Json
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          dispatched_at?: string | null
+          id?: string
+          payload: Json
+          type: string
+        }
+        Update: {
+          created_at?: string
+          dispatched_at?: string | null
+          id?: string
+          payload?: Json
+          type?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -256,12 +378,129 @@ export type Database = {
         }
         Relationships: []
       }
+      training_profiles: {
+        Row: {
+          created_at: string
+          days_per_week: number
+          equipment: string
+          experience: string
+          limitations: string | null
+          session_minutes: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          days_per_week: number
+          equipment: string
+          experience: string
+          limitations?: string | null
+          session_minutes: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          days_per_week?: number
+          equipment?: string
+          experience?: string
+          limitations?: string | null
+          session_minutes?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'training_profiles_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: true
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
+      workout_plans: {
+        Row: {
+          ai_call_id: string | null
+          body_scan_id: string | null
+          completed_at: string | null
+          created_at: string
+          error: string | null
+          id: string
+          inputs: Json
+          model: string | null
+          plan: Json | null
+          prompt_version: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          ai_call_id?: string | null
+          body_scan_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          inputs: Json
+          model?: string | null
+          plan?: Json | null
+          prompt_version?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          ai_call_id?: string | null
+          body_scan_id?: string | null
+          completed_at?: string | null
+          created_at?: string
+          error?: string | null
+          id?: string
+          inputs?: Json
+          model?: string | null
+          plan?: Json | null
+          prompt_version?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'workout_plans_ai_call_id_fkey'
+            columns: ['ai_call_id']
+            isOneToOne: false
+            referencedRelation: 'ai_calls'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'workout_plans_body_scan_id_fkey'
+            columns: ['body_scan_id']
+            isOneToOne: false
+            referencedRelation: 'body_scans'
+            referencedColumns: ['id']
+          },
+          {
+            foreignKeyName: 'workout_plans_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      training_request_plan: {
+        Args: {
+          p_inputs: Json
+          p_request_id: string
+          p_scan: Json
+          p_training_profile: Json
+          p_user_id: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       [_ in never]: never

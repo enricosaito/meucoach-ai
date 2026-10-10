@@ -6,7 +6,15 @@
     "build": {
       "dependsOn": ["^build"],
       "outputs": [".next/**", "!.next/cache/**"],
-      "env": ["NEXT_PUBLIC_*", "SUPABASE_*", "AI_*", "ANTHROPIC_*", "LOG_LEVEL", "RATE_LIMIT_*"]
+      "env": [
+        "NEXT_PUBLIC_*",
+        "SUPABASE_*",
+        "AI_*",
+        "ANTHROPIC_*",
+        "INNGEST_*",
+        "LOG_LEVEL",
+        "RATE_LIMIT_*"
+      ]
     },
     "dev": {
       "cache": false,

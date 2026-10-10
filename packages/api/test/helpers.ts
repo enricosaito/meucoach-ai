@@ -45,8 +45,13 @@ export async function deleteTestUser(user: TestUser | undefined) {
   if (user) await adminClient().auth.admin.deleteUser(user.id)
 }
 
+/** Deps for tests: background jobs are run explicitly by the test, never via Inngest. */
+export function testDeps(overrides: Partial<AppDeps> = {}): AppDeps {
+  return createDefaultDeps(env(), { nudgeOutbox: () => Promise.resolve(), ...overrides })
+}
+
 export function testApp(overrides: Partial<AppDeps> = {}) {
-  return createApp(createDefaultDeps(env(), overrides))
+  return createApp(testDeps(overrides))
 }
 
 export function authHeaders(user: TestUser, extra: Record<string, string> = {}) {
