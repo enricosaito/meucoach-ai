@@ -49,8 +49,9 @@ local Supabase.
   2. `vercel deploy --prod --yes`.
   3. `curl -X PUT https://meucoach-ai.vercel.app/api/inngest` → `"Successfully registered"`.
   4. Check `vercel logs --environment production --no-branch --since 10m` for errors.
-- **Git**: all work is committed locally on `main` but **never pushed to GitHub** (ask before
-  pushing). CI has therefore never run on GitHub.
+- **Git**: `main` is pushed to `enricosaito/meucoach-ai` and CI is green. Every push to `main` also
+  triggers a Vercel production deploy (repo connected), so run `supabase db push` BEFORE pushing
+  code that needs a new migration.
 
 ## Gotchas seen in this project
 
@@ -81,7 +82,6 @@ local Supabase.
 - [ ] Sign-up, password reset, real email provider (e.g. Resend).
 - [ ] Shared rate limiter (Upstash) before real traffic; in-memory today.
 - [ ] Add `ANTHROPIC_API_KEY` + `AI_PROVIDER=anthropic` in Vercel when ready.
-- [ ] Push to GitHub and get CI green.
 
 ## Next: checkpoint 3
 
