@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { ACTIVITY_LEVELS, SEXES } from './domain/mifflin-st-jeor'
 import { UNIT_SYSTEMS } from './domain/units'
+import { LOCALES } from '@mycoach/i18n'
 
 export function isValidTimeZone(timeZone: string): boolean {
   try {
@@ -23,6 +24,7 @@ export const updateProfileSchema = z
   .strictObject({
     displayName: z.string().trim().min(1).max(80).nullable().optional(),
     units: z.enum(UNIT_SYSTEMS).optional(),
+    locale: z.enum(LOCALES).optional(),
     timezone: z.string().refine(isValidTimeZone, 'Must be an IANA time zone').optional(),
     goals: goalsSchema.optional(),
   })

@@ -68,9 +68,14 @@ describe('GET /me', () => {
   it('returns the profile created by the signup trigger', async () => {
     const res = await app.request('/api/v1/me', { headers: authHeaders(user) })
     expect(res.status).toBe(200)
-    const body = (await res.json()) as { profile: { id: string; units: string } }
+    const body = (await res.json()) as {
+      profile: { id: string; units: string; locale: string }
+      targets: unknown
+    }
     expect(body.profile.id).toBe(user.id)
     expect(body.profile.units).toBe('metric')
+    expect(body.profile.locale).toBe('pt-BR') // default for the Brazilian market
+    expect(body.targets).toBeNull() // no energy test yet
   })
 })
 
@@ -84,6 +89,19 @@ describe('PATCH /me/profile', () => {
     expect(res.status).toBe(200)
     const body = (await res.json()) as { profile: { displayName: string; timezone: string } }
     expect(body.profile).toMatchObject({ displayName: 'Test User', timezone: 'America/Sao_Paulo' })
+  })
+
+  it('switches the language and rejects unsupported locales', async () => {
+    const patch = (locale: string) =>
+      app.request('/api/v1/me/profile', {
+        method: 'PATCH',
+        headers: authHeaders(user, { 'idempotency-key': newKey() }),
+        body: JSON.stringify({ locale }),
+      })
+    const ok = await patch('en')
+    expect(await ok.json()).toMatchObject({ profile: { locale: 'en' } })
+    expect((await patch('fr')).status).toBe(400)
+    await patch('pt-BR')
   })
 })
 
@@ -117,7 +135,11 @@ describe('POST /me/assessments (Mifflin-St Jeor test)', () => {
     expect(data?.user_id).toBe(user.id)
 
     const me = await app.request('/api/v1/me', { headers: authHeaders(user) })
-    expect(await me.json()).toMatchObject({ latestAssessment: { id: saved.id } })
+    expect(await me.json()).toMatchObject({
+      latestAssessment: { id: saved.id },
+      // No goal set → maintenance targets.
+      targets: { kcal: 2760, proteinG: 144, fatG: 77, carbsG: 373, formulaVersion: 1 },
+    })
   })
 
   it('replays the original response when retried with the same key', async () => {
@@ -168,8 +190,8 @@ describe('POST /chat/messages', () => {
       content: 'How many calories should I eat?',
     })
     expect(body.reply.role).toBe('assistant')
-    // The mock provider sees the latest assessment through the coaching prompt.
-    expect(body.reply.content).toContain('2759 kcal/day')
+    // The mock provider sees the targets and the user's language (pt-BR) through the prompt.
+    expect(body.reply.content).toContain('Suas metas diárias são cerca de 2760 kcal e 144 g')
 
     const { data: calls } = await adminClient()
       .from('ai_calls')
@@ -180,7 +202,7 @@ describe('POST /chat/messages', () => {
     expect(calls?.[0]).toMatchObject({
       feature: 'coach_chat',
       provider: 'mock',
-      prompt_version: 'coach-chat@1',
+      prompt_version: 'coach-chat@2',
       status: 'succeeded',
     })
 

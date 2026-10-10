@@ -229,6 +229,7 @@ export type Database = {
           display_name: string | null
           goals: Json
           id: string
+          locale: string
           timezone: string
           units: string
           updated_at: string
@@ -238,6 +239,7 @@ export type Database = {
           display_name?: string | null
           goals?: Json
           id: string
+          locale?: string
           timezone?: string
           units?: string
           updated_at?: string
@@ -247,6 +249,7 @@ export type Database = {
           display_name?: string | null
           goals?: Json
           id?: string
+          locale?: string
           timezone?: string
           units?: string
           updated_at?: string

@@ -1,12 +1,40 @@
 import type { AiProvider, ProviderChatRequest, ProviderChatResult } from '../types'
 
-const TIPS = [
-  'Aim for a palm-sized portion of protein at most meals.',
-  'Consistency beats perfection: small daily habits compound.',
-  'Prioritise 7–9 hours of sleep; it affects appetite and recovery.',
-  'A modest deficit of 300–500 kcal/day is sustainable for most people.',
-  'Walking more is the easiest way to raise daily energy expenditure.',
-]
+// A canned, deterministic "coach". It never calls a model: it echoes the question, quotes numbers
+// it finds in the system prompt, adds one fixed tip, and answers in the language the prompt asks for.
+
+const COPY = {
+  en: {
+    asked: (q: string) => `(mock coach) You asked: "${q}".`,
+    targets: (kcal: string, protein: string) =>
+      `Your daily targets are about ${kcal} kcal and ${protein} g of protein.`,
+    tdee: (tdee: string) =>
+      `Based on your last test, your estimated maintenance is about ${tdee} kcal/day.`,
+    noTest: 'Take the energy test so I can personalise calorie advice.',
+    tips: [
+      'Aim for a palm-sized portion of protein at most meals.',
+      'Consistency beats perfection: small daily habits compound.',
+      'Prioritise 7–9 hours of sleep; it affects appetite and recovery.',
+      'Add a little weight or one more rep each week: that is progressive overload.',
+      'Walking more is the easiest way to raise daily energy expenditure.',
+    ],
+  },
+  pt: {
+    asked: (q: string) => `(coach simulado) Você perguntou: "${q}".`,
+    targets: (kcal: string, protein: string) =>
+      `Suas metas diárias são cerca de ${kcal} kcal e ${protein} g de proteína.`,
+    tdee: (tdee: string) =>
+      `Pelo seu último teste, sua manutenção estimada é de cerca de ${tdee} kcal/dia.`,
+    noTest: 'Faça o teste de energia para eu personalizar as dicas de calorias.',
+    tips: [
+      'Tente incluir uma porção de proteína do tamanho da palma da mão na maioria das refeições.',
+      'Consistência vence perfeição: pequenos hábitos diários se acumulam.',
+      'Priorize 7–9 horas de sono; isso afeta o apetite e a recuperação.',
+      'Aumente um pouco a carga ou faça uma repetição a mais por semana: isso é sobrecarga progressiva.',
+      'Caminhar mais é o jeito mais fácil de aumentar seu gasto diário.',
+    ],
+  },
+}
 
 function hash(text: string): number {
   let h = 0
@@ -29,15 +57,18 @@ export function createMockProvider(options: { delayMs?: number } = {}): AiProvid
     name: 'mock',
     async chat(request: ProviderChatRequest): Promise<ProviderChatResult> {
       if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs))
+      const copy = request.system.includes('Reply in Brazilian Portuguese') ? COPY.pt : COPY.en
       const question = request.messages.at(-1)?.content ?? ''
-      const tip = TIPS[hash(question) % TIPS.length] ?? ''
+      const targets = /Daily targets: (\d+) kcal, protein (\d+) g/.exec(request.system)
       const tdee = /TDEE: (\d+) kcal/.exec(request.system)?.[1]
       const text = [
-        `(mock coach) You asked: "${question.slice(0, 200)}".`,
-        tdee
-          ? `Based on your last test, your estimated maintenance is about ${tdee} kcal/day.`
-          : 'Take the Mifflin-St Jeor test so I can personalise calorie advice.',
-        tip,
+        copy.asked(question.slice(0, 200)),
+        targets?.[1] && targets[2]
+          ? copy.targets(targets[1], targets[2])
+          : tdee
+            ? copy.tdee(tdee)
+            : copy.noTest,
+        copy.tips[hash(question) % copy.tips.length] ?? '',
       ].join(' ')
       const input = request.system + request.messages.map((m) => m.content).join('\n')
       return {

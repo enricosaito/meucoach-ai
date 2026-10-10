@@ -1,5 +1,6 @@
 import type { ActivityLevel, Sex } from './domain/mifflin-st-jeor'
 import type { UnitSystem } from './domain/units'
+import type { Locale } from '@mycoach/i18n'
 import type { Goals } from './schemas'
 
 export interface Profile {
@@ -7,6 +8,7 @@ export interface Profile {
   displayName: string | null
   goals: Goals
   units: UnitSystem
+  locale: Locale
   timezone: string
   createdAt: string
   updatedAt: string
@@ -36,5 +38,7 @@ export interface CoachingContext {
   displayName: string | null
   goals: Goals
   units: UnitSystem
+  locale: Locale
+  timezone: string
   latestAssessment: Assessment | null
 }

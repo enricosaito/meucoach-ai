@@ -1,3 +1,4 @@
+import { targetsForMe } from '@mycoach/core/nutrition'
 import { assessmentInputSchema, updateProfileSchema } from '@mycoach/core/profile'
 import { Hono } from 'hono'
 import type { AppEnv } from '../types'
@@ -5,7 +6,9 @@ import { jsonBody } from '../validation'
 
 export const meRoutes = new Hono<AppEnv>()
   .get('/', async (c) => {
-    return c.json(await c.var.deps.profile.getMe(c.var.userId))
+    const me = await c.var.deps.profile.getMe(c.var.userId)
+    // Targets are derived on every read (never stored), so formula changes apply immediately.
+    return c.json({ ...me, targets: targetsForMe(me) })
   })
   .patch('/profile', jsonBody(updateProfileSchema), async (c) => {
     const profile = await c.var.deps.profile.updateProfile(c.var.userId, c.req.valid('json'))

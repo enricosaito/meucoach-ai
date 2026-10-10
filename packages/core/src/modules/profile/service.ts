@@ -1,3 +1,4 @@
+import { DEFAULT_LOCALE, isLocale } from '@mycoach/i18n'
 import { AppError, type AdminClient } from '../../shared'
 import { estimateEnergyExpenditure, type ActivityLevel, type Sex } from './domain/mifflin-st-jeor'
 import type { UnitSystem } from './domain/units'
@@ -17,6 +18,7 @@ function toProfile(row: ProfileRow): Profile {
     displayName: row.display_name,
     goals: goals.success ? goals.data : {},
     units: row.units as UnitSystem,
+    locale: isLocale(row.locale) ? row.locale : DEFAULT_LOCALE,
     timezone: row.timezone,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -63,6 +65,7 @@ export function createProfileService(deps: { db: AdminClient }) {
       const row = await updateProfileRow(db, userId, {
         ...(input.displayName !== undefined && { display_name: input.displayName }),
         ...(input.units !== undefined && { units: input.units }),
+        ...(input.locale !== undefined && { locale: input.locale }),
         ...(input.timezone !== undefined && { timezone: input.timezone }),
         ...(input.goals !== undefined && { goals: input.goals }),
       })
@@ -93,6 +96,8 @@ export function createProfileService(deps: { db: AdminClient }) {
         displayName: profile.displayName,
         goals: profile.goals,
         units: profile.units,
+        locale: profile.locale,
+        timezone: profile.timezone,
         latestAssessment,
       }
     },

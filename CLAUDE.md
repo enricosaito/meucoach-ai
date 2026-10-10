@@ -1,6 +1,7 @@
 # My Coach: rules for working in this repo
 
-Personalized fitness/nutrition app. **Modular monolith** in a pnpm + Turborepo monorepo, TypeScript
+Personalized, training-first fitness app (with nutrition targets) for the Brazilian market, in
+Brazilian Portuguese (default) and English. **Modular monolith** in a pnpm + Turborepo monorepo, TypeScript
 strict everywhere. Built to scale to 100k+ users and to add an Expo app (`apps/mobile`) later, so
 everything below `apps/` must stay client-agnostic.
 
@@ -18,6 +19,7 @@ apps/web/                 Next.js 16 (App Router, Tailwind 4). UI only + mounts 
                           globals.css (bg-surface, text-muted, bg-accent…), dark mode automatic
 packages/api/             Hono app: /api/v1 routes + middleware. Framework-agnostic.
 packages/api-client/      typed hono/client wrapper for web and future mobile
+packages/i18n/            translations (en = source, pt-BR) + framework-agnostic translator
 packages/core/src/
   shared/                 AppError, Logger interface, db helpers (no domain logic)
   modules/<module>/
@@ -31,8 +33,10 @@ packages/config/          shared tsconfig, ESLint (incl. module boundaries), Pre
 supabase/migrations/      SQL migrations, the only source of schema truth
 ```
 
-Modules today: `profile` (profile, Mifflin-St Jeor energy test) and `coaching` (AI gateway, coach
-chat). Planned: `nutrition`, `gamification`, plus `packages/jobs` (Inngest) and an outbox.
+Modules today: `profile` (profile, locale, Mifflin-St Jeor energy test), `nutrition` (daily calorie
+and macro targets, pure and derived, never stored) and `coaching` (AI gateway, coach chat).
+Planned: `training` (AI workout plans), `gamification` (XP, streaks), `billing` (freemium
+entitlements), plus `packages/jobs` (Inngest) and an outbox.
 
 ## Non-negotiable rules
 
@@ -82,6 +86,12 @@ chat). Planned: `nutrition`, `gamification`, plus `packages/jobs` (Inngest) and 
     use one shape: `{ error: { code, message, requestId, details? } }` via `AppError`.
 14. **Logging:** structured JSON (pino), always with `requestId`; use `c.var.logger` in the API.
     No `console.*` in packages (lint error).
+15. **Every user-facing string is translated.** Add keys to `packages/i18n/src/messages/en.ts`
+    and `pt-BR.ts` (the type checker and tests fail if keys or `{placeholders}` differ). UI uses
+    `useI18n()` (client) / `getTranslator()` (server); format numbers and dates with its
+    `formatNumber` / `formatDate`, never hard-code separators. API error `message`s stay English
+    for logs; clients translate by `error.code`. The user's language is `profiles.locale`
+    (default `pt-BR`); AI prompts must make the model reply in it.
 
 ## API conventions (`packages/api`)
 

@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import { buildSystemPrompt, version } from './coach-chat.v1'
 
-const base = { displayName: 'Ana', units: 'metric' as const, goals: {}, latestAssessment: null }
+const base = {
+  displayName: 'Ana',
+  units: 'metric' as const,
+  locale: 'en' as const,
+  timezone: 'UTC',
+  goals: {},
+  latestAssessment: null,
+}
 
 describe('coach-chat v1 system prompt', () => {
   it('has a stable version id', () => {
