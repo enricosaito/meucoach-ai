@@ -20,6 +20,18 @@ export const apiEnvSchema = z
       .default('info'),
     RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(120),
     CHAT_RATE_LIMIT_PER_MINUTE: z.coerce.number().int().positive().default(10),
+    // Comma-separated browser origins allowed to call the API cross-origin (e.g. the Expo web
+    // dev server). Empty in production: native apps don't need CORS and the web app is
+    // same-origin.
+    API_CORS_ORIGINS: z
+      .string()
+      .default('')
+      .transform((value) =>
+        value
+          .split(',')
+          .map((origin) => origin.trim())
+          .filter(Boolean),
+      ),
   })
   .refine((env) => env.AI_PROVIDER !== 'anthropic' || env.ANTHROPIC_API_KEY, {
     message: 'ANTHROPIC_API_KEY is required when AI_PROVIDER=anthropic',

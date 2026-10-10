@@ -19,6 +19,15 @@ every checkpoint. Last updated: 2026-10-10.
 - Founder prioritises speed; Claude has write access to production Supabase via MCP (see the
   guardrail in CLAUDE.md: schema changes still only via migrations).
 
+## Mobile app (checkpoint 4, in progress)
+
+`apps/mobile` (Expo SDK 57). Done: login, native tabs (Início, Treino, Dieta, Coach, Perfil), Home
+ported (greeting with goal/streak/level chips, today's workout with one-tap logging and XP, diet
+card, targets), read-only Profile with sign-out. Treino, Dieta and Coach show a "coming soon"
+placeholder. Next: link the Expo project (EAS, owner `enricolass`), port Training, Diet, Coach,
+Settings, the energy test and the plan questionnaire (camera/photos), then freemium with
+RevenueCat (needs a development build, not Expo Go). The web UI is paused (no new features).
+
 ## What is built
 
 | Area         | Status                                                                                                                                                                                                                                                                                                                         |

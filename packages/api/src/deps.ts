@@ -38,6 +38,8 @@ export interface AppDeps {
   nutrition: NutritionService
   gamification: GamificationService
   limits: { perMinute: number; chatPerMinute: number }
+  /** Browser origins allowed to call the API cross-origin (see API_CORS_ORIGINS). */
+  corsOrigins: string[]
   /** Background functions served at /api/inngest. */
   jobFunctions: ReturnType<typeof createJobFunctions>
   /**
@@ -96,6 +98,7 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
     nutrition,
     gamification: createGamificationService({ db }),
     limits: { perMinute: env.RATE_LIMIT_PER_MINUTE, chatPerMinute: env.CHAT_RATE_LIMIT_PER_MINUTE },
+    corsOrigins: env.API_CORS_ORIGINS,
     jobFunctions: createJobFunctions({ db, training, nutrition, logger }),
     nudgeOutbox: async () => {
       try {

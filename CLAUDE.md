@@ -2,8 +2,16 @@
 
 Personalized, training-first fitness app (with nutrition targets) for the Brazilian market, in
 Brazilian Portuguese (default) and English. **Modular monolith** in a pnpm + Turborepo monorepo, TypeScript
-strict everywhere. Built to scale to 100k+ users and to add an Expo app (`apps/mobile`) later, so
-everything below `apps/` must stay client-agnostic.
+strict everywhere. Built to scale to 100k+ users. **Mobile-first since 2026-10-10:** the product
+UI is the Expo app (`apps/mobile`); the Next.js web UI is paused (no new features) and keeps the
+API, background jobs, landing and legal pages. Everything below `apps/` stays client-agnostic.
+
+**Mobile (`apps/mobile`)**: Expo SDK 57, Expo Router (routes in `src/app`, native tabs), plain
+React Native styles with tokens in `src/theme.ts` (same colors as web), shared `@mycoach/*`
+packages for contracts, API client and i18n. Reads go to Supabase under RLS, writes to the API
+with a Bearer token. Native builds use production by default (`src/lib/env.ts`); the web preview
+in dev uses the local stack. Read `apps/mobile/AGENTS.md` before touching Expo APIs (versioned
+docs, `npx expo install` for native packages, no hand-edited `ios/`/`android/`).
 
 **Start here:** [docs/status.md](docs/status.md) has the current state, deploy procedure, known gotchas,
 open items and the next checkpoint. Keep it updated at the end of each checkpoint.
@@ -128,6 +136,7 @@ analysis, AI workout plans generated in a background job, workout log) and `gami
 | ----------------------- | -------------------------------------------------------------------- |
 | `pnpm bootstrap`        | `db:start` + `env:setup` (first run)                                 |
 | `pnpm dev`              | Next.js (web + API) on :3000 + Inngest Dev Server on :8288           |
+| `pnpm mobile`           | Expo dev server (:8081): QR for Expo Go on a phone, `w` for web      |
 | `pnpm db:start`         | Start local Supabase (Docker). Studio :54323, Mailpit inbox :54324   |
 | `pnpm db:stop`          | Stop local Supabase                                                  |
 | `pnpm db:reset`         | Re-apply migrations + seed (demo user), restart storage (local)      |

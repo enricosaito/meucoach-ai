@@ -462,6 +462,10 @@ export const ptBR = {
     generate: 'Criar minha dieta',
     sending: 'Enviando…',
   },
+  mobile: {
+    comingSoonTitle: 'Em breve no app',
+    comingSoonBody: 'Esta tela está chegando ao app. Enquanto isso, use a versão web.',
+  },
   legal: {
     privacy: 'Política de Privacidade',
     terms: 'Termos de Uso',

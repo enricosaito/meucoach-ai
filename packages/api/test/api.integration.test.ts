@@ -69,6 +69,32 @@ describe('platform', () => {
     expect(error).not.toBeNull()
   })
 
+  it('sends no CORS headers unless origins are configured', async () => {
+    const res = await app.request('/api/v1/health', {
+      headers: { origin: 'http://localhost:8081' },
+    })
+    expect(res.headers.get('access-control-allow-origin')).toBeNull()
+  })
+
+  it('answers CORS preflights for configured origins only', async () => {
+    const withCors = testApp({ corsOrigins: ['http://localhost:8081'] })
+    const preflight = (origin: string) =>
+      withCors.request('/api/v1/me', {
+        method: 'OPTIONS',
+        headers: {
+          origin,
+          'access-control-request-method': 'POST',
+          'access-control-request-headers': 'authorization,idempotency-key',
+        },
+      })
+    const allowed = await preflight('http://localhost:8081')
+    expect(allowed.status).toBe(204)
+    expect(allowed.headers.get('access-control-allow-origin')).toBe('http://localhost:8081')
+    expect(allowed.headers.get('access-control-allow-credentials')).toBeNull()
+    const other = await preflight('https://evil.example')
+    expect(other.headers.get('access-control-allow-origin')).toBeNull()
+  })
+
   it('propagates a caller-supplied request id', async () => {
     const res = await app.request('/api/v1/health', { headers: { 'x-request-id': 'trace-123' } })
     expect(res.headers.get('x-request-id')).toBe('trace-123')

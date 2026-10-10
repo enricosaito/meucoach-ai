@@ -1,5 +1,6 @@
 import { inngest } from '@mycoach/jobs'
 import { Hono } from 'hono'
+import { cors } from 'hono/cors'
 import { serve } from 'inngest/hono'
 import type { AppDeps } from './deps'
 import { requireAuth } from './middleware/auth'
@@ -52,6 +53,20 @@ export function createApp(deps: AppDeps) {
     await next()
   })
   app.use(requestId)
+  // Opt-in CORS for browser clients on other origins (dev only). Auth is a bearer token, never a
+  // cookie, for those clients, so no credentials are allowed.
+  if (deps.corsOrigins.length > 0) {
+    app.use(
+      '/v1/*',
+      cors({
+        origin: deps.corsOrigins,
+        allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+        allowHeaders: ['authorization', 'content-type', 'idempotency-key', 'x-request-id'],
+        exposeHeaders: ['x-request-id'],
+        maxAge: 600,
+      }),
+    )
+  }
   app.onError(handleError)
   app.notFound(handleNotFound)
   // Inngest calls this endpoint to run background functions. Requests are verified with the

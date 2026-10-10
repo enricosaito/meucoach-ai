@@ -4,3 +4,8 @@ pnpm-lock.yaml
 node_modules
 supabase/.temp
 .claude/settings.local.json
+
+# Expo (generated)
+**/.expo
+apps/mobile/ios
+apps/mobile/android

@@ -9,3 +9,7 @@ allowBuilds:
   unrs-resolver: false
   protobufjs: false
   inngest-cli: true
+# One React type definition across apps (web runs React 19.3, Expo pins 19.2 at runtime); two
+# copies make JSX types incompatible in the web app.
+overrides:
+  '@types/react': 19.3.0

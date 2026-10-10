@@ -453,6 +453,10 @@ export const en = {
     generate: 'Create my diet',
     sending: 'Sending…',
   },
+  mobile: {
+    comingSoonTitle: 'Coming soon to the app',
+    comingSoonBody: 'This screen is being brought to the app. Meanwhile, use the web version.',
+  },
   legal: {
     privacy: 'Privacy Policy',
     terms: 'Terms of Use',
