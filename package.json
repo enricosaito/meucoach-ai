@@ -18,6 +18,9 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local > packages/db/src/database.types.ts && prettier --write packages/db/src/database.types.ts",
+    "db:push:check": "node scripts/with-supabase-token.mjs db push --dry-run",
+    "db:push": "node scripts/with-supabase-token.mjs db push --yes",
+    "db:migrations": "node scripts/with-supabase-token.mjs migration list",
     "env:setup": "node scripts/setup-env.mjs",
     "bootstrap": "pnpm db:start && pnpm env:setup"
   },

@@ -52,12 +52,13 @@ workout first, then awards XP, so a retry after a partial failure completes the 
   (`sa-east-1`), Inngest connected via the Vercel Marketplace (keys in Vercel env). Deployment
   protection is currently off.
 - **Deploy procedure** (CLI, not git push):
-  1. `supabase db push --dry-run`, then `supabase db push --yes` if migrations are pending.
+  1. `pnpm db:push:check`, then `pnpm db:push` if migrations are pending (uses the token in
+     `.env.supabase.local`).
   2. `vercel deploy --prod --yes`.
   3. `curl -X PUT https://meucoach-ai.vercel.app/api/inngest` → `"Successfully registered"`.
   4. Check `vercel logs --environment production --no-branch --since 10m` for errors.
 - **Git**: `main` is pushed to `enricosaito/meucoach-ai` and CI is green. Every push to `main` also
-  triggers a Vercel production deploy (repo connected), so run `supabase db push` BEFORE pushing
+  triggers a Vercel production deploy (repo connected), so run `pnpm db:push` BEFORE pushing
   code that needs a new migration.
 
 ## Gotchas seen in this project
@@ -65,9 +66,9 @@ workout first, then awards XP, so a retry after a partial failure completes the 
 - **Docker Desktop won't start** (unreadable socket files on this Windows Insider build): stop
   Docker, rename `%LOCALAPPDATA%\Docker\run` and `%LOCALAPPDATA%\docker-secrets-engine` to
   `*.stale-<timestamp>`, recreate an empty `Docker\run`, `docker desktop start`.
-- **Supabase CLI login keeps getting replaced** by another account on this machine. Prefer the
-  Supabase MCP server for reads/writes; for `db push`, re-run `supabase login` or set
-  `SUPABASE_ACCESS_TOKEN` for this repo.
+- **Supabase CLI login keeps getting replaced** by another account on this machine (403 on
+  "Initialising login role"). Use `pnpm db:push*`, which take the owner's token from
+  `.env.supabase.local` instead of the CLI login.
 - Vercel CLI was once switched to another account (`ripaames-2699`); check `vercel whoami`.
 - Git Bash mangles paths: `export MSYS_NO_PATHCONV=1` before `vercel curl /api/...`.
 - `vercel env add ... preview` fails non-interactively; use
@@ -94,10 +95,8 @@ workout first, then awards XP, so a retry after a partial failure completes the 
       INFO "RLS enabled, no policy" on `ai_calls`, `idempotency_keys`, `outbox_events` (intended:
       server-only tables).
 - [ ] Migrations `20261012000000_workout_sessions_and_xp` and `20261013000000_diet_plans` are NOT
-      in production yet: run `supabase db push` before pushing to `main`. The CLI on this machine
-      was logged in to an account without the project (403 "login role"); either log in with the
-      owner account (sign out of the other one on supabase.com first) or push with
-      `--db-url` (session pooler connection string + DB password).
+      in production yet: `pnpm db:push:check` then `pnpm db:push` (needs
+      `.env.supabase.local` with the owner's access token) before pushing to `main`.
 - [ ] Diet: the mock template's portions are only good enough to pass validation (dev/test); real
       quality depends on the AI. Ideas: diet in the coach's context, swap a single food, weekly
       variety, grocery list by category.

@@ -132,6 +132,9 @@ analysis, AI workout plans generated in a background job, workout log) and `gami
 | `pnpm db:stop`          | Stop local Supabase                                                 |
 | `pnpm db:reset`         | Re-apply all migrations + `supabase/seed.sql` (wipes local data)    |
 | `pnpm db:types`         | Regenerate `packages/db/src/database.types.ts`                      |
+| `pnpm db:push:check`    | PRODUCTION: list pending migrations (dry run)                       |
+| `pnpm db:push`          | PRODUCTION: apply pending migrations                                |
+| `pnpm db:migrations`    | PRODUCTION: local vs remote migration history                       |
 | `pnpm env:setup`        | Write `apps/web/.env.local` from `.env.example` + `supabase status` |
 | `pnpm lint`             | ESLint everywhere (incl. module boundaries)                         |
 | `pnpm typecheck`        | `tsc --noEmit` everywhere                                           |
@@ -146,8 +149,13 @@ Before finishing a change run `pnpm lint && pnpm typecheck && pnpm test`, plus
 
 - The Supabase MCP server (`.mcp.json`) has write access to the PRODUCTION project. Use it to read,
   debug, run advisors and manage test data. Never use it for schema changes (`apply_migration`,
-  DDL via `execute_sql`): add a migration file and `supabase db push` so the repo stays the source
+  DDL via `execute_sql`): add a migration file and `pnpm db:push` so the repo stays the source
   of truth. Delete any test users/data you create.
+- `pnpm db:push*` use the owner's access token from the git-ignored `.env.supabase.local`
+  (`scripts/with-supabase-token.mjs`), never the machine's `supabase login`. Claude may run them:
+  always `db:push:check` first, push only migrations that passed `pnpm test:integration`
+  locally, and push BEFORE pushing code that needs them to `main` (auto-deploys). Never print the
+  token or read the file.
 - Workspace packages ship TS source (no build step); Next transpiles them (`transpilePackages`).
 - pnpm 12 blocks dependency install scripts unless listed in `allowBuilds` (`pnpm-workspace.yaml`).
 - `AGENTS.md` is managed by Turborepo; leave it in place.
