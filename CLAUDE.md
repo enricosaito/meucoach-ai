@@ -139,6 +139,10 @@ Before finishing a change run `pnpm lint && pnpm typecheck && pnpm test`, plus
 
 ## Gotchas
 
+- The Supabase MCP server (`.mcp.json`) has write access to the PRODUCTION project. Use it to read,
+  debug, run advisors and manage test data. Never use it for schema changes (`apply_migration`,
+  DDL via `execute_sql`): add a migration file and `supabase db push` so the repo stays the source
+  of truth. Delete any test users/data you create.
 - Workspace packages ship TS source (no build step); Next transpiles them (`transpilePackages`).
 - pnpm 12 blocks dependency install scripts unless listed in `allowBuilds` (`pnpm-workspace.yaml`).
 - `AGENTS.md` is managed by Turborepo; leave it in place.
