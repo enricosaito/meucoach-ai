@@ -46,13 +46,25 @@ Done (2026-10-10):
   temporary identifier `dev.enricolass.meucoach.dev`; the store identifier is unset in
   `app.config.ts` until the app name/publisher is decided (before the first TestFlight upload).
 
-Next, in order: port **Dieta** (plan view, questionnaire), **Coach** (chat), the **energy test**
-(the wizard's energy hint has no link until then); then
+- **Brand identity (2026-10-10, see [BRAND.md](../BRAND.md))**: "chalk and iron" palette, Archivo
+  Expanded + Manrope, tokens in `packages/brand` (single source; web `globals.css` mirrors it,
+  tested). Treino plan header is compact (summary in an ⓘ tooltip, "Perguntar para Meu Coach"
+  button with twinkling sparkles → Coach tab), workouts are lettered A/B/C… and swipeable, plan
+  numbers moved to a "Sobre o plano" card at the bottom. Settings → Aparência (Sistema / Claro /
+  Escuro, per device). Plate-colored level badge, bold orange "Feito hoje", knurling texture on
+  celebrations. Copy is already in the brand voice; a full copy pass was deferred.
+
+Next, in order: **Coach chat on mobile** (the core feature; the API, gateway and `coach-chat@2`
+prompt already exist; a new prompt version should carry the BRAND.md voice), then **Dieta**, the
+**energy test** (the wizard's energy hint has no link until then); then
 **freemium** with RevenueCat (needs an EAS development build, not Expo Go). The web UI is paused
 (no new features).
 
 To verify on the phone (not testable in the web preview): profile photo upload, progress photos
-from the camera and library (permission prompts, action sheet), haptics, safe areas on iOS.
+from the camera and library (permission prompts, action sheet), haptics, safe areas on iOS, the
+A/B/C swipe feel, the appearance override on native UI (tab bar, alerts), font rendering on
+Android. Fonts load at runtime (works in Expo Go); embed them with the `expo-font` config plugin
+when moving to an EAS development build.
 Known: the web preview logs "Unexpected text node" six times on the first page load (from before
 Treino; an empty string rendered with `&&` somewhere); harmless, but worth finding.
 
