@@ -41,7 +41,7 @@ export function MacroTiles({ targets }: { targets: DailyTargets }) {
               key={m.key}
               style={[styles.tile, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
-              <Txt variant="heading">
+              <Txt variant="number">
                 {t('common.grams', { value: formatNumber(targets[m.key]) })}
               </Txt>
               <Txt variant="caption" muted>

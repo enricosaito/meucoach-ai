@@ -11,7 +11,7 @@ import {
   Sparkles,
 } from 'lucide-react-native'
 import { useEffect, useState } from 'react'
-import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native'
+import { ActivityIndicator, StyleSheet, View } from 'react-native'
 import { haptics } from '../../lib/haptics'
 import { useI18n } from '../../lib/i18n'
 import { radius, space, useColors } from '../../theme'
@@ -66,6 +66,7 @@ export function EmptyPlanCard() {
             router.push('/new-plan')
           }}
           trailingIcon={<ArrowRight size={16} color={colors.onAccent} />}
+          size="lg"
           style={{ alignSelf: 'stretch' }}
         >
           {t('training.createPlan')}
@@ -152,16 +153,16 @@ export function FailedCard() {
         <Txt variant="caption" muted>
           {t('training.failedBody')}
         </Txt>
-        <Pressable
-          accessibilityRole="button"
+        <Button
+          variant="secondary"
           onPress={() => {
             router.push('/new-plan')
           }}
-          style={[styles.retry, { backgroundColor: colors.surfaceMuted }]}
+          icon={<RefreshCw size={14} color={colors.textPrimary} />}
+          style={{ marginTop: space.sm }}
         >
-          <RefreshCw size={14} color={colors.textPrimary} />
-          <Txt variant="label">{t('common.tryAgain')}</Txt>
-        </Pressable>
+          {t('common.tryAgain')}
+        </Button>
       </View>
     </Card>
   )
@@ -194,14 +195,4 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   pip: { width: 6, height: 6, borderRadius: 3 },
-  retry: {
-    marginTop: space.sm,
-    alignSelf: 'flex-start',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    height: 36,
-    paddingHorizontal: space.md,
-    borderRadius: radius.full,
-  },
 })

@@ -86,7 +86,7 @@ export function StreakCelebration({ streak, onClose }: { streak: Streak; onClose
             </Txt>
           </Appear>
         </View>
-        <Button onPress={onClose} style={{ alignSelf: 'stretch' }}>
+        <Button onPress={onClose} size="lg" style={{ alignSelf: 'stretch' }}>
           {t('celebrate.cta')}
         </Button>
       </View>

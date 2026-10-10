@@ -252,7 +252,7 @@ function AboutStep({
           />
         </View>
 
-        <Button onPress={onNext} style={{ alignSelf: 'stretch' }}>
+        <Button onPress={onNext} size="lg" style={{ alignSelf: 'stretch' }}>
           {t('wizard.next')}
         </Button>
       </Card>
@@ -314,7 +314,12 @@ function PhotosStep({
               {t('wizard.photoTips')}
             </Txt>
           </View>
-          <Button onPress={onNext} disabled={count === 0} style={{ alignSelf: 'stretch' }}>
+          <Button
+            onPress={onNext}
+            disabled={count === 0}
+            size="lg"
+            style={{ alignSelf: 'stretch' }}
+          >
             {t('wizard.next')}
           </Button>
         </Card>
@@ -494,6 +499,7 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
         onPress={() => void accept()}
         disabled={!adult || !agree}
         loading={pending}
+        size="lg"
         style={{ alignSelf: 'stretch' }}
       >
         {t('consent.accept')}
@@ -622,6 +628,7 @@ function ReviewStep({ questionnaire, photos }: { questionnaire: Questionnaire; p
         <Button
           onPress={() => void submit()}
           loading={phase !== 'idle'}
+          size="lg"
           style={{ alignSelf: 'stretch' }}
         >
           {phase === 'uploading'

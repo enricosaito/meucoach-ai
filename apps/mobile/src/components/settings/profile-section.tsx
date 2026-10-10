@@ -179,6 +179,7 @@ function IdentityForm({ profile }: { profile: Me['profile'] }) {
         onPress={() => void submit()}
         loading={save.pending}
         disabled={!dirty}
+        size="lg"
         style={{ alignSelf: 'stretch' }}
         icon={saved && !dirty ? <Check size={16} color={colors.onAccent} /> : undefined}
       >

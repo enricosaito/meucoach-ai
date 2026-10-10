@@ -119,7 +119,7 @@ const styles = StyleSheet.create({
   box: {
     width: 22,
     height: 22,
-    borderRadius: 6,
+    borderRadius: radius.xs,
     borderWidth: 2,
     alignItems: 'center',
     justifyContent: 'center',

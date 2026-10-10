@@ -28,7 +28,7 @@ export function BodyAnalysisCard({ analysis }: { analysis: BodyAnalysis }) {
           <Txt variant="caption" muted>
             {t('training.bodyFat')}
           </Txt>
-          <Txt variant="title" style={{ fontVariant: ['tabular-nums'] }}>
+          <Txt variant="displayL" tabularNums>
             {analysis.bodyFatPercentLow}–{analysis.bodyFatPercentHigh}%
           </Txt>
         </View>

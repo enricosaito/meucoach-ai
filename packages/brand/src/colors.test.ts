@@ -19,7 +19,7 @@ function surfaces(c: ColorTokens) {
 
 // Every token used for text, and the backgrounds it may sit on (all surfaces + its own tint).
 const TEXT_ON: [keyof ColorTokens, (keyof ColorTokens)[]][] = [
-  ['textPrimary', ['accentSoft', 'recoverySoft']],
+  ['textPrimary', ['accentSoft', 'recoverySoft', 'controlSelected']],
   ['textSecondary', ['accentSoft', 'recoverySoft']],
   ['accentText', ['accentSoft']],
   ['recoveryText', ['recoverySoft']],

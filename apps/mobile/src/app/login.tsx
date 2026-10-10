@@ -113,6 +113,7 @@ export default function LoginScreen() {
           onPress={() => void signIn()}
           loading={pending}
           disabled={!email || !password}
+          size="lg"
           style={{ alignSelf: 'stretch' }}
         >
           {pending ? t('auth.submitting') : t('auth.submit')}

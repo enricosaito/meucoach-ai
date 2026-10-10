@@ -2,17 +2,16 @@ import type { BodyScan, WorkoutPlanRecord } from '@mycoach/core/training/contrac
 import { router, useFocusEffect } from 'expo-router'
 import { RefreshCw } from 'lucide-react-native'
 import { useCallback, useEffect, useState } from 'react'
-import { Pressable, StyleSheet } from 'react-native'
 import { BodyAnalysisCard } from '../../components/training/body-analysis-card'
 import { PlanView } from '../../components/training/plan-view'
 import { ProgressPhotos } from '../../components/training/progress-photos'
 import { EmptyPlanCard, FailedCard, GeneratingCard } from '../../components/training/status-cards'
 import { WorkoutHistory } from '../../components/training/workout-history'
-import { ErrorText, Screen, Skeleton, Txt } from '../../components/ui'
+import { Button, ErrorText, Screen, Skeleton } from '../../components/ui'
 import { fetchLatestPlan, fetchLatestReadyPlan, fetchScans } from '../../lib/data'
 import { errorMessage, useI18n } from '../../lib/i18n'
 import { useWorkoutLog } from '../../lib/use-workout-log'
-import { radius, space, useColors } from '../../theme'
+import { useColors } from '../../theme'
 
 const POLL_MS = 3000
 
@@ -113,36 +112,18 @@ export default function TrainingScreen() {
       <ProgressPhotos scans={scans} onChange={() => void load()} />
 
       {ready?.plan && !generating && (
-        // router.push, not <Link asChild>: Link drops function styles (pressed state) on web.
-        <Pressable
-          accessibilityRole="button"
+        <Button
+          variant="ghost"
           onPress={() => {
             router.push('/new-plan')
           }}
-          style={({ pressed }) => [
-            styles.update,
-            { backgroundColor: pressed ? colors.accentSoft : 'transparent' },
-          ]}
+          icon={<RefreshCw size={16} color={colors.accentIcon} />}
+          style={{ alignSelf: 'center' }}
         >
-          <RefreshCw size={16} color={colors.accentIcon} />
-          <Txt variant="label" color="accentText">
-            {t('training.updatePlan')}
-          </Txt>
-        </Pressable>
+          {t('training.updatePlan')}
+        </Button>
       )}
       <ErrorText>{error}</ErrorText>
     </Screen>
   )
 }
-
-const styles = StyleSheet.create({
-  update: {
-    alignSelf: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: space.sm,
-    height: 40,
-    paddingHorizontal: space.lg,
-    borderRadius: radius.full,
-  },
-})

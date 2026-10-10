@@ -122,7 +122,7 @@ function Pill({ icon, value, label }: { icon: ReactNode; value: string; label: s
     <View style={styles.pillCol}>
       <View style={[styles.pill, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         {icon}
-        <Txt variant="label" style={{ fontWeight: '700' }}>
+        <Txt variant="number" style={{ fontSize: 15, lineHeight: 20 }}>
           {value}
         </Txt>
       </View>

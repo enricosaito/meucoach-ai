@@ -1,8 +1,8 @@
-import type { TypeVariant } from '@mycoach/brand'
+import { palette, type TypeVariant } from '@mycoach/brand'
 import { greetingName } from '@mycoach/core/profile/contracts'
 import { Image } from 'expo-image'
 import { Link } from 'expo-router'
-import type { ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import {
   ActivityIndicator,
   Platform,
@@ -73,11 +73,29 @@ export function Txt({
 // Containers
 // ---------------------------------------------------------------------------
 
-export function Card({ style, children }: { style?: StyleProp<ViewStyle>; children: ReactNode }) {
+/**
+ * The basic container: a calm surface with a hairline border. `elevated` lifts it with a soft
+ * shadow instead (sheets, highlighted cards).
+ */
+export function Card({
+  style,
+  elevated = false,
+  children,
+}: {
+  style?: StyleProp<ViewStyle>
+  elevated?: boolean
+  children: ReactNode
+}) {
   const colors = useColors()
   return (
     <View
-      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style]}
+      style={[
+        styles.card,
+        elevated
+          ? [styles.cardElevated, { backgroundColor: colors.surfaceElevated }]
+          : { backgroundColor: colors.surface, borderColor: colors.border },
+        style,
+      ]}
     >
       {children}
     </View>
@@ -143,7 +161,7 @@ export function Screen({
     >
       {(title !== undefined || showAvatar || headerRight) && (
         <View style={styles.header}>
-          <Txt variant="title" numberOfLines={1} style={{ flex: 1 }}>
+          <Txt variant="displayL" numberOfLines={1} style={styles.screenTitle}>
             {title ?? ''}
           </Txt>
           {headerRight ?? (showAvatar && <ProfileAvatarLink />)}
@@ -215,10 +233,18 @@ export function Avatar({
 // Controls
 // ---------------------------------------------------------------------------
 
+type ButtonVariant = 'primary' | 'secondary' | 'ghost'
+
+/**
+ * Buttons are pills. Primary is signal orange with graphite text (white on orange fails AA);
+ * secondary is a quiet neutral; ghost is orange text for low-emphasis actions. Disabled buttons
+ * turn neutral rather than faded orange, so they never look tappable.
+ */
 export function Button({
   children,
   onPress,
   variant = 'primary',
+  size = 'md',
   loading = false,
   disabled = false,
   icon,
@@ -227,7 +253,8 @@ export function Button({
 }: {
   children: ReactNode
   onPress: () => void
-  variant?: 'primary' | 'secondary'
+  variant?: ButtonVariant
+  size?: 'md' | 'lg'
   loading?: boolean
   disabled?: boolean
   icon?: ReactNode
@@ -236,8 +263,20 @@ export function Button({
   style?: StyleProp<ViewStyle>
 }) {
   const colors = useColors()
-  const primary = variant === 'primary'
-  const fg = primary ? colors.onAccent : colors.textPrimary
+  const inactive = disabled && !loading
+  const fg = inactive
+    ? colors.textDisabled
+    : variant === 'primary'
+      ? colors.onAccent
+      : variant === 'ghost'
+        ? colors.accentText
+        : colors.textPrimary
+  const background = (pressed: boolean) => {
+    if (inactive) return variant === 'ghost' ? 'transparent' : colors.surfaceMuted
+    if (variant === 'primary') return pressed ? colors.accentPressed : colors.accent
+    if (variant === 'ghost') return pressed ? colors.accentSoft : 'transparent'
+    return pressed ? colors.border : colors.surfaceMuted
+  }
   return (
     <Pressable
       accessibilityRole="button"
@@ -246,18 +285,13 @@ export function Button({
       onPress={onPress}
       style={({ pressed }) => [
         styles.button,
-        {
-          backgroundColor: primary ? colors.accent : colors.surfaceMuted,
-          opacity: disabled ? 0.5 : 1,
-          transform: [{ scale: pressed ? 0.97 : 1 }],
-        },
+        size === 'lg' && styles.buttonLg,
+        { backgroundColor: background(pressed), transform: [{ scale: pressed ? 0.97 : 1 }] },
         style,
       ]}
     >
       {loading ? <ActivityIndicator size="small" color={fg} /> : icon}
-      <Text
-        style={[textStyles.label, font('ui', 700), { color: fg, fontSize: 16, lineHeight: 22 }]}
-      >
+      <Text style={[textStyles.label, font('ui', 700), styles.buttonLabel, { color: fg }]}>
         {children}
       </Text>
       {!loading && trailingIcon}
@@ -265,20 +299,36 @@ export function Button({
   )
 }
 
+type ChipTone = 'neutral' | 'accent' | 'recovery'
+
+/** A small rounded tag (status, filter, metadata). */
 export function Chip({
   icon,
+  tone = 'neutral',
   children,
   style,
 }: {
   icon?: ReactNode
+  tone?: ChipTone
   children: ReactNode
   style?: StyleProp<ViewStyle>
 }) {
   const colors = useColors()
+  const toneColors = {
+    neutral: { bg: colors.surfaceMuted, fg: colors.textPrimary },
+    accent: { bg: colors.accentSoft, fg: colors.accentText },
+    recovery: { bg: colors.recoverySoft, fg: colors.recoveryText },
+  }[tone]
   return (
-    <View style={[styles.chip, { backgroundColor: colors.surfaceMuted }, style]}>
+    <View style={[styles.chip, { backgroundColor: toneColors.bg }, style]}>
       {icon}
-      {children}
+      {typeof children === 'string' ? (
+        <Txt variant="label" style={{ color: toneColors.fg }}>
+          {children}
+        </Txt>
+      ) : (
+        children
+      )}
     </View>
   )
 }
@@ -308,7 +358,16 @@ const styles = StyleSheet.create({
     padding: space.xl,
     gap: space.md,
   },
-  header: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 40 },
+  cardElevated: {
+    borderWidth: 0,
+    shadowColor: palette.graphite,
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 3,
+  },
+  header: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 44 },
+  screenTitle: { flex: 1, fontSize: 28, lineHeight: 34 },
   button: {
     height: 48,
     borderRadius: radius.full,
@@ -319,34 +378,57 @@ const styles = StyleSheet.create({
     gap: space.sm,
     alignSelf: 'flex-start',
   },
+  buttonLg: { height: 56, paddingHorizontal: space.xxl },
+  buttonLabel: { fontSize: 16, lineHeight: 22 },
   chip: {
-    height: 40,
-    borderRadius: radius.md,
+    height: 32,
+    borderRadius: radius.full,
     paddingHorizontal: space.md,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
+    alignSelf: 'flex-start',
   },
 })
 
+/** A labelled text field; the border turns orange while it has focus. */
 export function Input({
   label,
   hint,
   prefix,
+  onFocus,
+  onBlur,
   ...props
 }: TextInputProps & { label: string; hint?: string; prefix?: string }) {
   const colors = useColors()
+  const [focused, setFocused] = useState(false)
   return (
-    <View style={{ gap: 6 }}>
+    <View style={{ gap: space.sm }}>
       <Txt variant="label">{label}</Txt>
       <View
-        style={[inputStyles.box, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        style={[
+          inputStyles.box,
+          {
+            backgroundColor: colors.surfaceElevated,
+            borderColor: focused ? colors.accentIcon : colors.border,
+          },
+        ]}
       >
         {prefix && <Txt muted>{prefix}</Txt>}
         <TextInput
           placeholderTextColor={colors.textSecondary}
+          selectionColor={colors.accentIcon}
+          cursorColor={colors.accentIcon}
           {...props}
+          onFocus={(e) => {
+            setFocused(true)
+            onFocus?.(e)
+          }}
+          onBlur={(e) => {
+            setFocused(false)
+            onBlur?.(e)
+          }}
           style={[inputStyles.input, { color: colors.textPrimary }]}
         />
       </View>
@@ -371,7 +453,10 @@ export function Segmented<T extends string>({
 }) {
   const colors = useColors()
   return (
-    <View style={[inputStyles.segmented, { backgroundColor: colors.surfaceMuted }]}>
+    <View
+      accessibilityRole="radiogroup"
+      style={[inputStyles.segmented, { backgroundColor: colors.surfaceMuted }]}
+    >
       {options.map((option) => {
         const selected = option.value === value
         return (
@@ -384,10 +469,18 @@ export function Segmented<T extends string>({
             }}
             style={[
               inputStyles.segment,
-              selected && { backgroundColor: colors.surface, borderColor: colors.border },
+              selected && [
+                inputStyles.segmentSelected,
+                { backgroundColor: colors.controlSelected, borderColor: colors.border },
+              ],
             ]}
           >
-            <Txt variant="label" style={{ fontWeight: selected ? '600' : '400' }} muted={!selected}>
+            <Txt
+              variant="label"
+              tabularNums
+              muted={!selected}
+              style={{ fontWeight: selected ? '700' : '500' }}
+            >
               {option.label}
             </Txt>
           </Pressable>
@@ -401,14 +494,14 @@ const inputStyles = StyleSheet.create({
   box: {
     height: 52,
     borderRadius: radius.md,
-    borderWidth: 1,
+    borderWidth: 1.5,
     paddingHorizontal: space.lg,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 2,
   },
   input: { flex: 1, fontSize: 16, height: '100%', ...font('ui', 500) },
-  segmented: { flexDirection: 'row', borderRadius: radius.md, padding: 3, gap: 3 },
+  segmented: { flexDirection: 'row', borderRadius: radius.md, padding: space.xs, gap: space.xs },
   segment: {
     flex: 1,
     height: 40,
@@ -417,5 +510,12 @@ const inputStyles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: StyleSheet.hairlineWidth,
     borderColor: 'transparent',
+  },
+  segmentSelected: {
+    shadowColor: palette.graphite,
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 1 },
+    elevation: 1,
   },
 })

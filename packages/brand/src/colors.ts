@@ -56,6 +56,8 @@ const lightTokens = {
   surfaceElevated: palette.white,
   surfaceMuted: neutral[50],
   border: neutral[100],
+  /** The selected segment of a segmented control (must stand out from surfaceMuted). */
+  controlSelected: palette.white,
 
   textPrimary: palette.graphite,
   textSecondary: neutral[600],
@@ -99,6 +101,7 @@ export const dark: ColorTokens = {
   surfaceElevated: neutral[850],
   surfaceMuted: '#2A2E34',
   border: neutral[800],
+  controlSelected: '#3D424A',
 
   textPrimary: palette.chalk,
   textSecondary: neutral[300],
@@ -108,7 +111,7 @@ export const dark: ColorTokens = {
   accentPressed: '#FF7A5C',
   accentText: '#FF7A5C',
   accentIcon: palette.orange,
-  accentSoft: '#3D2823',
+  accentSoft: '#322B2A',
   onAccent: palette.graphite,
 
   recovery: palette.sage,

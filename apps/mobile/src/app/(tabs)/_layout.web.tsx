@@ -24,7 +24,7 @@ export default function WebTabsLayout() {
     <Tabs>
       <TabSlot />
       <TabList
-        style={[styles.bar, { backgroundColor: colors.background, borderTopColor: colors.border }]}
+        style={[styles.bar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}
       >
         <TabTrigger name="index" href="/" asChild>
           <TabButton icon={House} label={t('nav.home')} />
@@ -53,7 +53,7 @@ const TabButton = forwardRef<View, TabTriggerSlotProps & { icon: LucideIcon; lab
     return (
       <Pressable ref={ref} {...props} style={styles.tab}>
         <Icon size={22} color={color} strokeWidth={isFocused ? 2.4 : 1.9} />
-        <Text style={[font('ui', 600), { color, fontSize: 11 }]}>{label}</Text>
+        <Text style={[font('ui', isFocused ? 700 : 600), { color, fontSize: 11 }]}>{label}</Text>
       </Pressable>
     )
   },

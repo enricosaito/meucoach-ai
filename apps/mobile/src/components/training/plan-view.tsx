@@ -201,25 +201,17 @@ function PlanHeader({ plan, log }: { plan: WorkoutPlan; log: WorkoutLog }) {
         </Txt>
       ) : null}
 
-      <Pressable
-        accessibilityRole="button"
+      <Button
+        variant="secondary"
         onPress={() => {
           haptics.tap()
           router.push('/coach')
         }}
-        style={({ pressed }) => [
-          styles.askCoach,
-          {
-            backgroundColor: pressed ? colors.accentSoft : colors.surfaceMuted,
-            transform: [{ scale: pressed ? 0.98 : 1 }],
-          },
-        ]}
+        icon={<ShiningSparkles size={16} color={colors.accentIcon} />}
+        style={{ alignSelf: 'stretch' }}
       >
-        <ShiningSparkles size={16} color={colors.accentIcon} />
-        <Txt variant="label" style={{ fontWeight: '600' }}>
-          {t('training.askCoach')}
-        </Txt>
-      </Pressable>
+        {t('training.askCoach')}
+      </Button>
     </Card>
   )
 }
@@ -349,17 +341,18 @@ function DayCard({
                 {i + 1}
               </Txt>
             </View>
-            <View style={{ flex: 1, gap: 2 }}>
-              <View style={styles.exerciseTop}>
-                <Txt style={{ flex: 1, fontWeight: '600' }}>{exercise.name}</Txt>
-                <Txt style={{ fontWeight: '700', fontVariant: ['tabular-nums'] }}>
+            <View style={{ flex: 1, gap: space.xs }}>
+              <Txt style={{ fontWeight: '600' }}>{exercise.name}</Txt>
+              {/* The prescription is the hero number; the details sit beside it. */}
+              <View style={styles.exerciseMeta}>
+                <Txt variant="number">
                   {t('training.setsReps', { sets: exercise.sets, reps: exercise.reps })}
                 </Txt>
+                <Txt variant="caption" muted style={{ flexShrink: 1 }}>
+                  {t(`training.muscles.${exercise.muscleGroup}`)} ·{' '}
+                  {t('training.rest', { seconds: exercise.restSeconds })}
+                </Txt>
               </View>
-              <Txt variant="caption" muted>
-                {t(`training.muscles.${exercise.muscleGroup}`)} ·{' '}
-                {t('training.rest', { seconds: exercise.restSeconds })}
-              </Txt>
               {exercise.notes ? <Txt variant="caption">{exercise.notes}</Txt> : null}
             </View>
           </View>
@@ -389,6 +382,7 @@ function DayCard({
           loading={log.pendingDay === dayIndex}
           disabled={log.pendingDay !== null || log.loading}
           icon={<Check size={16} color={colors.onAccent} strokeWidth={3} />}
+          size="lg"
           style={{ alignSelf: 'stretch' }}
         >
           {t('workout.markDayDone')}
@@ -442,7 +436,7 @@ function AboutPlan({ plan }: { plan: WorkoutPlan }) {
             ]}
           >
             <Icon size={16} color={colors.accentIcon} />
-            <Txt variant="title" style={{ fontVariant: ['tabular-nums'] }}>
+            <Txt variant="displayL" tabularNums style={{ fontSize: 24, lineHeight: 30 }}>
               {formatNumber(value)}
             </Txt>
             <Txt variant="caption" muted numberOfLines={1}>
@@ -500,14 +494,6 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '45deg' }],
   },
   bubble: { borderRadius: radius.md, padding: space.md },
-  askCoach: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: space.sm,
-    height: 44,
-    borderRadius: radius.full,
-  },
   pills: { paddingHorizontal: space.lg, gap: space.sm },
   pill: {
     width: 48,
@@ -530,7 +516,7 @@ const styles = StyleSheet.create({
   stat: { flex: 1, alignItems: 'center', gap: 2, paddingHorizontal: space.xs },
   note: { flexDirection: 'row', gap: space.sm, padding: space.md, borderRadius: radius.md },
   exercise: { flexDirection: 'row', gap: space.md, paddingVertical: space.md },
-  exerciseTop: { flexDirection: 'row', alignItems: 'baseline', gap: space.md },
+  exerciseMeta: { flexDirection: 'row', alignItems: 'baseline', gap: space.sm, flexWrap: 'wrap' },
   number: {
     width: 28,
     height: 28,

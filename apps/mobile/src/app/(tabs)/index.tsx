@@ -241,6 +241,7 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
           }}
           loading={log.pendingDay === dayIndex}
           icon={<Check size={16} color={colors.onAccent} strokeWidth={3} />}
+          size="lg"
           style={{ alignSelf: 'stretch' }}
         >
           {t('workout.markDone')}
