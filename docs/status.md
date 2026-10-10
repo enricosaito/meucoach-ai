@@ -21,15 +21,32 @@ every checkpoint. Last updated: 2026-10-10.
 
 ## Mobile app (checkpoint 4, in progress)
 
-`apps/mobile` (Expo SDK 57). Done: login, native tabs (Início, Treino, Dieta, Coach, Perfil), Home
-ported (greeting with goal/streak/level chips, today's workout with one-tap logging and XP, diet
-card, targets), read-only Profile with sign-out. Treino, Dieta and Coach show a "coming soon"
-placeholder. Expo project: @enricolass/meucoach (EAS profiles in `apps/mobile/eas.json`;
-the dev build uses the temporary identifier `dev.enricolass.meucoach.dev`; the store identifier is
-unset in `app.config.ts` until the app name/publisher is decided, before the first TestFlight
-upload). Next: port Training, Diet, Coach,
-Settings, the energy test and the plan questionnaire (camera/photos), then freemium with
-RevenueCat (needs a development build, not Expo Go). The web UI is paused (no new features).
+`apps/mobile` (Expo SDK 57, Expo Router, native tabs with Lucide template icons). Run with
+`pnpm mobile` (add `--clear` after installing packages; Metro caches failed lookups) and open in
+Expo Go on the iPhone; Claude previews it with the `mobile-web` launch config (local stack, demo
+user) since there's no simulator on Windows.
+
+Done (2026-10-10):
+
+- Login; native tabs Início, Treino, Dieta, Coach, Perfil.
+- Home (Opal-inspired, Mobbin research): weekly workouts ring vs the plan with streak/level/
+  protein pills, Mon-Sun week strip, today's workout with one-tap logging + haptics + XP,
+  macro tiles, diet card, rotating story card, full-screen streak celebration at milestones.
+- Profile (Sweatcoin-inspired): gradient hero, avatar with level badge, stats, last-7-days rings,
+  body stats; cog opens Configurações.
+- Configurações: photo (pick, crop, 512 px JPEG), name, @username, goal, language, units,
+  privacy (photo consent revoke, legal links), sign out.
+- Expo project @enricolass/meucoach, EAS profiles in `apps/mobile/eas.json`; dev build uses the
+  temporary identifier `dev.enricolass.meucoach.dev`; the store identifier is unset in
+  `app.config.ts` until the app name/publisher is decided (before the first TestFlight upload).
+
+Next, in order: port **Treino** (plan view, log any day, history, plan questionnaire with
+photos), **Dieta** (plan view, questionnaire), **Coach** (chat), the **energy test**; then
+**freemium** with RevenueCat (needs an EAS development build, not Expo Go). The web UI is paused
+(no new features).
+
+To verify on the phone (not testable in the web preview): profile photo upload, haptics, safe
+areas on iOS.
 
 ## What is built
 
