@@ -47,6 +47,17 @@ type Leaves<T, Prefix extends string = ''> = {
 }[keyof T & string]
 
 export type MessageKey = Leaves<Messages>
+
+// Paths to objects shaped { one, other }: pluralised messages, e.g. "streak.daysInARow".
+type PluralPaths<T, Prefix extends string = ''> = {
+  [K in keyof T & string]: T[K] extends { one: string; other: string }
+    ? `${Prefix}${K}`
+    : T[K] extends string
+      ? never
+      : PluralPaths<T[K], `${Prefix}${K}.`>
+}[keyof T & string]
+
+export type PluralKey = PluralPaths<Messages>
 export type MessageParams = Record<string, string | number>
 export type Translate = (key: MessageKey, params?: MessageParams) => string
 
@@ -69,6 +80,8 @@ function interpolate(template: string, params?: MessageParams): string {
 export interface Translator {
   locale: Locale
   t: Translate
+  /** Plural-aware translation: picks `one` or `other` for `count` (CLDR rules). `{count}` is interpolated. */
+  tc: (key: PluralKey, count: number, params?: MessageParams) => string
   formatNumber: (value: number, options?: Intl.NumberFormatOptions) => string
   formatDate: (value: string | Date, options?: Intl.DateTimeFormatOptions) => string
 }
@@ -77,9 +90,18 @@ export interface Translator {
 export function createTranslator(locale: Locale): Translator {
   const messages = CATALOGS[locale]
   const numberFormat = new Intl.NumberFormat(locale)
+  const pluralRules = new Intl.PluralRules(locale)
   return {
     locale,
     t: (key, params) => interpolate(lookup(messages, key) ?? lookup(en, key) ?? key, params),
+    tc: (key, count, params) => {
+      const category = pluralRules.select(count) === 'one' ? 'one' : 'other'
+      const path = `${key}.${category}`
+      return interpolate(lookup(messages, path) ?? lookup(en, path) ?? key, {
+        count: numberFormat.format(count),
+        ...params,
+      })
+    },
     formatNumber: (value, options) =>
       options ? new Intl.NumberFormat(locale, options).format(value) : numberFormat.format(value),
     formatDate: (value, options = { day: 'numeric', month: 'short', year: 'numeric' }) =>

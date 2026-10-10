@@ -20,9 +20,21 @@ export const goalsSchema = z.strictObject({
 })
 export type Goals = z.infer<typeof goalsSchema>
 
+/** Same rule as the database constraint `profiles_username_format`. */
+export const USERNAME_PATTERN = /^[a-z0-9_.]{3,20}$/
+export const USERNAME_MIN_LENGTH = 3
+export const USERNAME_MAX_LENGTH = 20
+
+export const usernameSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .regex(USERNAME_PATTERN, 'Use 3–20 letters, numbers, dots or underscores')
+
 export const updateProfileSchema = z
   .strictObject({
-    displayName: z.string().trim().min(1).max(80).nullable().optional(),
+    username: usernameSchema.optional(),
+    displayName: z.string().trim().min(1).max(40).nullable().optional(),
     units: z.enum(UNIT_SYSTEMS).optional(),
     locale: z.enum(LOCALES).optional(),
     timezone: z.string().refine(isValidTimeZone, 'Must be an IANA time zone').optional(),
@@ -50,3 +62,11 @@ export const CONSENT_VERSIONS: Readonly<Record<ConsentKind, number>> = { body_ph
 export const grantConsentSchema = z.strictObject({
   version: z.number().int().positive(),
 })
+
+/** Confirms an avatar uploaded through a signed URL. The path must be inside the user's folder. */
+export const setAvatarSchema = z.strictObject({
+  path: z.string().regex(/^[0-9a-f-]{36}\/[0-9a-f-]{36}\.jpg$/, 'Invalid avatar path'),
+})
+
+/** Public storage bucket for profile pictures. */
+export const AVATARS_BUCKET = 'avatars'

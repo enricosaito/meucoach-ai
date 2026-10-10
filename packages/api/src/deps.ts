@@ -5,6 +5,7 @@ import {
   createCoachingService,
   type CoachingService,
 } from '@mycoach/core/coaching'
+import { createGamificationService, type GamificationService } from '@mycoach/core/gamification'
 import { createProfileService, type ProfileService } from '@mycoach/core/profile'
 import type { Logger } from '@mycoach/core/shared'
 import { createTrainingService, type TrainingService } from '@mycoach/core/training'
@@ -27,6 +28,7 @@ export interface AppDeps {
   profile: ProfileService
   coaching: CoachingService
   training: TrainingService
+  gamification: GamificationService
   limits: { perMinute: number; chatPerMinute: number }
   /** Background functions served at /api/inngest. */
   jobFunctions: ReturnType<typeof createJobFunctions>
@@ -75,6 +77,7 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
     profile,
     coaching: createCoachingService({ db, gateway, profile }),
     training,
+    gamification: createGamificationService({ db }),
     limits: { perMinute: env.RATE_LIMIT_PER_MINUTE, chatPerMinute: env.CHAT_RATE_LIMIT_PER_MINUTE },
     jobFunctions: createJobFunctions({ db, training, logger }),
     nudgeOutbox: async () => {

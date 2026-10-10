@@ -5,7 +5,12 @@ import type { Goals } from './schemas'
 
 export interface Profile {
   id: string
+  /** Unique public handle (@username). Always set. */
+  username: string
+  /** Name used in greetings. Optional: fall back to the username (see `greetingName`). */
   displayName: string | null
+  /** Path in the public `avatars` bucket, or null. */
+  avatarPath: string | null
   goals: Goals
   units: UnitSystem
   locale: Locale

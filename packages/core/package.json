@@ -12,7 +12,9 @@
     "./nutrition": "./src/modules/nutrition/index.ts",
     "./nutrition/contracts": "./src/modules/nutrition/contracts.ts",
     "./training": "./src/modules/training/index.ts",
-    "./training/contracts": "./src/modules/training/contracts.ts"
+    "./training/contracts": "./src/modules/training/contracts.ts",
+    "./gamification": "./src/modules/gamification/index.ts",
+    "./gamification/contracts": "./src/modules/gamification/contracts.ts"
   },
   "scripts": {
     "lint": "eslint .",

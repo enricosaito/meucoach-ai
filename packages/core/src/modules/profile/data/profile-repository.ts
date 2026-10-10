@@ -1,4 +1,4 @@
-import { dbError, type AdminClient } from '../../../shared'
+import { AppError, dbError, type AdminClient } from '../../../shared'
 import type { Tables, TablesUpdate } from '@mycoach/db'
 
 export type ProfileRow = Tables<'profiles'>
@@ -22,6 +22,9 @@ export async function updateProfileRow(
     .eq('id', userId)
     .select('*')
     .maybeSingle()
+  if (error?.code === '23505') {
+    throw new AppError('username_taken', 'That username is already taken')
+  }
   if (error) throw dbError('updateProfileRow', error)
   return data
 }

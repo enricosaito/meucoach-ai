@@ -28,6 +28,32 @@ export type Database = {
   }
   public: {
     Tables: {
+      activity_days: {
+        Row: {
+          created_at: string
+          day: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: 'activity_days_user_id_fkey'
+            columns: ['user_id']
+            isOneToOne: false
+            referencedRelation: 'profiles'
+            referencedColumns: ['id']
+          },
+        ]
+      }
       ai_calls: {
         Row: {
           cost_usd: number
@@ -347,6 +373,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_path: string | null
           created_at: string
           display_name: string | null
           goals: Json
@@ -355,8 +382,10 @@ export type Database = {
           timezone: string
           units: string
           updated_at: string
+          username: string
         }
         Insert: {
+          avatar_path?: string | null
           created_at?: string
           display_name?: string | null
           goals?: Json
@@ -365,8 +394,10 @@ export type Database = {
           timezone?: string
           units?: string
           updated_at?: string
+          username: string
         }
         Update: {
+          avatar_path?: string | null
           created_at?: string
           display_name?: string | null
           goals?: Json
@@ -375,6 +406,7 @@ export type Database = {
           timezone?: string
           units?: string
           updated_at?: string
+          username?: string
         }
         Relationships: []
       }
@@ -491,6 +523,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_username: { Args: { base: string }; Returns: string }
       training_request_plan: {
         Args: {
           p_inputs: Json

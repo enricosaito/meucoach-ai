@@ -72,3 +72,12 @@ describe('resolveLocale', () => {
     expect(isLocale('pt')).toBe(false)
   })
 })
+
+describe('plurals', () => {
+  it('picks one/other by count and formats the number', () => {
+    expect(createTranslator('pt-BR').tc('streak.daysInARow', 1)).toBe('dia seguido')
+    expect(createTranslator('pt-BR').tc('streak.daysInARow', 5)).toBe('dias seguidos')
+    expect(createTranslator('en').tc('streak.daysInARow', 1)).toBe('day in a row')
+    expect(createTranslator('en').tc('streak.daysInARow', 2)).toBe('days in a row')
+  })
+})

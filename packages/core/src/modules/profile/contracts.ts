@@ -18,12 +18,20 @@ export {
   poundsToKg,
   type UnitSystem,
 } from './domain/units'
+
+export { firstName, greetingName } from './domain/names'
 export {
+  AVATARS_BUCKET,
   CONSENT_KINDS,
   CONSENT_VERSIONS,
   GOAL_TYPES,
   assessmentInputSchema,
   grantConsentSchema,
+  setAvatarSchema,
+  usernameSchema,
+  USERNAME_MAX_LENGTH,
+  USERNAME_MIN_LENGTH,
+  USERNAME_PATTERN,
   goalsSchema,
   updateProfileSchema,
   type AssessmentInput,

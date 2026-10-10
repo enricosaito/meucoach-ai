@@ -57,3 +57,19 @@ describe('updateProfileSchema', () => {
     )
   })
 })
+
+describe('username', () => {
+  it('normalises to lowercase and trims', () => {
+    expect(updateProfileSchema.parse({ username: '  Ana.Souza_1 ' })).toEqual({
+      username: 'ana.souza_1',
+    })
+  })
+
+  it.each(['ab', 'a'.repeat(21), 'ana souza', 'ana-souza', 'anã'])('rejects "%s"', (username) => {
+    expect(updateProfileSchema.safeParse({ username }).success).toBe(false)
+  })
+
+  it('caps display names at 40 characters', () => {
+    expect(updateProfileSchema.safeParse({ displayName: 'x'.repeat(41) }).success).toBe(false)
+  })
+})

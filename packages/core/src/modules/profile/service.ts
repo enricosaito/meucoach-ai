@@ -17,12 +17,16 @@ import {
   type UpdateProfileInput,
 } from './schemas'
 import type { Assessment, CoachingContext, Me, Profile } from './types'
+import { greetingName } from './domain/names'
+import { assertAvatarUploaded, createAvatarUpload, removeAvatars } from './data/avatar-storage'
 
 function toProfile(row: ProfileRow): Profile {
   const goals = goalsSchema.safeParse(row.goals)
   return {
     id: row.id,
+    username: row.username,
     displayName: row.display_name,
+    avatarPath: row.avatar_path,
     goals: goals.success ? goals.data : {},
     units: row.units as UnitSystem,
     locale: isLocale(row.locale) ? row.locale : DEFAULT_LOCALE,
@@ -70,6 +74,7 @@ export function createProfileService(deps: { db: AdminClient }) {
 
     async updateProfile(userId: string, input: UpdateProfileInput): Promise<Profile> {
       const row = await updateProfileRow(db, userId, {
+        ...(input.username !== undefined && { username: input.username }),
         ...(input.displayName !== undefined && { display_name: input.displayName }),
         ...(input.units !== undefined && { units: input.units }),
         ...(input.locale !== undefined && { locale: input.locale }),
@@ -100,13 +105,35 @@ export function createProfileService(deps: { db: AdminClient }) {
     async getCoachingContext(userId: string): Promise<CoachingContext> {
       const { profile, latestAssessment } = await getMe(userId)
       return {
-        displayName: profile.displayName,
+        displayName: greetingName(profile),
         goals: profile.goals,
         units: profile.units,
         locale: profile.locale,
         timezone: profile.timezone,
         latestAssessment,
       }
+    },
+
+    /** Step 1 of an avatar change: a signed upload URL for a new file in the user's folder. */
+    createAvatarUpload(userId: string) {
+      return createAvatarUpload(db, userId)
+    },
+
+    /** Step 2: points the profile at the uploaded file and deletes older avatar files. */
+    async setAvatar(userId: string, path: string): Promise<Profile> {
+      if (!path.startsWith(`${userId}/`)) throw new AppError('forbidden', 'Not your avatar')
+      await assertAvatarUploaded(db, userId, path)
+      const row = await updateProfileRow(db, userId, { avatar_path: path })
+      if (!row) throw new AppError('not_found', 'Profile not found')
+      await removeAvatars(db, userId, path)
+      return toProfile(row)
+    },
+
+    async removeAvatar(userId: string): Promise<Profile> {
+      const row = await updateProfileRow(db, userId, { avatar_path: null })
+      if (!row) throw new AppError('not_found', 'Profile not found')
+      await removeAvatars(db, userId)
+      return toProfile(row)
     },
 
     async hasActiveConsent(userId: string, kind: ConsentKind): Promise<boolean> {

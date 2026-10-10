@@ -4,6 +4,7 @@ import {
   assessmentInputSchema,
   type ConsentKind,
   grantConsentSchema,
+  setAvatarSchema,
   updateProfileSchema,
 } from '@mycoach/core/profile'
 import { Hono } from 'hono'
@@ -22,12 +23,30 @@ const ON_REVOKE: Record<ConsentKind, (deps: AppDeps, userId: string) => Promise<
 export const meRoutes = new Hono<AppEnv>()
   .get('/', async (c) => {
     const me = await c.var.deps.profile.getMe(c.var.userId)
-    // Targets are derived on every read (never stored), so formula changes apply immediately.
-    return c.json({ ...me, targets: targetsForMe(me) })
+    const streak = await c.var.deps.gamification.getStreak(c.var.userId, me.profile.timezone)
+    // Targets and streaks are derived on every read (never stored), so rule changes apply at once.
+    return c.json({ ...me, targets: targetsForMe(me), streak })
   })
   .patch('/profile', jsonBody(updateProfileSchema), async (c) => {
     const profile = await c.var.deps.profile.updateProfile(c.var.userId, c.req.valid('json'))
     return c.json({ profile })
+  })
+  // Logs today (in the user's time zone) as an active day; call on app open. Returns the streak.
+  .post('/check-in', async (c) => {
+    const { profile } = await c.var.deps.profile.getMe(c.var.userId)
+    const streak = await c.var.deps.gamification.checkIn(c.var.userId, profile.timezone)
+    return c.json({ streak })
+  })
+  // Avatar, step 1: signed upload URL. Step 2: PUT /avatar with the uploaded path.
+  .post('/avatar/upload-url', async (c) => {
+    return c.json(await c.var.deps.profile.createAvatarUpload(c.var.userId), 201)
+  })
+  .put('/avatar', jsonBody(setAvatarSchema), async (c) => {
+    const profile = await c.var.deps.profile.setAvatar(c.var.userId, c.req.valid('json').path)
+    return c.json({ profile })
+  })
+  .delete('/avatar', async (c) => {
+    return c.json({ profile: await c.var.deps.profile.removeAvatar(c.var.userId) })
   })
   // Mifflin-St Jeor test: computes BMR/TDEE server-side and stores the result.
   .post('/assessments', jsonBody(assessmentInputSchema), async (c) => {

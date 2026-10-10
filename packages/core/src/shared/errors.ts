@@ -5,6 +5,7 @@ export type ErrorCode =
   | 'forbidden'
   | 'not_found'
   | 'conflict'
+  | 'username_taken'
   | 'idempotency_key_required'
   | 'idempotency_key_reused'
   | 'idempotency_in_progress'
@@ -19,6 +20,7 @@ const STATUS_BY_CODE: Record<ErrorCode, number> = {
   forbidden: 403,
   not_found: 404,
   conflict: 409,
+  username_taken: 409,
   idempotency_key_required: 400,
   idempotency_key_reused: 422,
   idempotency_in_progress: 409,
