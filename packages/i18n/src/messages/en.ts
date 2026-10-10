@@ -108,6 +108,24 @@ export const en = {
     },
   },
   home: {
+    weekGoal: '{done} / {target}',
+    workoutsThisWeek: { one: 'workout this week', other: 'workouts this week' },
+    weekComplete: 'Week complete!',
+    noPlanHero: 'Create your plan to track your week',
+    streakLabel: 'Streak',
+    levelLabel: 'Level',
+    proteinLabel: 'Protein',
+    weekTitle: 'Your week',
+    weekdaysShort: 'M,T,W,T,F,S,S',
+    ofCalories: '{percent} of calories',
+    storyWeekDoneTitle: 'Week complete',
+    storyWeekDoneBody: 'You hit your goal of {count} workouts. Recovery is part of the plan.',
+    storyStreakTitle: { one: 'Day one', other: '{count} days in a row' },
+    storyStreakBody: 'Showing up is the hardest part. Next mark: {next} days.',
+    storyCoachTitle: 'Ask your coach',
+    storyCoachBody:
+      'Not sure what to eat after training, or how to progress? Your coach knows your plan.',
+    storyCoachCta: 'Open coach',
     streakDays: { one: '{count} day', other: '{count} days' },
     dailyEnergy: 'Daily energy',
     retake: 'Retake',
@@ -456,6 +474,13 @@ export const en = {
   mobile: {
     comingSoonTitle: 'Coming soon to the app',
     comingSoonBody: 'This screen is being brought to the app. Meanwhile, use the web version.',
+  },
+  celebrate: {
+    days: { one: 'day streak!', other: 'day streak!' },
+    first: 'Great start! Come back tomorrow to build it.',
+    next: 'Amazing! Now, on to {next} days.',
+    legend: 'You’re on your longest run ever. Keep going!',
+    cta: 'Let’s go',
   },
   legal: {
     privacy: 'Privacy Policy',

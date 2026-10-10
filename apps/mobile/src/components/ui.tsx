@@ -121,7 +121,7 @@ export function Screen({
   )
 }
 
-function ProfileAvatarLink() {
+export function ProfileAvatarLink() {
   const { me } = useMe()
   return (
     <Link href="/profile" asChild>

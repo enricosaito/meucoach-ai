@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addDays, computeStreak, localDay } from './streak'
+import { addDays, computeStreak, isStreakMilestone, localDay, nextStreakMilestone } from './streak'
 
 describe('computeStreak', () => {
   const today = '2026-10-11'
@@ -76,5 +76,28 @@ describe('addDays', () => {
   it('moves across months and years', () => {
     expect(addDays('2026-12-31', 1)).toBe('2027-01-01')
     expect(addDays('2026-03-01', -1)).toBe('2026-02-28')
+  })
+})
+
+describe('streak milestones', () => {
+  it('celebrates the early days and the habit marks', () => {
+    expect([1, 2, 3, 4, 7, 14, 30, 31].map(isStreakMilestone)).toEqual([
+      true,
+      false,
+      true,
+      false,
+      true,
+      true,
+      true,
+      false,
+    ])
+  })
+
+  it('points at the next milestone', () => {
+    expect(nextStreakMilestone(0)).toBe(1)
+    expect(nextStreakMilestone(1)).toBe(3)
+    expect(nextStreakMilestone(3)).toBe(7)
+    expect(nextStreakMilestone(29)).toBe(30)
+    expect(nextStreakMilestone(365)).toBeNull()
   })
 })

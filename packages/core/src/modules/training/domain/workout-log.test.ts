@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { todayWorkout, type WorkoutSession } from './workout-log'
+import { todayWorkout, weekProgress, type WorkoutSession } from './workout-log'
 
 const PLAN = 'plan-1'
 
@@ -76,5 +76,43 @@ describe('todayWorkout', () => {
 
   it('ignores days that no longer exist in the plan', () => {
     expect(todayWorkout(PLAN, 3, [session(5, '2026-10-09')], '2026-10-10').dayIndex).toBe(0)
+  })
+})
+
+describe('weekProgress', () => {
+  it('runs Monday to Sunday around today', () => {
+    // 2026-10-10 is a Saturday.
+    const { days } = weekProgress([], '2026-10-10')
+    expect(days.map((d) => d.date)).toEqual([
+      '2026-10-05',
+      '2026-10-06',
+      '2026-10-07',
+      '2026-10-08',
+      '2026-10-09',
+      '2026-10-10',
+      '2026-10-11',
+    ])
+    expect(days.map((d) => d.isToday)).toEqual([false, false, false, false, false, true, false])
+    expect(days[6]?.isFuture).toBe(true)
+  })
+
+  it('starts a new week on Monday', () => {
+    expect(weekProgress([], '2026-10-12').days[0]?.date).toBe('2026-10-12')
+    expect(weekProgress([], '2026-10-11').days[0]?.date).toBe('2026-10-05')
+  })
+
+  it('counts distinct trained days this week only', () => {
+    const sessions = [
+      session(0, '2026-10-04'), // last week (Sunday)
+      session(1, '2026-10-06'),
+      session(2, '2026-10-06', { id: 'second-same-day' }),
+      session(0, '2026-10-09'),
+    ]
+    const result = weekProgress(sessions, '2026-10-10')
+    expect(result.trainedDays).toBe(2)
+    expect(result.days.filter((d) => d.trained).map((d) => d.date)).toEqual([
+      '2026-10-06',
+      '2026-10-09',
+    ])
   })
 })

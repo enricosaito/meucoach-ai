@@ -7,6 +7,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { api, newIdempotencyKey, unwrap, writeHeaders } from './api'
 import { fetchRecentSessions } from './data'
+import { haptics } from './haptics'
 import { errorMessage, useI18n } from './i18n'
 import { useMe } from './me'
 
@@ -55,6 +56,7 @@ export function useWorkoutLog(ready: WorkoutPlanRecord | null) {
           ),
         )
         keys.current.delete(dayIndex)
+        haptics.success()
         setSessions((current) => [session, ...(current ?? []).filter((s) => s.id !== session.id)])
         setLevel(xp.progress)
         setFeedback({ awarded: xp.awarded, leveledUp: xp.leveledUp, level: xp.progress.level })
@@ -67,5 +69,15 @@ export function useWorkoutLog(ready: WorkoutPlanRecord | null) {
     [planId, setLevel, t],
   )
 
-  return { loading: sessions === null, today: workout, logDay, pendingDay, error, feedback, reload }
+  return {
+    loading: sessions === null,
+    sessions: sessions ?? [],
+    todayDate: today,
+    today: workout,
+    logDay,
+    pendingDay,
+    error,
+    feedback,
+    reload,
+  }
 }

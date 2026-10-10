@@ -110,6 +110,25 @@ export const ptBR = {
     },
   },
   home: {
+    weekGoal: '{done} / {target}',
+    workoutsThisWeek: { one: 'treino esta semana', other: 'treinos esta semana' },
+    weekComplete: 'Semana completa!',
+    noPlanHero: 'Crie seu plano para acompanhar a semana',
+    streakLabel: 'Sequência',
+    levelLabel: 'Nível',
+    proteinLabel: 'Proteína',
+    weekTitle: 'Sua semana',
+    weekdaysShort: 'S,T,Q,Q,S,S,D',
+    ofCalories: '{percent} das calorias',
+    storyWeekDoneTitle: 'Semana completa',
+    storyWeekDoneBody:
+      'Você bateu sua meta de {count} treinos. Descansar também faz parte do plano.',
+    storyStreakTitle: { one: 'Primeiro dia', other: '{count} dias seguidos' },
+    storyStreakBody: 'Aparecer é a parte mais difícil. Próxima marca: {next} dias.',
+    storyCoachTitle: 'Pergunte ao coach',
+    storyCoachBody:
+      'Na dúvida sobre o que comer depois do treino ou como progredir? Seu coach conhece seu plano.',
+    storyCoachCta: 'Abrir coach',
     streakDays: { one: '{count} dia', other: '{count} dias' },
     dailyEnergy: 'Energia diária',
     retake: 'Refazer',
@@ -465,6 +484,13 @@ export const ptBR = {
   mobile: {
     comingSoonTitle: 'Em breve no app',
     comingSoonBody: 'Esta tela está chegando ao app. Enquanto isso, use a versão web.',
+  },
+  celebrate: {
+    days: { one: 'dia seguido!', other: 'dias seguidos!' },
+    first: 'Ótimo começo! Volte amanhã para construir sua sequência.',
+    next: 'Incrível! Agora, rumo aos {next} dias.',
+    legend: 'Sua maior sequência até hoje. Continue assim!',
+    cta: 'Bora!',
   },
   legal: {
     privacy: 'Política de Privacidade',

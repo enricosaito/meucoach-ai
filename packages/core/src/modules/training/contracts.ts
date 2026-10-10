@@ -43,7 +43,10 @@ export {
 export {
   todayWorkout,
   toWorkoutSession,
+  weekProgress,
   type TodayWorkout,
+  type WeekDay,
+  type WeekProgress,
   type WorkoutSession,
   type WorkoutSessionRowLike,
 } from './domain/workout-log'

@@ -78,3 +78,43 @@ export function todayWorkout(
   if (latest.localDate === today) return { dayIndex: latest.dayIndex, doneToday: true, thisWeek }
   return { dayIndex: (latest.dayIndex + 1) % dayCount, doneToday: false, thisWeek }
 }
+
+export interface WeekDay {
+  /** Local calendar day, "YYYY-MM-DD". */
+  date: string
+  trained: boolean
+  isToday: boolean
+  isFuture: boolean
+}
+
+export interface WeekProgress {
+  /** Monday to Sunday of the current week. */
+  days: WeekDay[]
+  /** Distinct days with at least one workout this week. */
+  trainedDays: number
+}
+
+const isoDay = (epoch: number) => new Date(epoch * DAY_MS).toISOString().slice(0, 10)
+
+/**
+ * The current training week (Monday to Sunday, local days) and which days had a workout.
+ * Counts days, not sessions: two workouts on one day still count once against the weekly goal.
+ */
+export function weekProgress(sessions: readonly WorkoutSession[], today: string): WeekProgress {
+  const todayEpoch = epochDay(today)
+  // getUTCDay: Sunday = 0. Shift so Monday = 0.
+  const offset = (new Date(todayEpoch * DAY_MS).getUTCDay() + 6) % 7
+  const monday = todayEpoch - offset
+  const trainedDates = new Set(sessions.map((s) => s.localDate))
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const epoch = monday + i
+    const date = isoDay(epoch)
+    return {
+      date,
+      trained: trainedDates.has(date),
+      isToday: epoch === todayEpoch,
+      isFuture: epoch > todayEpoch,
+    }
+  })
+  return { days, trainedDays: days.filter((d) => d.trained).length }
+}

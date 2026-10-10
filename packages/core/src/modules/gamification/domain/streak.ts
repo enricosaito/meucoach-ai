@@ -66,3 +66,15 @@ export function computeStreak(days: readonly string[], today: string): Streak {
     lastActiveDay: new Date(last * DAY_MS).toISOString().slice(0, 10),
   }
 }
+
+/** Streak lengths worth celebrating: early wins first, then the habit-forming marks. */
+export const STREAK_MILESTONES = [1, 3, 7, 14, 30, 60, 100, 180, 365] as const
+
+export function isStreakMilestone(days: number): boolean {
+  return (STREAK_MILESTONES as readonly number[]).includes(days)
+}
+
+/** The next milestone after `days`, or null past the last one. */
+export function nextStreakMilestone(days: number): number | null {
+  return STREAK_MILESTONES.find((m) => m > days) ?? null
+}
