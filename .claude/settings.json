@@ -37,14 +37,6 @@
       "mcp__plugin_vercel_vercel__get_runtime_errors",
       "mcp__plugin_vercel_vercel__list_deployments",
       "mcp__plugin_vercel_vercel__get_deployment"
-    ],
-    "ask": [
-      "Bash(pnpm db:push)",
-      "Bash(pnpm ship*)",
-      "Bash(git push*)",
-      "Bash(supabase db push*)",
-      "mcp__supabase__execute_sql",
-      "mcp__supabase__apply_migration"
     ]
   }
 }
