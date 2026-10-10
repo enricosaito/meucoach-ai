@@ -209,6 +209,7 @@ export function Button({
   loading = false,
   disabled = false,
   icon,
+  trailingIcon,
   style,
 }: {
   children: ReactNode
@@ -217,6 +218,8 @@ export function Button({
   loading?: boolean
   disabled?: boolean
   icon?: ReactNode
+  /** Shown after the label, e.g. an arrow on a call to action. */
+  trailingIcon?: ReactNode
   style?: StyleProp<ViewStyle>
 }) {
   const colors = useColors()
@@ -240,6 +243,7 @@ export function Button({
     >
       {loading ? <ActivityIndicator size="small" color={fg} /> : icon}
       <Text style={{ color: fg, fontSize: 15, fontWeight: '600' }}>{children}</Text>
+      {!loading && trailingIcon}
     </Pressable>
   )
 }

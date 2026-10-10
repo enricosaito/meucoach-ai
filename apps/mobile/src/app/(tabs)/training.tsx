@@ -1,5 +1,5 @@
 import type { BodyScan, WorkoutPlanRecord } from '@mycoach/core/training/contracts'
-import { Link, useFocusEffect } from 'expo-router'
+import { router, useFocusEffect } from 'expo-router'
 import { RefreshCw } from 'lucide-react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { Pressable, StyleSheet } from 'react-native'
@@ -113,20 +113,22 @@ export default function TrainingScreen() {
       <ProgressPhotos scans={scans} onChange={() => void load()} />
 
       {ready?.plan && !generating && (
-        <Link href="/new-plan" asChild>
-          <Pressable
-            accessibilityRole="button"
-            style={({ pressed }) => [
-              styles.update,
-              { backgroundColor: pressed ? colors.accentSoft : 'transparent' },
-            ]}
-          >
-            <RefreshCw size={16} color={colors.accent} />
-            <Txt variant="label" color="accent">
-              {t('training.updatePlan')}
-            </Txt>
-          </Pressable>
-        </Link>
+        // router.push, not <Link asChild>: Link drops function styles (pressed state) on web.
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            router.push('/new-plan')
+          }}
+          style={({ pressed }) => [
+            styles.update,
+            { backgroundColor: pressed ? colors.accentSoft : 'transparent' },
+          ]}
+        >
+          <RefreshCw size={16} color={colors.accent} />
+          <Txt variant="label" color="accent">
+            {t('training.updatePlan')}
+          </Txt>
+        </Pressable>
       )}
       <ErrorText>{error}</ErrorText>
     </Screen>

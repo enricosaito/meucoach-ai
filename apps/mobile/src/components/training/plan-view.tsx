@@ -15,7 +15,7 @@ import { useI18n } from '../../lib/i18n'
 import type { useWorkoutLog } from '../../lib/use-workout-log'
 import { radius, space, useColors } from '../../theme'
 import { Appear } from '../appear'
-import { Button, Card, Chip, ErrorText, Txt } from '../ui'
+import { Button, Card, ErrorText, Txt } from '../ui'
 import { XpNote } from '../xp-note'
 
 /**
@@ -31,7 +31,7 @@ export function PlanView({
   plan: WorkoutPlan
   log: ReturnType<typeof useWorkoutLog>
 }) {
-  const { t, tc } = useI18n()
+  const { t, tc, formatNumber } = useI18n()
   const colors = useColors()
   // Until the user picks a day, show today's workout.
   const [picked, setPicked] = useState<number | null>(null)
@@ -47,25 +47,43 @@ export function PlanView({
 
   return (
     <>
-      <Card>
-        <Txt variant="title">{plan.name}</Txt>
-        <Txt muted>{plan.summary}</Txt>
-        <View style={styles.chips}>
-          <Chip icon={<CalendarDays size={16} color={colors.accent} />} style={styles.chip}>
-            <Txt variant="label">{t('training.daysPerWeek', { count: plan.days.length })}</Txt>
-          </Chip>
-          <Chip icon={<Clock size={16} color={colors.accent} />} style={styles.chip}>
-            <Txt variant="label">{t('training.minutes', { count: minutes })}</Txt>
-          </Chip>
-          <Chip icon={<TrendingUp size={16} color={colors.accent} />} style={styles.chip}>
-            <Txt variant="label">{t('training.weeks', { count: plan.durationWeeks })}</Txt>
-          </Chip>
+      <Card style={{ gap: space.lg }}>
+        <View style={{ gap: space.xs }}>
+          <Txt variant="caption" color="accent" style={styles.eyebrow}>
+            {t('training.homeCardTitle').toUpperCase()}
+          </Txt>
+          <Txt variant="title">{plan.name}</Txt>
+          <Txt muted>{plan.summary}</Txt>
         </View>
-        {log.today && log.today.thisWeek > 0 && (
+        {/* Three equal stats: always one row, whatever the language or phone width. */}
+        <View style={[styles.stats, { backgroundColor: colors.surface2 }]}>
+          {[
+            { icon: CalendarDays, value: plan.days.length, label: t('training.statDays') },
+            { icon: Clock, value: minutes, label: t('training.statMinutes') },
+            { icon: TrendingUp, value: plan.durationWeeks, label: t('training.statWeeks') },
+          ].map(({ icon: Icon, value, label }, i) => (
+            <View
+              key={label}
+              style={[
+                styles.stat,
+                i > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
+              ]}
+            >
+              <Icon size={16} color={colors.accent} />
+              <Txt variant="title" style={{ fontVariant: ['tabular-nums'] }}>
+                {formatNumber(value)}
+              </Txt>
+              <Txt variant="caption" muted numberOfLines={1}>
+                {label}
+              </Txt>
+            </View>
+          ))}
+        </View>
+        {log.today && log.today.thisWeek > 0 ? (
           <Txt variant="caption" muted>
             {tc('workout.thisWeek', log.today.thisWeek)}
           </Txt>
-        )}
+        ) : null}
       </Card>
 
       {/* Day picker: bleeds to the screen edges so pills scroll under the gutter. */}
@@ -223,8 +241,8 @@ function Note({ icon, label, children }: { icon: ReactNode; label: string; child
 
 const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  chip: { height: 34, borderRadius: radius.full },
+  stats: { flexDirection: 'row', borderRadius: radius.md, paddingVertical: space.md },
+  stat: { flex: 1, alignItems: 'center', gap: 2, paddingHorizontal: space.xs },
   days: { paddingHorizontal: space.lg, gap: space.sm },
   dayPill: {
     flexDirection: 'row',

@@ -1,41 +1,78 @@
-import { Link } from 'expo-router'
-import { AlertTriangle, ArrowRight, Check, Dumbbell, RefreshCw } from 'lucide-react-native'
+import { LinearGradient } from 'expo-linear-gradient'
+import { router } from 'expo-router'
+import {
+  AlertTriangle,
+  ArrowRight,
+  Camera,
+  Check,
+  ClipboardList,
+  Dumbbell,
+  RefreshCw,
+  Sparkles,
+} from 'lucide-react-native'
 import { useEffect, useState } from 'react'
 import { ActivityIndicator, Pressable, StyleSheet, View } from 'react-native'
+import { haptics } from '../../lib/haptics'
 import { useI18n } from '../../lib/i18n'
 import { radius, space, useColors } from '../../theme'
 import { Appear } from '../appear'
-import { Card, Txt } from '../ui'
+import { Button, Card, Txt } from '../ui'
 
-/** No plan yet: what the plan is and the way into the questionnaire. */
+/** No plan yet: a short pitch, how it works in three steps, and the way into the questionnaire. */
 export function EmptyPlanCard() {
   const { t } = useI18n()
   const colors = useColors()
+  const steps = [
+    { icon: ClipboardList, label: t('training.emptyStep1') },
+    { icon: Camera, label: t('training.emptyStep2') },
+    { icon: Sparkles, label: t('training.emptyStep3') },
+  ]
   return (
     <Appear>
-      <Card style={{ gap: space.lg, overflow: 'hidden' }}>
-        <View style={[styles.glow, { backgroundColor: colors.accentSoft }]} />
-        <View style={[styles.iconTile, { backgroundColor: colors.accentSoft }]}>
-          <Dumbbell size={24} color={colors.accent} />
+      <Card style={styles.emptyCard}>
+        {/* Soft wash of the accent behind the header; fades into the card in both themes. */}
+        <LinearGradient
+          colors={[colors.accentSoft, colors.surface]}
+          locations={[0, 0.55]}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        />
+        <View style={{ gap: space.lg }}>
+          <View style={[styles.iconTile, { backgroundColor: colors.accent }]}>
+            <Dumbbell size={24} color={colors.accentFg} />
+          </View>
+          <View style={{ gap: space.xs }}>
+            <Txt variant="title">{t('training.emptyTitle')}</Txt>
+            <Txt muted>{t('training.homeEmptyBody')}</Txt>
+          </View>
         </View>
-        <View style={{ gap: space.xs }}>
-          <Txt variant="title">{t('training.emptyTitle')}</Txt>
-          <Txt muted>{t('training.emptyBody')}</Txt>
+
+        <View style={[styles.steps, { backgroundColor: colors.surface2 }]}>
+          {steps.map(({ icon: Icon, label }, i) => (
+            <View key={label} style={styles.stepRow}>
+              <View style={[styles.stepIcon, { backgroundColor: colors.surface }]}>
+                <Icon size={16} color={colors.accent} />
+              </View>
+              <Txt variant="label" style={{ flex: 1 }}>
+                {label}
+              </Txt>
+              <Txt variant="caption" muted style={{ fontVariant: ['tabular-nums'] }}>
+                {i + 1}/3
+              </Txt>
+            </View>
+          ))}
         </View>
-        <Link href="/new-plan" asChild>
-          <Pressable
-            accessibilityRole="button"
-            style={({ pressed }) => [
-              styles.cta,
-              { backgroundColor: colors.accent, transform: [{ scale: pressed ? 0.97 : 1 }] },
-            ]}
-          >
-            <Txt style={{ color: colors.accentFg, fontWeight: '600' }}>
-              {t('training.createPlan')}
-            </Txt>
-            <ArrowRight size={16} color={colors.accentFg} />
-          </Pressable>
-        </Link>
+
+        <Button
+          onPress={() => {
+            haptics.tap()
+            router.push('/new-plan')
+          }}
+          trailingIcon={<ArrowRight size={16} color={colors.accentFg} />}
+          style={{ alignSelf: 'stretch' }}
+        >
+          {t('training.createPlan')}
+        </Button>
       </Card>
     </Appear>
   )
@@ -118,30 +155,23 @@ export function FailedCard() {
         <Txt variant="caption" muted>
           {t('training.failedBody')}
         </Txt>
-        <Link href="/new-plan" asChild>
-          <Pressable
-            accessibilityRole="button"
-            style={[styles.retry, { backgroundColor: colors.surface2 }]}
-          >
-            <RefreshCw size={14} color={colors.fg} />
-            <Txt variant="label">{t('common.tryAgain')}</Txt>
-          </Pressable>
-        </Link>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => {
+            router.push('/new-plan')
+          }}
+          style={[styles.retry, { backgroundColor: colors.surface2 }]}
+        >
+          <RefreshCw size={14} color={colors.fg} />
+          <Txt variant="label">{t('common.tryAgain')}</Txt>
+        </Pressable>
       </View>
     </Card>
   )
 }
 
 const styles = StyleSheet.create({
-  glow: {
-    position: 'absolute',
-    top: -80,
-    right: -60,
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    opacity: 0.8,
-  },
+  emptyCard: { gap: space.xl, overflow: 'hidden' },
   iconTile: {
     width: 48,
     height: 48,
@@ -149,14 +179,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  cta: {
-    height: 48,
-    borderRadius: radius.full,
-    paddingHorizontal: space.xl,
-    flexDirection: 'row',
+  steps: { borderRadius: radius.md, padding: space.md, gap: space.md },
+  stepRow: { flexDirection: 'row', alignItems: 'center', gap: space.md },
+  stepIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: radius.sm,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: space.sm,
   },
   step: { flexDirection: 'row', alignItems: 'center', gap: space.md },
   stepDot: {
