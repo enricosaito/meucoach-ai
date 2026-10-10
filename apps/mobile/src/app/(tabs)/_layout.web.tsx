@@ -22,7 +22,9 @@ export default function WebTabsLayout() {
   return (
     <Tabs>
       <TabSlot />
-      <TabList style={[styles.bar, { backgroundColor: colors.bg, borderTopColor: colors.line }]}>
+      <TabList
+        style={[styles.bar, { backgroundColor: colors.background, borderTopColor: colors.border }]}
+      >
         <TabTrigger name="index" href="/" asChild>
           <TabButton icon={House} label={t('nav.home')} />
         </TabTrigger>
@@ -46,7 +48,7 @@ export default function WebTabsLayout() {
 const TabButton = forwardRef<View, TabTriggerSlotProps & { icon: LucideIcon; label: string }>(
   function TabButton({ icon: Icon, label, isFocused, ...props }, ref) {
     const colors = useColors()
-    const color = isFocused ? colors.accent : colors.muted
+    const color = isFocused ? colors.accentText : colors.textSecondary
     return (
       <Pressable ref={ref} {...props} style={styles.tab}>
         <Icon size={22} color={color} strokeWidth={isFocused ? 2.4 : 1.9} />

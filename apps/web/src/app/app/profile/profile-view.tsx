@@ -90,7 +90,7 @@ function IdentityCard({ me }: { me: MeWithTargets }) {
       <p
         className={cx(
           'mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium',
-          goal ? 'bg-accent-soft text-accent' : 'bg-surface-2 text-muted',
+          goal ? 'bg-accent-soft text-accent-text' : 'bg-surface-2 text-muted',
         )}
       >
         <GoalIcon className="size-4" aria-hidden />
@@ -108,7 +108,7 @@ function StatsRow({ me }: { me: MeWithTargets }) {
   const { t, formatNumber } = useI18n()
   const stats: { icon: ReactNode; label: string; value: string }[] = [
     {
-      icon: <Star className="size-4 text-accent" aria-hidden />,
+      icon: <Star className="size-4 text-accent-text" aria-hidden />,
       label: t('profile.level'),
       value: formatNumber(me.level.level),
     },
@@ -177,7 +177,7 @@ function BodyCard({ assessment, units }: { assessment: Assessment | null; units:
     <Card>
       <div className="flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 font-semibold tracking-tight">
-          <Ruler className="size-4 text-accent" aria-hidden />
+          <Ruler className="size-4 text-accent-text" aria-hidden />
           {t('profile.bodyTitle')}
         </h2>
         <span className="text-sm text-muted">
@@ -196,7 +196,7 @@ function BodyCard({ assessment, units }: { assessment: Assessment | null; units:
       </dl>
       <Link
         href="/app/energy"
-        className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-sm font-medium text-accent"
+        className="mt-4 flex items-center justify-between gap-3 border-t border-line pt-3 text-sm font-medium text-accent-text"
       >
         {t('profile.energyLink')}
         <ChevronRight className="size-4" aria-hidden />
@@ -241,7 +241,7 @@ function PlansCard() {
         {rows.map((row) => (
           <li key={row.href}>
             <Link href={row.href} className="group flex items-center gap-3 py-3">
-              <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-accent-soft text-accent">
+              <span className="grid size-10 shrink-0 place-items-center rounded-2xl bg-accent-soft text-accent-text">
                 {row.icon}
               </span>
               <span className="min-w-0 flex-1">

@@ -39,7 +39,7 @@ export function EmptyPlanCard() {
         />
         <View style={{ gap: space.lg }}>
           <View style={[styles.iconTile, { backgroundColor: colors.accent }]}>
-            <Dumbbell size={24} color={colors.accentFg} />
+            <Dumbbell size={24} color={colors.onAccent} />
           </View>
           <View style={{ gap: space.xs }}>
             <Txt variant="title">{t('training.emptyTitle')}</Txt>
@@ -47,11 +47,11 @@ export function EmptyPlanCard() {
           </View>
         </View>
 
-        <View style={[styles.steps, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.steps, { backgroundColor: colors.surfaceMuted }]}>
           {steps.map(({ icon: Icon, label }) => (
             <View key={label} style={styles.stepRow}>
               <View style={[styles.stepIcon, { backgroundColor: colors.surface }]}>
-                <Icon size={16} color={colors.accent} />
+                <Icon size={16} color={colors.accentIcon} />
               </View>
               <Txt variant="label" style={{ flex: 1 }}>
                 {label}
@@ -65,7 +65,7 @@ export function EmptyPlanCard() {
             haptics.tap()
             router.push('/new-plan')
           }}
-          trailingIcon={<ArrowRight size={16} color={colors.accentFg} />}
+          trailingIcon={<ArrowRight size={16} color={colors.onAccent} />}
           style={{ alignSelf: 'stretch' }}
         >
           {t('training.createPlan')}
@@ -119,16 +119,16 @@ export function GeneratingCard({ withPhotos }: { withPhotos: boolean }) {
                         ? colors.accent
                         : active
                           ? colors.accentSoft
-                          : colors.surface2,
+                          : colors.surfaceMuted,
                     },
                   ]}
                 >
                   {done ? (
-                    <Check size={14} color={colors.accentFg} strokeWidth={3} />
+                    <Check size={14} color={colors.onAccent} strokeWidth={3} />
                   ) : active ? (
-                    <ActivityIndicator size="small" color={colors.accent} />
+                    <ActivityIndicator size="small" color={colors.accentIcon} />
                   ) : (
-                    <View style={[styles.pip, { backgroundColor: colors.muted }]} />
+                    <View style={[styles.pip, { backgroundColor: colors.textSecondary }]} />
                   )}
                 </View>
                 <Txt muted={i > current}>{label}</Txt>
@@ -145,8 +145,8 @@ export function FailedCard() {
   const { t } = useI18n()
   const colors = useColors()
   return (
-    <Card style={{ flexDirection: 'row', borderColor: colors.danger }}>
-      <AlertTriangle size={20} color={colors.danger} />
+    <Card style={{ flexDirection: 'row', borderColor: colors.error }}>
+      <AlertTriangle size={20} color={colors.error} />
       <View style={{ flex: 1, gap: space.xs }}>
         <Txt variant="heading">{t('training.failedTitle')}</Txt>
         <Txt variant="caption" muted>
@@ -157,9 +157,9 @@ export function FailedCard() {
           onPress={() => {
             router.push('/new-plan')
           }}
-          style={[styles.retry, { backgroundColor: colors.surface2 }]}
+          style={[styles.retry, { backgroundColor: colors.surfaceMuted }]}
         >
-          <RefreshCw size={14} color={colors.fg} />
+          <RefreshCw size={14} color={colors.textPrimary} />
           <Txt variant="label">{t('common.tryAgain')}</Txt>
         </Pressable>
       </View>

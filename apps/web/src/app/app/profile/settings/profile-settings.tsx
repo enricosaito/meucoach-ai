@@ -136,7 +136,7 @@ function AvatarEditor({ profile }: { profile: Profile }) {
           type="button"
           onClick={() => inputRef.current?.click()}
           disabled={busy}
-          className="rounded-full px-2 py-1 text-sm font-medium text-accent hover:bg-accent-soft disabled:opacity-50"
+          className="rounded-full px-2 py-1 text-sm font-medium text-accent-text hover:bg-accent-soft disabled:opacity-50"
         >
           {profile.avatarPath ? t('profile.changePhoto') : t('profile.addPhoto')}
         </button>
@@ -302,7 +302,7 @@ export function GoalSettings({ profile }: { profile: Profile }) {
                     className="sr-only"
                   />
                   <Icon
-                    className={cx('size-5', checked ? 'text-accent' : 'text-muted')}
+                    className={cx('size-5', checked ? 'text-accent-text' : 'text-muted')}
                     aria-hidden
                   />
                   <span>
@@ -311,7 +311,7 @@ export function GoalSettings({ profile }: { profile: Profile }) {
                   </span>
                   {checked && (
                     <Check
-                      className="absolute top-3 right-3 size-4 text-accent"
+                      className="absolute top-3 right-3 size-4 text-accent-text"
                       strokeWidth={3}
                       aria-hidden
                     />

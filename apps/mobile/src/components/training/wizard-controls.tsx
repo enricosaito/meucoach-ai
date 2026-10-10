@@ -35,8 +35,8 @@ export function OptionCards<T extends string>({
             style={[
               styles.option,
               selected
-                ? { backgroundColor: colors.accentSoft, borderColor: colors.accent }
-                : { backgroundColor: colors.surface, borderColor: colors.line },
+                ? { backgroundColor: colors.accentSoft, borderColor: colors.accentIcon }
+                : { backgroundColor: colors.surface, borderColor: colors.border },
             ]}
           >
             <View style={{ flex: 1, gap: 2 }}>
@@ -50,10 +50,10 @@ export function OptionCards<T extends string>({
                 styles.radio,
                 selected
                   ? { backgroundColor: colors.accent, borderColor: colors.accent }
-                  : { borderColor: colors.line },
+                  : { borderColor: colors.border },
               ]}
             >
-              {selected && <Check size={12} color={colors.accentFg} strokeWidth={3.5} />}
+              {selected && <Check size={12} color={colors.onAccent} strokeWidth={3.5} />}
             </View>
           </Pressable>
         )
@@ -87,10 +87,10 @@ export function Checkbox({
           styles.box,
           checked
             ? { backgroundColor: colors.accent, borderColor: colors.accent }
-            : { borderColor: colors.line },
+            : { borderColor: colors.border },
         ]}
       >
-        {checked && <Check size={13} color={colors.accentFg} strokeWidth={3.5} />}
+        {checked && <Check size={13} color={colors.onAccent} strokeWidth={3.5} />}
       </View>
       <Txt style={{ flex: 1 }}>{children}</Txt>
     </Pressable>

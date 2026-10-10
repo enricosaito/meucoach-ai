@@ -36,7 +36,7 @@ export function HomeHeader({ me }: { me: MeWithTargets }) {
           className={cx(chip, 'min-w-0 flex-1 hover:bg-line sm:flex-none')}
           aria-label={`${t('profile.goal')}: ${goal ? t(`goals.${goal}.label`) : t('goals.setGoal')}`}
         >
-          <GoalIcon className="size-4 shrink-0 text-accent" aria-hidden />
+          <GoalIcon className="size-4 shrink-0 text-accent-text" aria-hidden />
           <span className="truncate">{goal ? t(`goals.${goal}.label`) : t('goals.setGoal')}</span>
         </Link>
 
@@ -59,7 +59,7 @@ export function HomeHeader({ me }: { me: MeWithTargets }) {
           className={cx(chip, 'shrink-0 hover:bg-line')}
           aria-label={`${t('level.title', { level: formatNumber(level) })}, ${formatNumber(levelXp)} / ${formatNumber(levelSpan)} XP`}
         >
-          <Star className="size-4 shrink-0 text-accent" fill="currentColor" aria-hidden />
+          <Star className="size-4 shrink-0 text-accent-text" fill="currentColor" aria-hidden />
           <span className="tabular-nums" aria-hidden>
             {formatNumber(level)}
           </span>

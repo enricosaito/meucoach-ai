@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     '@mycoach/api',
     '@mycoach/api-client',
+    '@mycoach/brand',
     '@mycoach/core',
     '@mycoach/db',
     '@mycoach/i18n',

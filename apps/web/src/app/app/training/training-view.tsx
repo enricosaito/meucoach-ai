@@ -91,7 +91,7 @@ export function TrainingView() {
           {!generating && (
             <Link
               href="/app/training/new"
-              className="inline-flex items-center justify-center gap-2 self-center rounded-full px-4 py-2 text-sm font-medium text-accent hover:bg-accent-soft"
+              className="inline-flex items-center justify-center gap-2 self-center rounded-full px-4 py-2 text-sm font-medium text-accent-text hover:bg-accent-soft"
             >
               <RefreshCw className="size-4" aria-hidden />
               {t('training.updatePlan')}
@@ -121,7 +121,7 @@ function EmptyState() {
           aria-hidden
         />
         <div className="relative">
-          <span className="grid size-12 place-items-center rounded-2xl bg-accent-soft text-accent">
+          <span className="grid size-12 place-items-center rounded-2xl bg-accent-soft text-accent-text">
             <Dumbbell className="size-6" aria-hidden />
           </span>
           <h2 className="mt-4 text-xl font-semibold tracking-tight">{t('training.emptyTitle')}</h2>
@@ -171,7 +171,7 @@ function GeneratingCard({ withPhotos }: { withPhotos: boolean }) {
                 i < current
                   ? 'bg-accent text-accent-fg'
                   : i === current
-                    ? 'bg-accent-soft text-accent'
+                    ? 'bg-accent-soft text-accent-text'
                     : 'bg-surface-2 text-muted'
               }`}
             >

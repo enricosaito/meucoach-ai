@@ -75,13 +75,13 @@ export function GoalSection({ profile }: { profile: Me['profile'] }) {
               style={[
                 styles.tile,
                 selected
-                  ? { backgroundColor: colors.accentSoft, borderColor: colors.accent }
-                  : { backgroundColor: colors.surface, borderColor: colors.line },
+                  ? { backgroundColor: colors.accentSoft, borderColor: colors.accentIcon }
+                  : { backgroundColor: colors.surface, borderColor: colors.border },
               ]}
             >
               <View style={styles.tileTop}>
-                <Icon size={20} color={selected ? colors.accent : colors.muted} />
-                {selected && <Check size={16} color={colors.accent} strokeWidth={3} />}
+                <Icon size={20} color={selected ? colors.accentIcon : colors.textSecondary} />
+                {selected && <Check size={16} color={colors.accentIcon} strokeWidth={3} />}
               </View>
               <Txt variant="label" style={{ fontWeight: '600' }}>
                 {t(`goals.${goal}.label`)}

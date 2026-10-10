@@ -1,8 +1,10 @@
+import { APP_NAME } from '@mycoach/brand'
+
 // Source catalog. Every other locale must provide exactly these keys (enforced by the type checker).
 // Use {name} placeholders for interpolation.
 export const en = {
   common: {
-    appName: 'My Coach',
+    appName: APP_NAME,
     tryAgain: 'Try again',
     loading: 'Loading',
     kcal: 'kcal',
@@ -45,7 +47,7 @@ export const en = {
     energy: 'Energy',
     coach: 'Coach',
     profile: 'Profile',
-    homeLink: 'My Coach home',
+    homeLink: `${APP_NAME} home`,
     profileLink: 'Your profile',
   },
   language: {
@@ -271,7 +273,7 @@ export const en = {
     statMinutes: 'min/session',
     statWeeks: 'weeks',
     workoutLetter: 'Workout {letter}',
-    askCoach: 'Ask My Coach',
+    askCoach: `Ask ${APP_NAME}`,
     aboutPlan: 'About this plan',
     viewPlan: 'View plan',
     analysisTitle: 'Body analysis',

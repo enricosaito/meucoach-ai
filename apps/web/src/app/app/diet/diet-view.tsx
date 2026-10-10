@@ -99,7 +99,7 @@ export function DietView() {
           {!generating && (
             <Link
               href="/app/diet/new"
-              className="inline-flex items-center justify-center gap-2 self-center rounded-full px-4 py-2 text-sm font-medium text-accent hover:bg-accent-soft"
+              className="inline-flex items-center justify-center gap-2 self-center rounded-full px-4 py-2 text-sm font-medium text-accent-text hover:bg-accent-soft"
             >
               <RefreshCw className="size-4" aria-hidden />
               {t('diet.updatePlan')}
@@ -142,7 +142,7 @@ function IntroCard({
           <span
             className={cx(
               'grid size-12 place-items-center rounded-2xl',
-              tone === 'accent' ? 'bg-accent-soft text-accent' : 'bg-energy-soft text-energy',
+              tone === 'accent' ? 'bg-accent-soft text-accent-text' : 'bg-energy-soft text-energy',
             )}
           >
             {icon}
@@ -216,7 +216,7 @@ function GeneratingCard() {
                 i < current
                   ? 'bg-accent text-accent-fg'
                   : i === current
-                    ? 'bg-accent-soft text-accent'
+                    ? 'bg-accent-soft text-accent-text'
                     : 'bg-surface-2 text-muted',
               )}
             >

@@ -31,10 +31,10 @@ export default function ProfileScreen() {
             onPress={haptics.tap}
             style={({ pressed }) => [
               styles.iconButton,
-              { backgroundColor: colors.surface2, opacity: pressed ? 0.7 : 1 },
+              { backgroundColor: colors.surfaceMuted, opacity: pressed ? 0.7 : 1 },
             ]}
           >
-            <Settings size={20} color={colors.fg} />
+            <Settings size={20} color={colors.textPrimary} />
           </Pressable>
         </Link>
       }
@@ -68,7 +68,7 @@ function Hero({ me }: { me: Me }) {
   ]
 
   return (
-    <View style={[styles.hero, { borderColor: colors.line }]}>
+    <View style={[styles.hero, { borderColor: colors.border }]}>
       <LinearGradient
         colors={[colors.accentSoft, colors.surface]}
         locations={[0, 0.85]}
@@ -85,8 +85,8 @@ function Hero({ me }: { me: Me }) {
             { backgroundColor: colors.accent, borderColor: colors.surface },
           ]}
         >
-          <Star size={12} color={colors.accentFg} fill={colors.accentFg} />
-          <Txt variant="caption" style={{ color: colors.accentFg, fontWeight: '800' }}>
+          <Star size={12} color={colors.onAccent} fill={colors.onAccent} />
+          <Txt variant="caption" style={{ color: colors.onAccent, fontWeight: '800' }}>
             {formatNumber(level.level)}
           </Txt>
         </View>
@@ -99,8 +99,8 @@ function Hero({ me }: { me: Me }) {
 
       {goal && (
         <View style={[styles.goalChip, { backgroundColor: colors.surface }]}>
-          <Target size={14} color={colors.accent} />
-          <Txt variant="label" color="accent">
+          <Target size={14} color={colors.accentIcon} />
+          <Txt variant="label" color="accentText">
             {t(`goals.${goal}.label`)}
           </Txt>
         </View>
@@ -158,7 +158,7 @@ function LastSevenDays({ me }: { me: Me }) {
               <Txt
                 variant="caption"
                 style={{
-                  color: isToday ? colors.fg : colors.muted,
+                  color: isToday ? colors.textPrimary : colors.textSecondary,
                   fontWeight: isToday ? '700' : '400',
                 }}
               >
@@ -168,13 +168,13 @@ function LastSevenDays({ me }: { me: Me }) {
                 size={36}
                 stroke={4}
                 progress={trained || active ? 1 : 0}
-                color={trained ? colors.accent : colors.energy}
-                trackColor={colors.surface2}
+                color={trained ? colors.accentIcon : colors.recovery}
+                trackColor={colors.surfaceMuted}
               >
                 {trained ? (
-                  <Check size={14} color={colors.accent} strokeWidth={3} />
+                  <Check size={14} color={colors.accentIcon} strokeWidth={3} />
                 ) : active ? (
-                  <Flame size={12} color={colors.energy} />
+                  <Flame size={12} color={colors.recoveryText} />
                 ) : null}
               </ProgressRing>
             </View>
@@ -182,8 +182,8 @@ function LastSevenDays({ me }: { me: Me }) {
         })}
       </View>
       <View style={styles.legend}>
-        <Legend color={colors.accent} label={t('profile.legendTrained')} />
-        <Legend color={colors.energy} label={t('profile.legendActive')} />
+        <Legend color={colors.accentIcon} label={t('profile.legendTrained')} />
+        <Legend color={colors.recoveryText} label={t('profile.legendActive')} />
       </View>
     </Card>
   )
@@ -207,7 +207,7 @@ function BodyCard({ me }: { me: Me }) {
   if (!a) {
     return (
       <Card style={{ flexDirection: 'row', alignItems: 'center', gap: space.md }}>
-        <Flame size={20} color={colors.energy} />
+        <Flame size={20} color={colors.accentIcon} />
         <Txt muted style={{ flex: 1 }}>
           {t('profile.bodyEmpty')}
         </Txt>
@@ -232,7 +232,7 @@ function BodyCard({ me }: { me: Me }) {
     <Card>
       <View style={styles.rowBetween}>
         <View style={styles.legendItem}>
-          <Ruler size={16} color={colors.accent} />
+          <Ruler size={16} color={colors.accentIcon} />
           <Txt variant="label">{t('profile.bodyTitle')}</Txt>
         </View>
         <Txt variant="caption" muted>

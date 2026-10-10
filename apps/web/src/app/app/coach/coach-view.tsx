@@ -146,7 +146,7 @@ export function CoachView() {
             <button
               type="button"
               onClick={deliver}
-              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-accent hover:bg-accent-soft"
+              className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium text-accent-text hover:bg-accent-soft"
             >
               <RotateCw className="size-4" aria-hidden />
               {t('common.tryAgain')}

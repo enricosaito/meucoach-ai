@@ -15,8 +15,8 @@ export function XpNote({ feedback }: { feedback: XpFeedback | null }) {
     <Appear key={`${String(feedback.level)}-${String(feedback.awarded)}`} style={styles.row}>
       {feedback.awarded > 0 && (
         <View style={[styles.pill, { backgroundColor: colors.accent }]}>
-          <Sparkles size={13} color={colors.accentFg} />
-          <Txt variant="caption" style={{ color: colors.accentFg, fontWeight: '700' }}>
+          <Sparkles size={13} color={colors.onAccent} />
+          <Txt variant="caption" style={{ color: colors.onAccent, fontWeight: '700' }}>
             {t('workout.xpEarned', { xp: formatNumber(feedback.awarded) })}
           </Txt>
         </View>

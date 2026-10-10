@@ -30,7 +30,7 @@ export function TargetsCard({
     <Card>
       <div className="flex items-center justify-between gap-3">
         <p className="inline-flex items-center gap-1.5 text-sm font-medium text-muted">
-          <Target className="size-4 text-accent" aria-hidden />
+          <Target className="size-4 text-accent-text" aria-hidden />
           {t('targets.title')}
         </p>
         {footer}
@@ -79,7 +79,7 @@ export function TargetsCard({
         ) : (
           <Link
             href="/app/profile/settings#goal"
-            className="font-medium text-accent hover:underline"
+            className="font-medium text-accent-text hover:underline"
           >
             {t('targets.noGoal')}
           </Link>

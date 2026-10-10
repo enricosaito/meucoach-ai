@@ -61,8 +61,8 @@ export function PrivacySection() {
   return (
     <Card style={{ gap: space.lg }}>
       <Txt variant="heading">{t('profile.privacyTitle')}</Txt>
-      <View style={[styles.status, { backgroundColor: colors.surface2 }]}>
-        <ShieldCheck size={20} color={colors.accent} />
+      <View style={[styles.status, { backgroundColor: colors.surfaceMuted }]}>
+        <ShieldCheck size={20} color={colors.accentIcon} />
         <View style={{ flex: 1, gap: 2 }}>
           <Txt variant="label" style={{ fontWeight: '600' }}>
             {t('consent.statusTitle')}
@@ -76,15 +76,15 @@ export function PrivacySection() {
           </Txt>
           {done && (
             <View style={styles.row}>
-              <Check size={14} color={colors.accent} />
-              <Txt variant="caption" color="accent">
+              <Check size={14} color={colors.accentIcon} />
+              <Txt variant="caption" color="accentText">
                 {t('consent.revoked')}
               </Txt>
             </View>
           )}
           {consented && (
             <Pressable onPress={confirmRevoke} disabled={revoke.pending} hitSlop={6}>
-              <Txt variant="label" color="danger" style={{ marginTop: 4 }}>
+              <Txt variant="label" color="error" style={{ marginTop: 4 }}>
                 {t('consent.revoke')}
               </Txt>
             </Pressable>
@@ -97,10 +97,10 @@ export function PrivacySection() {
           <Pressable
             key={doc}
             onPress={() => void WebBrowser.openBrowserAsync(`${env.apiUrl}/${doc}`)}
-            style={[styles.link, { backgroundColor: colors.surface2 }]}
+            style={[styles.link, { backgroundColor: colors.surfaceMuted }]}
           >
             <Txt variant="caption">{t(`legal.${doc}`)}</Txt>
-            <ExternalLink size={12} color={colors.muted} />
+            <ExternalLink size={12} color={colors.textSecondary} />
           </Pressable>
         ))}
       </View>

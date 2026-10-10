@@ -34,7 +34,7 @@ export function DietSummaryCard() {
   return (
     <Link href={plan || generating ? '/app/diet' : '/app/diet/new'} className="group block">
       <Card className="flex items-center gap-4 transition-colors group-hover:bg-surface-2">
-        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-accent-soft text-accent">
+        <span className="grid size-12 shrink-0 place-items-center rounded-2xl bg-accent-soft text-accent-text">
           {generating && !plan ? (
             <Loader2 className="size-6 animate-spin" aria-hidden />
           ) : (

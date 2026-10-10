@@ -19,12 +19,12 @@ export function LogoMark({ size = 32 }: { size?: number }) {
       <Svg width={size * 0.58} height={size * 0.58} viewBox="0 0 24 24" fill="none">
         <Path
           d="M4 15.5 8.5 11l3.5 3.5L20 6.5"
-          stroke={colors.accentFg}
+          stroke={colors.onAccent}
           strokeWidth={2.6}
           strokeLinecap="round"
           strokeLinejoin="round"
         />
-        <Circle cx={20} cy={6.5} r={1.6} fill={colors.accentFg} />
+        <Circle cx={20} cy={6.5} r={1.6} fill={colors.onAccent} />
       </Svg>
     </View>
   )

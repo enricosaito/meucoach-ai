@@ -81,7 +81,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                   aria-current={active ? 'page' : undefined}
                   className={cx(
                     'flex h-full flex-col items-center justify-center gap-1 text-[11px] font-medium transition-colors',
-                    active ? 'text-accent' : 'text-muted',
+                    active ? 'text-accent-text' : 'text-muted',
                   )}
                 >
                   <Icon className="size-[22px]" strokeWidth={active ? 2.4 : 1.9} aria-hidden />

@@ -1,8 +1,9 @@
+import { APP_NAME } from '@mycoach/brand'
 import type { Messages } from './en'
 
 export const ptBR = {
   common: {
-    appName: 'Meu Coach',
+    appName: APP_NAME,
     tryAgain: 'Tentar de novo',
     loading: 'Carregando',
     kcal: 'kcal',
@@ -46,7 +47,7 @@ export const ptBR = {
     energy: 'Energia',
     coach: 'Coach',
     profile: 'Perfil',
-    homeLink: 'Início do Meu Coach',
+    homeLink: `Início do ${APP_NAME}`,
     profileLink: 'Seu perfil',
   },
   language: {
@@ -275,7 +276,7 @@ export const ptBR = {
     statMinutes: 'min/sessão',
     statWeeks: 'semanas',
     workoutLetter: 'Treino {letter}',
-    askCoach: 'Perguntar para Meu Coach',
+    askCoach: `Perguntar para ${APP_NAME}`,
     aboutPlan: 'Sobre o plano',
     viewPlan: 'Ver plano',
     analysisTitle: 'Análise corporal',

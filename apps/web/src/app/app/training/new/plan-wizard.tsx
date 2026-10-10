@@ -354,7 +354,7 @@ function PhotoSlot({
         <button
           type="button"
           onClick={() => inputRef.current?.click()}
-          className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-line bg-surface text-muted transition-colors hover:border-accent hover:text-accent"
+          className="flex aspect-[3/4] w-full flex-col items-center justify-center gap-1.5 rounded-2xl border-2 border-dashed border-line bg-surface text-muted transition-colors hover:border-accent hover:text-accent-text"
         >
           <Camera className="size-6" aria-hidden />
           <span className="text-xs font-medium">{t('wizard.addPhoto')}</span>
@@ -394,7 +394,7 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
 
   return (
     <Card>
-      <span className="grid size-11 place-items-center rounded-2xl bg-accent-soft text-accent">
+      <span className="grid size-11 place-items-center rounded-2xl bg-accent-soft text-accent-text">
         <ShieldCheck className="size-6" aria-hidden />
       </span>
       <h2 className="mt-4 text-lg font-semibold tracking-tight">{t('consent.title')}</h2>
@@ -402,7 +402,7 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
       <Link
         href="/privacy"
         target="_blank"
-        className="mt-2 inline-block text-sm font-medium text-accent hover:underline"
+        className="mt-2 inline-block text-sm font-medium text-accent-text hover:underline"
       >
         {t('consent.readPolicy')}
       </Link>

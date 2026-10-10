@@ -19,6 +19,7 @@ import {
 } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
 import { avatarUrl } from '../lib/avatar'
+import { useI18n } from '../lib/i18n'
 import { useMe } from '../lib/me'
 import { radius, space, useColors, type Colors } from '../theme'
 
@@ -54,7 +55,11 @@ export function Txt({
   return (
     <Text
       numberOfLines={numberOfLines}
-      style={[TEXT_VARIANTS[variant], { color: colors[color ?? (muted ? 'muted' : 'fg')] }, style]}
+      style={[
+        TEXT_VARIANTS[variant],
+        { color: colors[color ?? (muted ? 'textSecondary' : 'textPrimary')] },
+        style,
+      ]}
     >
       {children}
     </Text>
@@ -69,7 +74,7 @@ export function Card({ style, children }: { style?: StyleProp<ViewStyle>; childr
   const colors = useColors()
   return (
     <View
-      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.line }, style]}
+      style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }, style]}
     >
       {children}
     </View>
@@ -115,7 +120,7 @@ export function Screen({
   const padding = screenPadding(useSafeAreaInsets())
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.bg }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       contentInsetAdjustmentBehavior="automatic"
       contentContainerStyle={{
         paddingTop: padding.top,
@@ -125,7 +130,11 @@ export function Screen({
       }}
       refreshControl={
         onRefresh ? (
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.muted} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={colors.textSecondary}
+          />
         ) : undefined
       }
     >
@@ -144,9 +153,10 @@ export function Screen({
 
 export function ProfileAvatarLink() {
   const { me } = useMe()
+  const { t } = useI18n()
   return (
     <Link href="/profile" asChild>
-      <Pressable accessibilityRole="link" accessibilityLabel="Perfil" hitSlop={8}>
+      <Pressable accessibilityRole="link" accessibilityLabel={t('nav.profile')} hitSlop={8}>
         <Avatar
           name={me ? greetingName(me.profile) : null}
           path={me?.profile.avatarPath ?? null}
@@ -190,7 +200,7 @@ export function Avatar({
       {src ? (
         <Image source={{ uri: src }} style={{ width: size, height: size }} contentFit="cover" />
       ) : (
-        <Text style={{ color: colors.accentStrong, fontWeight: '600', fontSize: size * 0.36 }}>
+        <Text style={{ color: colors.accentText, fontWeight: '600', fontSize: size * 0.36 }}>
           {initials}
         </Text>
       )}
@@ -224,7 +234,7 @@ export function Button({
 }) {
   const colors = useColors()
   const primary = variant === 'primary'
-  const fg = primary ? colors.accentFg : colors.fg
+  const fg = primary ? colors.onAccent : colors.textPrimary
   return (
     <Pressable
       accessibilityRole="button"
@@ -234,7 +244,7 @@ export function Button({
       style={({ pressed }) => [
         styles.button,
         {
-          backgroundColor: primary ? colors.accent : colors.surface2,
+          backgroundColor: primary ? colors.accent : colors.surfaceMuted,
           opacity: disabled ? 0.5 : 1,
           transform: [{ scale: pressed ? 0.97 : 1 }],
         },
@@ -259,7 +269,7 @@ export function Chip({
 }) {
   const colors = useColors()
   return (
-    <View style={[styles.chip, { backgroundColor: colors.surface2 }, style]}>
+    <View style={[styles.chip, { backgroundColor: colors.surfaceMuted }, style]}>
       {icon}
       {children}
     </View>
@@ -269,7 +279,7 @@ export function Chip({
 export function ErrorText({ children }: { children: ReactNode }) {
   if (!children) return null
   return (
-    <Txt variant="label" color="danger">
+    <Txt variant="label" color="error">
       {children}
     </Txt>
   )
@@ -278,7 +288,9 @@ export function ErrorText({ children }: { children: ReactNode }) {
 export function Skeleton({ height, style }: { height: number; style?: StyleProp<ViewStyle> }) {
   const colors = useColors()
   return (
-    <View style={[{ height, borderRadius: radius.lg, backgroundColor: colors.surface2 }, style]} />
+    <View
+      style={[{ height, borderRadius: radius.lg, backgroundColor: colors.surfaceMuted }, style]}
+    />
   )
 }
 
@@ -322,13 +334,13 @@ export function Input({
     <View style={{ gap: 6 }}>
       <Txt variant="label">{label}</Txt>
       <View
-        style={[inputStyles.box, { backgroundColor: colors.surface, borderColor: colors.line }]}
+        style={[inputStyles.box, { backgroundColor: colors.surface, borderColor: colors.border }]}
       >
         {prefix && <Txt muted>{prefix}</Txt>}
         <TextInput
-          placeholderTextColor={colors.muted}
+          placeholderTextColor={colors.textSecondary}
           {...props}
-          style={[inputStyles.input, { color: colors.fg }]}
+          style={[inputStyles.input, { color: colors.textPrimary }]}
         />
       </View>
       {hint && (
@@ -352,7 +364,7 @@ export function Segmented<T extends string>({
 }) {
   const colors = useColors()
   return (
-    <View style={[inputStyles.segmented, { backgroundColor: colors.surface2 }]}>
+    <View style={[inputStyles.segmented, { backgroundColor: colors.surfaceMuted }]}>
       {options.map((option) => {
         const selected = option.value === value
         return (
@@ -365,7 +377,7 @@ export function Segmented<T extends string>({
             }}
             style={[
               inputStyles.segment,
-              selected && { backgroundColor: colors.surface, borderColor: colors.line },
+              selected && { backgroundColor: colors.surface, borderColor: colors.border },
             ]}
           >
             <Txt variant="label" style={{ fontWeight: selected ? '600' : '400' }} muted={!selected}>

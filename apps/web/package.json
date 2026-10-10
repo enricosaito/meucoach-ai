@@ -13,6 +13,7 @@
   "dependencies": {
     "@mycoach/api": "workspace:*",
     "@mycoach/api-client": "workspace:*",
+    "@mycoach/brand": "workspace:*",
     "@mycoach/core": "workspace:*",
     "@mycoach/db": "workspace:*",
     "@mycoach/i18n": "workspace:*",

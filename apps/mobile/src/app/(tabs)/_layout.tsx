@@ -20,7 +20,7 @@ export default function TabsLayout() {
   const { t } = useI18n()
   const colors = useColors()
   return (
-    <NativeTabs tintColor={colors.accent} labelStyle={{ color: colors.muted }}>
+    <NativeTabs tintColor={colors.accentText} labelStyle={{ color: colors.textSecondary }}>
       <NativeTabs.Trigger name="index">
         <NativeTabs.Trigger.Label>{t('nav.home')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={ICONS.home} renderingMode="template" />

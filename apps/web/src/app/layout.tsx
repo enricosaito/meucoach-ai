@@ -1,5 +1,6 @@
 import { I18nProvider } from '@/lib/i18n/client'
 import { getLocale, getTranslator } from '@/lib/i18n/server'
+import { dark, light } from '@mycoach/brand'
 import type { Metadata, Viewport } from 'next'
 import { Geist } from 'next/font/google'
 import './globals.css'
@@ -19,8 +20,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: 'cover',
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f5f4ef' },
-    { media: '(prefers-color-scheme: dark)', color: '#0f0f0d' },
+    { media: '(prefers-color-scheme: light)', color: light.background },
+    { media: '(prefers-color-scheme: dark)', color: dark.background },
   ],
 }
 

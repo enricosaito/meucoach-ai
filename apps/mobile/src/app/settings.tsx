@@ -41,7 +41,7 @@ export default function SettingsScreen() {
 
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.bg }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       contentInsetAdjustmentBehavior="automatic"
       automaticallyAdjustKeyboardInsets
       keyboardDismissMode="interactive"
@@ -63,11 +63,13 @@ export default function SettingsScreen() {
         <Txt variant="caption" muted style={styles.sectionLabel}>
           {t('settings.account').toUpperCase()}
         </Txt>
-        <View style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.line }]}>
+        <View
+          style={[styles.group, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        >
           <Row
-            icon={<LogOut size={18} color={colors.danger} />}
+            icon={<LogOut size={18} color={colors.error} />}
             label={t('auth.signOut')}
-            labelColor={colors.danger}
+            labelColor={colors.error}
             onPress={confirmSignOut}
           />
         </View>
@@ -98,12 +100,12 @@ function Row({
       onPress={onPress}
       style={({ pressed }) => [
         styles.row,
-        { backgroundColor: pressed ? colors.surface2 : 'transparent' },
+        { backgroundColor: pressed ? colors.surfaceMuted : 'transparent' },
       ]}
     >
       {icon}
-      <Txt style={{ flex: 1, color: labelColor ?? colors.fg }}>{label}</Txt>
-      <ChevronRight size={18} color={colors.muted} />
+      <Txt style={{ flex: 1, color: labelColor ?? colors.textPrimary }}>{label}</Txt>
+      <ChevronRight size={18} color={colors.textSecondary} />
     </Pressable>
   )
 }

@@ -24,7 +24,7 @@ export function WeekStrip({ days }: { days: WeekDay[] }) {
             <Txt
               variant="caption"
               style={{
-                color: day.isToday ? colors.fg : colors.muted,
+                color: day.isToday ? colors.textPrimary : colors.textSecondary,
                 fontWeight: day.isToday ? '700' : '400',
               }}
             >
@@ -37,13 +37,13 @@ export function WeekStrip({ days }: { days: WeekDay[] }) {
                 day.trained
                   ? { backgroundColor: colors.accent }
                   : {
-                      backgroundColor: day.isFuture ? 'transparent' : colors.surface2,
+                      backgroundColor: day.isFuture ? 'transparent' : colors.surfaceMuted,
                       borderWidth: day.isToday ? 2 : 1,
-                      borderColor: day.isToday ? colors.accent : colors.line,
+                      borderColor: day.isToday ? colors.accentIcon : colors.border,
                     },
               ]}
             >
-              {day.trained && <Check size={16} color={colors.accentFg} strokeWidth={3} />}
+              {day.trained && <Check size={16} color={colors.onAccent} strokeWidth={3} />}
             </View>
           </View>
         ))}

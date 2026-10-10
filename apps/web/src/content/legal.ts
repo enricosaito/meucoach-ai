@@ -1,3 +1,4 @@
+import { APP_NAME } from '@mycoach/brand'
 import type { Locale } from '@mycoach/i18n'
 
 // DRAFT legal content. Must be reviewed by a qualified lawyer (LGPD / Brazilian consumer law)
@@ -21,8 +22,7 @@ const privacy: Record<Locale, LegalDocument> = {
   'pt-BR': {
     title: 'Política de Privacidade',
     updated: UPDATED,
-    intro:
-      'Esta política explica quais dados pessoais o Meu Coach coleta, por que, com quem compartilha e como você controla seus dados, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018, “LGPD”).',
+    intro: `Esta política explica quais dados pessoais o ${APP_NAME} coleta, por que, com quem compartilha e como você controla seus dados, em conformidade com a Lei Geral de Proteção de Dados (Lei nº 13.709/2018, “LGPD”).`,
     sections: [
       {
         heading: '1. Quem é o controlador',
@@ -107,7 +107,7 @@ const privacy: Record<Locale, LegalDocument> = {
       {
         heading: '11. Menores de idade',
         paragraphs: [
-          'O Meu Coach não se destina a menores de 16 anos. A análise de fotos é exclusiva para maiores de 18 anos.',
+          `O ${APP_NAME} não se destina a menores de 16 anos. A análise de fotos é exclusiva para maiores de 18 anos.`,
         ],
       },
       {
@@ -121,8 +121,7 @@ const privacy: Record<Locale, LegalDocument> = {
   en: {
     title: 'Privacy Policy',
     updated: UPDATED,
-    intro:
-      'This policy explains what personal data My Coach collects, why, who we share it with and how you control it, in line with Brazil’s General Data Protection Law (Law 13,709/2018, “LGPD”).',
+    intro: `This policy explains what personal data ${APP_NAME} collects, why, who we share it with and how you control it, in line with Brazil’s General Data Protection Law (Law 13,709/2018, “LGPD”).`,
     sections: [
       {
         heading: '1. Who is responsible',
@@ -207,7 +206,7 @@ const privacy: Record<Locale, LegalDocument> = {
       {
         heading: '11. Minors',
         paragraphs: [
-          'My Coach is not intended for people under 16. Photo analysis is only available to people aged 18 or over.',
+          `${APP_NAME} is not intended for people under 16. Photo analysis is only available to people aged 18 or over.`,
         ],
       },
       {
@@ -224,13 +223,12 @@ const terms: Record<Locale, LegalDocument> = {
   'pt-BR': {
     title: 'Termos de Uso',
     updated: UPDATED,
-    intro:
-      'Ao criar uma conta ou usar o Meu Coach, você concorda com estes Termos. Leia-os junto com a nossa Política de Privacidade.',
+    intro: `Ao criar uma conta ou usar o ${APP_NAME}, você concorda com estes Termos. Leia-os junto com a nossa Política de Privacidade.`,
     sections: [
       {
         heading: '1. O serviço',
         paragraphs: [
-          'O Meu Coach oferece planos de treino e de dieta personalizados, metas de calorias e macronutrientes, análise opcional de fotos do corpo e um coach virtual, gerados com apoio de inteligência artificial.',
+          `O ${APP_NAME} oferece planos de treino e de dieta personalizados, metas de calorias e macronutrientes, análise opcional de fotos do corpo e um coach virtual, gerados com apoio de inteligência artificial.`,
         ],
       },
       {
@@ -293,13 +291,12 @@ const terms: Record<Locale, LegalDocument> = {
   en: {
     title: 'Terms of Use',
     updated: UPDATED,
-    intro:
-      'By creating an account or using My Coach, you agree to these Terms. Please read them together with our Privacy Policy.',
+    intro: `By creating an account or using ${APP_NAME}, you agree to these Terms. Please read them together with our Privacy Policy.`,
     sections: [
       {
         heading: '1. The service',
         paragraphs: [
-          'My Coach provides personalised training and diet plans, calorie and macro targets, optional body photo analysis and a virtual coach, generated with the help of artificial intelligence.',
+          `${APP_NAME} provides personalised training and diet plans, calorie and macro targets, optional body photo analysis and a virtual coach, generated with the help of artificial intelligence.`,
         ],
       },
       {

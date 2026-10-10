@@ -92,7 +92,7 @@ export function PlanWizard() {
               }}
               style={styles.row}
             >
-              <ArrowLeft size={16} color={colors.muted} />
+              <ArrowLeft size={16} color={colors.textSecondary} />
               <Txt variant="label" muted>
                 {t('wizard.back')}
               </Txt>
@@ -110,7 +110,7 @@ export function PlanWizard() {
               key={i}
               style={[
                 styles.progressBar,
-                { backgroundColor: i <= step ? colors.accent : colors.surface2 },
+                { backgroundColor: i <= step ? colors.accent : colors.surfaceMuted },
               ]}
             />
           ))}
@@ -235,14 +235,18 @@ function AboutStep({
             multiline
             maxLength={500}
             placeholder={t('wizard.limitationsPlaceholder')}
-            placeholderTextColor={colors.muted}
+            placeholderTextColor={colors.textSecondary}
             value={value.limitations ?? ''}
             onChangeText={(text) => {
               set('limitations', text)
             }}
             style={[
               styles.textarea,
-              { backgroundColor: colors.surface, borderColor: colors.line, color: colors.fg },
+              {
+                backgroundColor: colors.surface,
+                borderColor: colors.border,
+                color: colors.textPrimary,
+              },
             ]}
           />
         </View>
@@ -304,7 +308,7 @@ function PhotosStep({
             ))}
           </View>
           <View style={styles.tip}>
-            <Info size={16} color={colors.muted} />
+            <Info size={16} color={colors.textSecondary} />
             <Txt variant="caption" muted style={{ flex: 1 }}>
               {t('wizard.photoTips')}
             </Txt>
@@ -386,7 +390,7 @@ function PhotoSlot({
   return (
     <View style={{ flex: 1, gap: 6 }}>
       {asset ? (
-        <View style={[styles.slot, { backgroundColor: colors.surface2 }]}>
+        <View style={[styles.slot, { backgroundColor: colors.surfaceMuted }]}>
           {/* Local file preview; never leaves the device until upload. */}
           <Image source={{ uri: asset.uri }} style={StyleSheet.absoluteFill} contentFit="cover" />
           <Pressable
@@ -397,9 +401,9 @@ function PhotoSlot({
               onChange(undefined)
             }}
             hitSlop={6}
-            style={styles.remove}
+            style={[styles.remove, { backgroundColor: colors.overlay }]}
           >
-            <X size={14} color="#fff" />
+            <X size={14} color={colors.onOverlay} />
           </Pressable>
         </View>
       ) : (
@@ -411,12 +415,12 @@ function PhotoSlot({
             styles.slot,
             styles.emptySlot,
             {
-              borderColor: pressed ? colors.accent : colors.line,
+              borderColor: pressed ? colors.accentIcon : colors.border,
               backgroundColor: colors.surface,
             },
           ]}
         >
-          <Camera size={22} color={colors.muted} />
+          <Camera size={22} color={colors.textSecondary} />
           <Txt variant="caption" muted style={{ fontWeight: '500', textAlign: 'center' }}>
             {t('wizard.addPhoto')}
           </Txt>
@@ -460,7 +464,7 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
   return (
     <Card style={{ gap: space.lg }}>
       <View style={[styles.iconTile, { backgroundColor: colors.accentSoft }]}>
-        <ShieldCheck size={24} color={colors.accent} />
+        <ShieldCheck size={24} color={colors.accentIcon} />
       </View>
       <View style={{ gap: space.xs }}>
         <Txt variant="heading">{t('consent.title')}</Txt>
@@ -471,10 +475,10 @@ function ConsentCard({ onConsented }: { onConsented: () => void }) {
         style={styles.row}
         hitSlop={6}
       >
-        <Txt variant="label" color="accent">
+        <Txt variant="label" color="accentText">
           {t('consent.readPolicy')}
         </Txt>
-        <ExternalLink size={14} color={colors.accent} />
+        <ExternalLink size={14} color={colors.accentIcon} />
       </Pressable>
       <View style={{ gap: space.md }}>
         <Checkbox checked={adult} onChange={setAdult}>
@@ -597,7 +601,7 @@ function ReviewStep({ questionnaire, photos }: { questionnaire: Questionnaire; p
               key={label}
               style={[
                 styles.reviewRow,
-                i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
+                i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border },
               ]}
             >
               <Txt muted>{label}</Txt>
@@ -606,8 +610,8 @@ function ReviewStep({ questionnaire, photos }: { questionnaire: Questionnaire; p
           ))}
         </View>
         {me && !me.latestAssessment && (
-          <View style={[styles.hint, { backgroundColor: colors.energySoft }]}>
-            <Info size={16} color={colors.energy} />
+          <View style={[styles.hint, { backgroundColor: colors.warningSoft }]}>
+            <Info size={16} color={colors.warning} />
             <Txt variant="caption" style={{ flex: 1 }}>
               {t('wizard.energyHint')}
             </Txt>
@@ -665,7 +669,6 @@ const styles = StyleSheet.create({
     width: 26,
     height: 26,
     borderRadius: 13,
-    backgroundColor: 'rgba(0,0,0,0.55)',
     alignItems: 'center',
     justifyContent: 'center',
   },

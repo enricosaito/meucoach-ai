@@ -7,7 +7,7 @@ export default function NewPlanScreen() {
   const colors = useColors()
   return (
     <ScrollView
-      style={{ flex: 1, backgroundColor: colors.bg }}
+      style={{ flex: 1, backgroundColor: colors.background }}
       contentInsetAdjustmentBehavior="automatic"
       automaticallyAdjustKeyboardInsets
       keyboardDismissMode="interactive"

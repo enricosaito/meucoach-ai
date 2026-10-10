@@ -13,7 +13,7 @@ export function BodyAnalysisCard({ analysis }: { analysis: BodyAnalysis }) {
     <Card style={{ gap: space.lg }}>
       <View style={styles.rowBetween}>
         <View style={styles.row}>
-          <ScanLine size={16} color={colors.accent} />
+          <ScanLine size={16} color={colors.accentIcon} />
           <Txt variant="heading">{t('training.analysisTitle')}</Txt>
         </View>
         <Txt variant="caption" muted>
@@ -52,10 +52,10 @@ export function BodyAnalysisCard({ analysis }: { analysis: BodyAnalysis }) {
           {analysis.priorityAreas.map((p, i) => (
             <View
               key={`${p.area}-${String(i)}`}
-              style={[styles.priority, { backgroundColor: colors.surface2 }]}
+              style={[styles.priority, { backgroundColor: colors.surfaceMuted }]}
             >
               <View style={[styles.number, { backgroundColor: colors.accent }]}>
-                <Txt variant="caption" style={{ color: colors.accentFg, fontWeight: '700' }}>
+                <Txt variant="caption" style={{ color: colors.onAccent, fontWeight: '700' }}>
                   {i + 1}
                 </Txt>
               </View>

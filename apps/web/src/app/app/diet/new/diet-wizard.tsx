@@ -200,7 +200,7 @@ function DietForm({
 
         {targets ? (
           <p className="flex items-start gap-2 rounded-2xl bg-accent-soft px-4 py-3 text-sm">
-            <Info className="mt-0.5 size-4 shrink-0 text-accent" aria-hidden />
+            <Info className="mt-0.5 size-4 shrink-0 text-accent-text" aria-hidden />
             {t('dietWizard.targetsNote', {
               kcal: formatNumber(targets.kcal),
               protein: formatNumber(targets.proteinG),

@@ -272,7 +272,7 @@ export function Avatar({
   return (
     <span
       className={cx(
-        'inline-grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-accent-soft font-semibold text-accent-strong',
+        'inline-grid size-9 shrink-0 place-items-center overflow-hidden rounded-full bg-accent-soft font-semibold text-accent-text',
         className,
       )}
       aria-hidden

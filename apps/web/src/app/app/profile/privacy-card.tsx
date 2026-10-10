@@ -39,7 +39,7 @@ export function PrivacyCard() {
     <Card>
       <SectionTitle title={t('profile.privacyTitle')} />
       <div className="flex gap-3 rounded-2xl bg-surface-2 px-4 py-3">
-        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-accent" aria-hidden />
+        <ShieldCheck className="mt-0.5 size-5 shrink-0 text-accent-text" aria-hidden />
         <div className="min-w-0 flex-1">
           <p className="font-medium">{t('consent.statusTitle')}</p>
           <p className="text-sm text-muted">
@@ -50,7 +50,7 @@ export function PrivacyCard() {
                 : t('consent.statusInactive')}
           </p>
           {done && (
-            <p className="mt-1 flex items-center gap-1 text-sm text-accent">
+            <p className="mt-1 flex items-center gap-1 text-sm text-accent-text">
               <Check className="size-4" aria-hidden />
               {t('consent.revoked')}
             </p>

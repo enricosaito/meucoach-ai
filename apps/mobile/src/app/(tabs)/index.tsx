@@ -125,11 +125,11 @@ function TopRow({ me }: { me: Me }) {
           {firstName(me.profile)}
         </Txt>
       </View>
-      <View style={[styles.streakPill, { backgroundColor: colors.surface2 }]}>
+      <View style={[styles.streakPill, { backgroundColor: colors.surfaceMuted }]}>
         <Flame
           size={16}
-          color={current > 0 ? colors.energy : colors.muted}
-          fill={current > 1 ? colors.energy : 'transparent'}
+          color={current > 0 ? colors.accentIcon : colors.textSecondary}
+          fill={current > 1 ? colors.accentIcon : 'transparent'}
         />
         <Txt variant="label" style={{ fontWeight: '700' }}>
           {formatNumber(current)}
@@ -182,7 +182,7 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
         <Pressable>
           <Card style={styles.rowCard}>
             <View style={[styles.iconTile, { backgroundColor: colors.accentSoft }]}>
-              <Dumbbell size={24} color={colors.accent} />
+              <Dumbbell size={24} color={colors.accentIcon} />
             </View>
             <View style={{ flex: 1, gap: 2 }}>
               <Txt variant="caption" muted>
@@ -192,7 +192,7 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
                 {generating ? t('training.generatingTitle') : t('training.emptyTitle')}
               </Txt>
             </View>
-            <ChevronRight size={20} color={colors.muted} />
+            <ChevronRight size={20} color={colors.textSecondary} />
           </Card>
         </Pressable>
       </Link>
@@ -206,17 +206,17 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
     <Card>
       <View style={styles.rowBetween}>
         <View style={styles.row}>
-          <Dumbbell size={16} color={colors.accent} />
+          <Dumbbell size={16} color={colors.accentIcon} />
           <Txt variant="label" muted>
             {t('workout.today')}
           </Txt>
         </View>
         <Link href="/training" asChild>
           <Pressable style={styles.row} hitSlop={8}>
-            <Txt variant="label" color="accent">
+            <Txt variant="label" color="accentText">
               {t('training.viewPlan')}
             </Txt>
-            <ArrowRight size={16} color={colors.accent} />
+            <ArrowRight size={16} color={colors.accentIcon} />
           </Pressable>
         </Link>
       </View>
@@ -228,8 +228,8 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
       </View>
       {doneToday ? (
         <View style={[styles.doneBadge, { backgroundColor: colors.accentSoft }]}>
-          <Check size={16} color={colors.accent} strokeWidth={3} />
-          <Txt variant="label" color="accent">
+          <Check size={16} color={colors.accentIcon} strokeWidth={3} />
+          <Txt variant="label" color="accentText">
             {t('workout.doneToday')}
           </Txt>
         </View>
@@ -240,7 +240,7 @@ function TodayCard({ plans, log }: { plans: Plans; log: ReturnType<typeof useWor
             void log.logDay(dayIndex)
           }}
           loading={log.pendingDay === dayIndex}
-          icon={<Check size={16} color={colors.accentFg} strokeWidth={3} />}
+          icon={<Check size={16} color={colors.onAccent} strokeWidth={3} />}
           style={{ alignSelf: 'stretch' }}
         >
           {t('workout.markDone')}
@@ -265,7 +265,7 @@ function DietCard({ diet }: { diet: DietPlanRecord | null }) {
       <Pressable>
         <Card style={styles.rowCard}>
           <View style={[styles.iconTile, { backgroundColor: colors.accentSoft }]}>
-            <Salad size={24} color={colors.accent} />
+            <Salad size={24} color={colors.accentIcon} />
           </View>
           <View style={{ flex: 1, gap: 2 }}>
             <Txt variant="caption" muted>
@@ -283,7 +283,7 @@ function DietCard({ diet }: { diet: DietPlanRecord | null }) {
                 : t('diet.homeEmptyBody')}
             </Txt>
           </View>
-          <ChevronRight size={20} color={colors.muted} />
+          <ChevronRight size={20} color={colors.textSecondary} />
         </Card>
       </Pressable>
     </Link>

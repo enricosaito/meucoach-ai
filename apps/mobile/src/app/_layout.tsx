@@ -38,16 +38,18 @@ function RootStack() {
   // Pushed screens: native header with a back button, in the app's colors.
   const pushed = {
     headerShown: true,
-    headerTintColor: colors.accent,
-    headerTitleStyle: { color: colors.fg },
-    headerStyle: { backgroundColor: colors.bg },
+    headerTintColor: colors.accentText,
+    headerTitleStyle: { color: colors.textPrimary },
+    headerStyle: { backgroundColor: colors.background },
     headerShadowVisible: false,
   }
 
   return (
     <>
       <StatusBar style="auto" />
-      <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
+      <Stack
+        screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }}
+      >
         <Stack.Protected guard={session !== null}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen

@@ -101,12 +101,12 @@ function ScanRow({
           onPress={confirmDelete}
           disabled={remove.pending}
           hitSlop={8}
-          style={[styles.delete, { backgroundColor: colors.dangerSoft }]}
+          style={[styles.delete, { backgroundColor: colors.errorSoft }]}
         >
           {remove.pending ? (
-            <ActivityIndicator size="small" color={colors.danger} />
+            <ActivityIndicator size="small" color={colors.error} />
           ) : (
-            <Trash2 size={16} color={colors.danger} />
+            <Trash2 size={16} color={colors.error} />
           )}
         </Pressable>
       </View>
@@ -115,7 +115,7 @@ function ScanRow({
           const uri = urls[photo.path]
           return (
             <View key={photo.path} style={{ flex: 1, gap: 4 }}>
-              <View style={[styles.photo, { backgroundColor: colors.surface2 }]}>
+              <View style={[styles.photo, { backgroundColor: colors.surfaceMuted }]}>
                 {uri && (
                   // Signed, short-lived URL: don't keep it in the disk cache.
                   <Image

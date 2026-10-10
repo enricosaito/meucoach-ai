@@ -22,7 +22,7 @@ export function ComingSoon({ title, icon: Icon }: { title: string; icon: LucideI
             marginBottom: space.xs,
           }}
         >
-          <Icon size={24} color={colors.accent} />
+          <Icon size={24} color={colors.accentIcon} />
         </View>
         <Txt variant="heading">{t('mobile.comingSoonTitle')}</Txt>
         <Txt muted>{t('mobile.comingSoonBody')}</Txt>

@@ -45,7 +45,7 @@ export function StreakCelebration({ streak, onClose }: { streak: Streak; onClose
         style={[
           styles.screen,
           {
-            backgroundColor: colors.bg,
+            backgroundColor: colors.background,
             paddingTop: insets.top + 80,
             paddingBottom: insets.bottom + 24,
           },
@@ -53,7 +53,7 @@ export function StreakCelebration({ streak, onClose }: { streak: Streak; onClose
       >
         <View style={styles.center}>
           <Appear variant="pop">
-            <Flame size={120} color={colors.energy} fill={colors.energy} strokeWidth={1.5} />
+            <Flame size={120} color={colors.accent} fill={colors.accent} strokeWidth={1.5} />
           </Appear>
           <Appear delay={150} style={styles.center}>
             <Txt style={styles.number}>{formatNumber(current)}</Txt>
@@ -66,15 +66,15 @@ export function StreakCelebration({ streak, onClose }: { streak: Streak; onClose
                 style={[
                   styles.dot,
                   lit
-                    ? { backgroundColor: colors.energy }
+                    ? { backgroundColor: colors.accent }
                     : {
-                        backgroundColor: colors.surface2,
-                        borderColor: colors.line,
+                        backgroundColor: colors.surfaceMuted,
+                        borderColor: colors.border,
                         borderWidth: 1,
                       },
                 ]}
               >
-                {lit && <Check size={18} color="#ffffff" strokeWidth={3} />}
+                {lit && <Check size={18} color={colors.onAccent} strokeWidth={3} />}
               </View>
             ))}
           </Appear>

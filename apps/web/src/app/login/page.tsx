@@ -32,7 +32,7 @@ export default async function LoginPage() {
           aria-hidden
         />
         <span className="relative inline-flex items-center gap-2 text-lg font-semibold">
-          <LogoMark className="size-9 bg-accent-fg text-accent" />
+          <LogoMark className="size-9 bg-accent-fg text-accent-text" />
           {t('common.appName')}
         </span>
         <div className="relative">

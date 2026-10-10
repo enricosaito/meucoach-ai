@@ -54,7 +54,7 @@ export function HomeView() {
                 </p>
                 <Link
                   href="/app/energy"
-                  className="rounded-full px-2 py-1 text-sm font-medium text-accent hover:bg-accent-soft"
+                  className="rounded-full px-2 py-1 text-sm font-medium text-accent-text hover:bg-accent-soft"
                 >
                   {t('home.retake')}
                 </Link>
@@ -107,7 +107,7 @@ export function HomeView() {
 
       <Card>
         <div className="flex items-center gap-3">
-          <span className="grid size-11 place-items-center rounded-2xl bg-accent-soft text-accent">
+          <span className="grid size-11 place-items-center rounded-2xl bg-accent-soft text-accent-text">
             <MessageCircle className="size-6" aria-hidden />
           </span>
           <div>

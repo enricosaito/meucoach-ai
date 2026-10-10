@@ -34,7 +34,7 @@ export function WeekHero({
   const { level, levelXp, levelSpan } = me.level
 
   return (
-    <View style={[styles.card, { borderColor: colors.line }]}>
+    <View style={[styles.card, { borderColor: colors.border }]}>
       <LinearGradient
         colors={[colors.accentSoft, colors.surface]}
         locations={[0, 0.75]}
@@ -49,8 +49,8 @@ export function WeekHero({
                 size={RING}
                 stroke={14}
                 progress={0}
-                color={colors.accent}
-                trackColor={colors.line}
+                color={colors.accentIcon}
+                trackColor={colors.border}
               >
                 <Txt variant="label" muted style={styles.noPlan}>
                   {t('home.noPlanHero')}
@@ -63,8 +63,8 @@ export function WeekHero({
             size={RING}
             stroke={14}
             progress={trainedDays / target}
-            color={colors.accent}
-            trackColor={colors.line}
+            color={colors.accentIcon}
+            trackColor={colors.border}
           >
             <Txt style={styles.bigNumber}>
               {t('home.weekGoal', {
@@ -84,8 +84,8 @@ export function WeekHero({
           icon={
             <Flame
               size={16}
-              color={me.streak.current > 0 ? colors.energy : colors.muted}
-              fill={me.streak.current > 1 ? colors.energy : 'transparent'}
+              color={me.streak.current > 0 ? colors.accentIcon : colors.textSecondary}
+              fill={me.streak.current > 1 ? colors.accentIcon : 'transparent'}
             />
           }
           value={formatNumber(me.streak.current)}
@@ -97,17 +97,17 @@ export function WeekHero({
               size={18}
               stroke={3}
               progress={levelSpan > 0 ? levelXp / levelSpan : 0}
-              color={colors.accent}
-              trackColor={colors.line}
+              color={colors.accentIcon}
+              trackColor={colors.border}
             >
-              <Star size={8} color={colors.accent} fill={colors.accent} />
+              <Star size={8} color={colors.accentIcon} fill={colors.accentIcon} />
             </ProgressRing>
           }
           value={formatNumber(level)}
           label={t('home.levelLabel')}
         />
         <Pill
-          icon={<Beef size={16} color={colors.fat} />}
+          icon={<Beef size={16} color={colors.macroProtein} />}
           value={targets ? t('common.grams', { value: formatNumber(targets.proteinG) }) : '—'}
           label={t('home.proteinLabel')}
         />
@@ -120,7 +120,7 @@ function Pill({ icon, value, label }: { icon: ReactNode; value: string; label: s
   const colors = useColors()
   return (
     <View style={styles.pillCol}>
-      <View style={[styles.pill, { backgroundColor: colors.surface, borderColor: colors.line }]}>
+      <View style={[styles.pill, { backgroundColor: colors.surface, borderColor: colors.border }]}>
         {icon}
         <Txt variant="label" style={{ fontWeight: '700' }}>
           {value}

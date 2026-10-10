@@ -85,21 +85,21 @@ function AvatarEditor({ profile }: { profile: Me['profile'] }) {
           ]}
         >
           {busy ? (
-            <ActivityIndicator size="small" color={colors.accentFg} />
+            <ActivityIndicator size="small" color={colors.onAccent} />
           ) : (
-            <Camera size={14} color={colors.accentFg} />
+            <Camera size={14} color={colors.onAccent} />
           )}
         </View>
       </Pressable>
       <View style={{ flex: 1, gap: space.sm, alignItems: 'flex-start' }}>
         <Pressable onPress={() => void change()} disabled={busy} hitSlop={6}>
-          <Txt variant="label" color="accent">
+          <Txt variant="label" color="accentText">
             {profile.avatarPath ? t('profile.changePhoto') : t('profile.addPhoto')}
           </Txt>
         </Pressable>
         {profile.avatarPath && (
           <Pressable onPress={() => void remove()} disabled={busy} hitSlop={6} style={styles.row}>
-            <Trash2 size={14} color={colors.muted} />
+            <Trash2 size={14} color={colors.textSecondary} />
             <Txt variant="label" muted>
               {t('profile.removePhoto')}
             </Txt>
@@ -180,7 +180,7 @@ function IdentityForm({ profile }: { profile: Me['profile'] }) {
         loading={save.pending}
         disabled={!dirty}
         style={{ alignSelf: 'stretch' }}
-        icon={saved && !dirty ? <Check size={16} color={colors.accentFg} /> : undefined}
+        icon={saved && !dirty ? <Check size={16} color={colors.onAccent} /> : undefined}
       >
         {saved && !dirty ? t('profile.saved') : t('settings.saveProfile')}
       </Button>

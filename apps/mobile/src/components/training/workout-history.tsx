@@ -39,11 +39,11 @@ export function WorkoutHistory({
           key={session.id}
           style={[
             styles.row,
-            i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
+            i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border },
           ]}
         >
           <View style={[styles.check, { backgroundColor: colors.accentSoft }]}>
-            <Check size={14} color={colors.accent} strokeWidth={3} />
+            <Check size={14} color={colors.accentIcon} strokeWidth={3} />
           </View>
           <Txt numberOfLines={1} style={{ flex: 1, fontWeight: '500' }}>
             {workoutTitle(t, session.dayIndex, session.dayTitle)}
@@ -69,7 +69,7 @@ export function WorkoutHistory({
             setExpanded((v) => !v)
           }}
         >
-          <Txt variant="label" color="accent">
+          <Txt variant="label" color="accentText">
             {expanded ? t('training.showLess') : t('training.showMore')}
           </Txt>
         </Pressable>

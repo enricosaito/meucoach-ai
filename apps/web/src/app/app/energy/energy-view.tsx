@@ -99,7 +99,7 @@ function ResultCard({ assessment, highlight }: { assessment: Assessment; highlig
             {t('energy.yourResult')}
           </p>
           {highlight ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent-strong">
+            <span className="inline-flex items-center gap-1 rounded-full bg-accent-soft px-2.5 py-1 text-xs font-medium text-accent-text">
               <Check className="size-3.5" aria-hidden />
               {t('energy.updated')}
             </span>
@@ -202,7 +202,10 @@ function AssessmentForm({
               units: imperial ? t('energy.imperial') : t('energy.metric'),
             })}{' '}
             ·{' '}
-            <Link href="/app/profile/settings" className="font-medium text-accent hover:underline">
+            <Link
+              href="/app/profile/settings"
+              className="font-medium text-accent-text hover:underline"
+            >
               {t('energy.change')}
             </Link>
           </>

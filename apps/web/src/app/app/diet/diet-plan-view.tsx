@@ -82,7 +82,7 @@ export function DietPlanView({ plan, targets }: { plan: DietPlan; targets: Daily
         <Card>
           <details className="group">
             <summary className="flex cursor-pointer list-none items-center gap-2 font-semibold tracking-tight [&::-webkit-details-marker]:hidden">
-              <ShoppingBasket className="size-4 text-accent" aria-hidden />
+              <ShoppingBasket className="size-4 text-accent-text" aria-hidden />
               <span className="flex-1">{t('diet.shoppingList')}</span>
               <span className="text-sm font-normal text-muted tabular-nums">
                 {formatNumber(plan.shoppingList.length)}

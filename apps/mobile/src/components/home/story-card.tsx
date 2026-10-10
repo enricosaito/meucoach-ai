@@ -29,7 +29,7 @@ export function StoryCard({
     return (
       <Story
         tint={colors.accentSoft}
-        icon={<Trophy size={28} color={colors.accent} />}
+        icon={<Trophy size={28} color={colors.accentIcon} />}
         title={t('home.storyWeekDoneTitle')}
         body={t('home.storyWeekDoneBody', { count: formatNumber(target) })}
       />
@@ -40,8 +40,8 @@ export function StoryCard({
     const next = nextStreakMilestone(streak)
     return (
       <Story
-        tint={colors.energySoft}
-        icon={<Flame size={28} color={colors.energy} fill={colors.energy} />}
+        tint={colors.accentSoft}
+        icon={<Flame size={28} color={colors.accentIcon} fill={colors.accentIcon} />}
         title={tc('home.storyStreakTitle', streak)}
         body={
           next ? t('home.storyStreakBody', { next: formatNumber(next) }) : t('celebrate.legend')
@@ -52,17 +52,17 @@ export function StoryCard({
 
   return (
     <Story
-      tint={colors.surface2}
-      icon={<MessageCircle size={28} color={colors.accent} />}
+      tint={colors.surfaceMuted}
+      icon={<MessageCircle size={28} color={colors.accentIcon} />}
       title={t('home.storyCoachTitle')}
       body={t('home.storyCoachBody')}
       action={
         <Link href="/coach" asChild>
           <Pressable style={styles.action} hitSlop={8}>
-            <Txt variant="label" color="accent">
+            <Txt variant="label" color="accentText">
               {t('home.storyCoachCta')}
             </Txt>
-            <ArrowRight size={16} color={colors.accent} />
+            <ArrowRight size={16} color={colors.accentIcon} />
           </Pressable>
         </Link>
       }

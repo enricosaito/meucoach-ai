@@ -80,17 +80,23 @@ export function PlanView({
                   haptics.tap()
                   setPicked(i)
                 }}
-                style={[styles.pill, { backgroundColor: selected ? colors.fg : colors.surface2 }]}
+                style={[
+                  styles.pill,
+                  { backgroundColor: selected ? colors.textPrimary : colors.surfaceMuted },
+                ]}
               >
                 <Txt
                   variant="heading"
-                  style={{ color: selected ? colors.bg : colors.muted, fontWeight: '700' }}
+                  style={{
+                    color: selected ? colors.background : colors.textSecondary,
+                    fontWeight: '700',
+                  }}
                 >
                   {dayLetter(i)}
                 </Txt>
                 {doneToday.has(i) && (
                   <View style={[styles.pillDone, { backgroundColor: colors.accent }]}>
-                    <Check size={10} strokeWidth={3.5} color={colors.accentFg} />
+                    <Check size={10} strokeWidth={3.5} color={colors.onAccent} />
                   </View>
                 )}
               </Pressable>
@@ -136,7 +142,7 @@ function PlanHeader({ plan, log }: { plan: WorkoutPlan; log: WorkoutLog }) {
   return (
     <Card style={{ gap: space.md }}>
       <View style={{ gap: 2 }}>
-        <Txt variant="caption" color="accent" style={styles.eyebrow}>
+        <Txt variant="caption" color="accentText" style={styles.eyebrow}>
           {t('training.homeCardTitle').toUpperCase()}
         </Txt>
         <View style={styles.titleRow}>
@@ -160,7 +166,7 @@ function PlanHeader({ plan, log }: { plan: WorkoutPlan; log: WorkoutLog }) {
               { backgroundColor: showInfo ? colors.accentSoft : 'transparent' },
             ]}
           >
-            <Info size={18} color={showInfo ? colors.accent : colors.muted} />
+            <Info size={18} color={showInfo ? colors.accentIcon : colors.textSecondary} />
           </Pressable>
         </View>
       </View>
@@ -175,9 +181,12 @@ function PlanHeader({ plan, log }: { plan: WorkoutPlan; log: WorkoutLog }) {
             }}
           >
             <View
-              style={[styles.caret, { backgroundColor: colors.surface2, marginLeft: caretX - 6 }]}
+              style={[
+                styles.caret,
+                { backgroundColor: colors.surfaceMuted, marginLeft: caretX - 6 },
+              ]}
             />
-            <View style={[styles.bubble, { backgroundColor: colors.surface2 }]}>
+            <View style={[styles.bubble, { backgroundColor: colors.surfaceMuted }]}>
               <Txt variant="label" style={{ fontWeight: '400' }}>
                 {plan.summary}
               </Txt>
@@ -201,12 +210,12 @@ function PlanHeader({ plan, log }: { plan: WorkoutPlan; log: WorkoutLog }) {
         style={({ pressed }) => [
           styles.askCoach,
           {
-            backgroundColor: pressed ? colors.accentSoft : colors.surface2,
+            backgroundColor: pressed ? colors.accentSoft : colors.surfaceMuted,
             transform: [{ scale: pressed ? 0.98 : 1 }],
           },
         ]}
       >
-        <ShiningSparkles size={16} color={colors.accent} />
+        <ShiningSparkles size={16} color={colors.accentIcon} />
         <Txt variant="label" style={{ fontWeight: '600' }}>
           {t('training.askCoach')}
         </Txt>
@@ -312,7 +321,7 @@ function DayCard({
     <Card style={{ gap: space.lg }}>
       <View style={{ gap: 2 }}>
         {isToday && (
-          <Txt variant="caption" color="accent" style={styles.eyebrow}>
+          <Txt variant="caption" color="accentText" style={styles.eyebrow}>
             {t('workout.today').toUpperCase()}
           </Txt>
         )}
@@ -322,7 +331,7 @@ function DayCard({
         </Txt>
       </View>
 
-      <Note icon={<Flame size={16} color={colors.energy} />} label={t('training.warmup')}>
+      <Note icon={<Flame size={16} color={colors.accentIcon} />} label={t('training.warmup')}>
         {day.warmup}
       </Note>
 
@@ -332,10 +341,10 @@ function DayCard({
             key={`${exercise.name}-${String(i)}`}
             style={[
               styles.exercise,
-              i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
+              i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderColor: colors.border },
             ]}
           >
-            <View style={[styles.number, { backgroundColor: colors.surface2 }]}>
+            <View style={[styles.number, { backgroundColor: colors.surfaceMuted }]}>
               <Txt variant="label" style={{ fontWeight: '700' }}>
                 {i + 1}
               </Txt>
@@ -357,14 +366,17 @@ function DayCard({
         ))}
       </View>
 
-      <Note icon={<Snowflake size={16} color={colors.fat} />} label={t('training.cooldown')}>
+      <Note
+        icon={<Snowflake size={16} color={colors.recoveryText} />}
+        label={t('training.cooldown')}
+      >
         {day.cooldown}
       </Note>
 
       {done ? (
         <View style={[styles.doneBadge, { backgroundColor: colors.accentSoft }]}>
-          <Check size={16} color={colors.accent} strokeWidth={3} />
-          <Txt variant="label" color="accent">
+          <Check size={16} color={colors.accentIcon} strokeWidth={3} />
+          <Txt variant="label" color="accentText">
             {t('workout.doneToday')}
           </Txt>
         </View>
@@ -376,7 +388,7 @@ function DayCard({
           }}
           loading={log.pendingDay === dayIndex}
           disabled={log.pendingDay !== null || log.loading}
-          icon={<Check size={16} color={colors.accentFg} strokeWidth={3} />}
+          icon={<Check size={16} color={colors.onAccent} strokeWidth={3} />}
           style={{ alignSelf: 'stretch' }}
         >
           {t('workout.markDayDone')}
@@ -392,7 +404,7 @@ function DayCard({
 function Note({ icon, label, children }: { icon: ReactNode; label: string; children: ReactNode }) {
   const colors = useColors()
   return (
-    <View style={[styles.note, { backgroundColor: colors.surface2 }]}>
+    <View style={[styles.note, { backgroundColor: colors.surfaceMuted }]}>
       <View style={{ marginTop: 1 }}>{icon}</View>
       <Txt variant="label" style={{ flex: 1, fontWeight: '400' }}>
         <Txt variant="label">{label}: </Txt>
@@ -416,7 +428,7 @@ function AboutPlan({ plan }: { plan: WorkoutPlan }) {
     <Card style={{ gap: space.lg }}>
       <Txt variant="heading">{t('training.aboutPlan')}</Txt>
       {/* Three equal stats: always one row, whatever the language or phone width. */}
-      <View style={[styles.stats, { backgroundColor: colors.surface2 }]}>
+      <View style={[styles.stats, { backgroundColor: colors.surfaceMuted }]}>
         {[
           { icon: CalendarDays, value: plan.days.length, label: t('training.statDays') },
           { icon: Clock, value: minutes, label: t('training.statMinutes') },
@@ -426,10 +438,10 @@ function AboutPlan({ plan }: { plan: WorkoutPlan }) {
             key={label}
             style={[
               styles.stat,
-              i > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
+              i > 0 && { borderLeftWidth: StyleSheet.hairlineWidth, borderColor: colors.border },
             ]}
           >
-            <Icon size={16} color={colors.accent} />
+            <Icon size={16} color={colors.accentIcon} />
             <Txt variant="title" style={{ fontVariant: ['tabular-nums'] }}>
               {formatNumber(value)}
             </Txt>
@@ -442,7 +454,7 @@ function AboutPlan({ plan }: { plan: WorkoutPlan }) {
 
       <View style={{ gap: space.sm }}>
         <View style={styles.row}>
-          <TrendingUp size={16} color={colors.accent} />
+          <TrendingUp size={16} color={colors.accentIcon} />
           <Txt variant="label" style={{ fontWeight: '600' }}>
             {t('training.progression')}
           </Txt>
@@ -452,14 +464,14 @@ function AboutPlan({ plan }: { plan: WorkoutPlan }) {
 
       <View style={{ gap: space.sm }}>
         <View style={styles.row}>
-          <Lightbulb size={16} color={colors.energy} />
+          <Lightbulb size={16} color={colors.warning} />
           <Txt variant="label" style={{ fontWeight: '600' }}>
             {t('training.tips')}
           </Txt>
         </View>
         {plan.tips.map((tip) => (
           <View key={tip} style={styles.tip}>
-            <View style={[styles.bullet, { backgroundColor: colors.accent }]} />
+            <View style={[styles.bullet, { backgroundColor: colors.accentIcon }]} />
             <Txt muted style={{ flex: 1 }}>
               {tip}
             </Txt>

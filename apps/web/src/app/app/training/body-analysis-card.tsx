@@ -11,7 +11,7 @@ export function BodyAnalysisCard({ analysis }: { analysis: BodyAnalysis }) {
     <Card>
       <div className="flex items-center justify-between gap-3">
         <h2 className="flex items-center gap-2 font-semibold tracking-tight">
-          <ScanLine className="size-4 text-accent" aria-hidden />
+          <ScanLine className="size-4 text-accent-text" aria-hidden />
           {t('training.analysisTitle')}
         </h2>
         <span className="text-xs text-muted">

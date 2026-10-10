@@ -13,9 +13,9 @@ const MACROS: {
   kcalPerGram: number
   icon: LucideIcon
 }[] = [
-  { key: 'proteinG', label: 'targets.protein', color: 'accent', kcalPerGram: 4, icon: Beef },
-  { key: 'carbsG', label: 'targets.carbs', color: 'energy', kcalPerGram: 4, icon: Wheat },
-  { key: 'fatG', label: 'targets.fat', color: 'fat', kcalPerGram: 9, icon: Droplet },
+  { key: 'proteinG', label: 'targets.protein', color: 'macroProtein', kcalPerGram: 4, icon: Beef },
+  { key: 'carbsG', label: 'targets.carbs', color: 'macroCarbs', kcalPerGram: 4, icon: Wheat },
+  { key: 'fatG', label: 'targets.fat', color: 'macroFat', kcalPerGram: 9, icon: Droplet },
 ]
 
 /** Daily macro targets as three tiles; each ring shows the macro's share of the calories. */
@@ -39,7 +39,7 @@ export function MacroTiles({ targets }: { targets: DailyTargets }) {
           return (
             <View
               key={m.key}
-              style={[styles.tile, { backgroundColor: colors.surface, borderColor: colors.line }]}
+              style={[styles.tile, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
               <Txt variant="heading">
                 {t('common.grams', { value: formatNumber(targets[m.key]) })}
@@ -52,7 +52,7 @@ export function MacroTiles({ targets }: { targets: DailyTargets }) {
                 stroke={5}
                 progress={share}
                 color={colors[m.color]}
-                trackColor={colors.surface2}
+                trackColor={colors.surfaceMuted}
               >
                 <Icon size={18} color={colors[m.color]} />
               </ProgressRing>

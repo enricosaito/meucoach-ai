@@ -124,8 +124,8 @@ export default function TrainingScreen() {
             { backgroundColor: pressed ? colors.accentSoft : 'transparent' },
           ]}
         >
-          <RefreshCw size={16} color={colors.accent} />
-          <Txt variant="label" color="accent">
+          <RefreshCw size={16} color={colors.accentIcon} />
+          <Txt variant="label" color="accentText">
             {t('training.updatePlan')}
           </Txt>
         </Pressable>

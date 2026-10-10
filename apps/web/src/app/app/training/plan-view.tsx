@@ -85,7 +85,7 @@ export function PlanView({
       {day && (
         <Card role="tabpanel" key={dayIndex} className="animate-rise-in">
           {log && dayIndex === todayIndex && (
-            <p className="mb-1 text-xs font-semibold tracking-wide text-accent uppercase">
+            <p className="mb-1 text-xs font-semibold tracking-wide text-accent-text uppercase">
               {t('workout.today')}
             </p>
           )}
@@ -132,7 +132,7 @@ export function PlanView({
           {log && (
             <div className="mt-5 flex flex-col items-start gap-2">
               {dayDone ? (
-                <span className="inline-flex h-11 items-center gap-2 rounded-full bg-accent-soft px-5 text-[15px] font-medium text-accent">
+                <span className="inline-flex h-11 items-center gap-2 rounded-full bg-accent-soft px-5 text-[15px] font-medium text-accent-text">
                   <Check className="size-4" strokeWidth={3} aria-hidden />
                   {t('workout.doneToday')}
                 </span>
@@ -157,7 +157,7 @@ export function PlanView({
 
       <Card>
         <h3 className="flex items-center gap-2 font-semibold tracking-tight">
-          <TrendingUp className="size-4 text-accent" aria-hidden />
+          <TrendingUp className="size-4 text-accent-text" aria-hidden />
           {t('training.progression')}
         </h3>
         <p className="mt-1.5 text-[15px] text-muted">{plan.progression}</p>

@@ -42,13 +42,13 @@ export default function LoginScreen() {
 
   const input = [
     styles.input,
-    { backgroundColor: colors.surface, borderColor: colors.line, color: colors.fg },
+    { backgroundColor: colors.surface, borderColor: colors.border, color: colors.textPrimary },
   ]
 
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={{ flex: 1, backgroundColor: colors.bg }}
+      style={{ flex: 1, backgroundColor: colors.background }}
     >
       <View
         style={[
@@ -69,7 +69,7 @@ export default function LoginScreen() {
             value={email}
             onChangeText={setEmail}
             placeholder={t('auth.emailPlaceholder')}
-            placeholderTextColor={colors.muted}
+            placeholderTextColor={colors.textSecondary}
             autoCapitalize="none"
             autoComplete="email"
             keyboardType="email-address"
@@ -98,9 +98,9 @@ export default function LoginScreen() {
               hitSlop={8}
             >
               {showPassword ? (
-                <EyeOff size={20} color={colors.muted} />
+                <EyeOff size={20} color={colors.textSecondary} />
               ) : (
-                <Eye size={20} color={colors.muted} />
+                <Eye size={20} color={colors.textSecondary} />
               )}
             </Pressable>
           </View>
