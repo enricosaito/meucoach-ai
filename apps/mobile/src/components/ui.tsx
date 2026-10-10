@@ -97,12 +97,15 @@ export function Screen({
   children,
   title,
   showAvatar = true,
+  headerRight,
   onRefresh,
   refreshing = false,
 }: {
   children: ReactNode
   title?: string
   showAvatar?: boolean
+  /** Buttons at the right of the title (e.g. settings); shown instead of the avatar. */
+  headerRight?: ReactNode
   onRefresh?: () => void
   refreshing?: boolean
 }) {
@@ -124,12 +127,12 @@ export function Screen({
         ) : undefined
       }
     >
-      {(title !== undefined || showAvatar) && (
+      {(title !== undefined || showAvatar || headerRight) && (
         <View style={styles.header}>
           <Txt variant="title" numberOfLines={1} style={{ flex: 1 }}>
             {title ?? ''}
           </Txt>
-          {showAvatar && <ProfileAvatarLink />}
+          {headerRight ?? (showAvatar && <ProfileAvatarLink />)}
         </View>
       )}
       {children}

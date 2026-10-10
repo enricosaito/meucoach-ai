@@ -4,7 +4,7 @@ import { Stack } from 'expo-router'
 import * as SplashScreen from 'expo-splash-screen'
 import { StatusBar } from 'expo-status-bar'
 import { useEffect } from 'react'
-import { I18nProvider } from '../lib/i18n'
+import { I18nProvider, useI18n } from '../lib/i18n'
 import { MeProvider } from '../lib/me'
 import { SessionProvider, useSession } from '../lib/session'
 import { useColors } from '../theme'
@@ -26,6 +26,7 @@ export default function RootLayout() {
 /** Signed-out users only see the login screen; signed-in users only see the tabs. */
 function RootStack() {
   const { session, ready } = useSession()
+  const { t } = useI18n()
   const colors = useColors()
 
   useEffect(() => {
@@ -40,6 +41,18 @@ function RootStack() {
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Protected guard={session !== null}>
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen
+            name="settings"
+            options={{
+              headerShown: true,
+              title: t('settings.title'),
+              headerBackTitle: t('nav.profile'),
+              headerTintColor: colors.accent,
+              headerTitleStyle: { color: colors.fg },
+              headerStyle: { backgroundColor: colors.bg },
+              headerShadowVisible: false,
+            }}
+          />
         </Stack.Protected>
         <Stack.Protected guard={session === null}>
           <Stack.Screen name="login" />

@@ -8,6 +8,7 @@ export const en = {
     kcal: 'kcal',
     kcalPerDay: 'kcal/day',
     grams: '{value} g',
+    cancel: 'Cancel',
   },
   errors: {
     generic: 'Something went wrong. Please try again.',
@@ -184,6 +185,10 @@ export const en = {
     suggestion3: 'What’s a simple weekly workout plan for me?',
   },
   profile: {
+    highlights: 'Highlights',
+    last7Days: 'Last 7 days',
+    legendTrained: 'Workout',
+    legendActive: 'Checked in',
     title: 'Profile',
     description: 'Your coach uses this to tailor its advice.',
     name: 'Name',
@@ -364,6 +369,8 @@ export const en = {
     revoked: 'Consent withdrawn and photos deleted.',
   },
   settings: {
+    version: 'Version {version}',
+    comingSoon: 'Profile, goal, language and privacy settings are coming to the app soon.',
     title: 'Settings',
     description: 'Your profile, goal, language, units and privacy.',
     profileSection: 'Profile',

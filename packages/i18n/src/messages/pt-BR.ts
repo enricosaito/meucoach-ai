@@ -8,6 +8,7 @@ export const ptBR = {
     kcal: 'kcal',
     kcalPerDay: 'kcal/dia',
     grams: '{value} g',
+    cancel: 'Cancelar',
   },
   errors: {
     generic: 'Algo deu errado. Tente de novo.',
@@ -188,6 +189,10 @@ export const ptBR = {
     suggestion3: 'Qual seria um plano de treino semanal simples para mim?',
   },
   profile: {
+    highlights: 'Destaques',
+    last7Days: 'Últimos 7 dias',
+    legendTrained: 'Treino',
+    legendActive: 'Entrou no app',
     title: 'Perfil',
     description: 'Seu coach usa estas informações para personalizar as dicas.',
     name: 'Nome',
@@ -367,6 +372,8 @@ export const ptBR = {
     revoked: 'Consentimento retirado e fotos excluídas.',
   },
   settings: {
+    version: 'Versão {version}',
+    comingSoon: 'Perfil, objetivo, idioma e privacidade chegam ao app em breve.',
     title: 'Configurações',
     description: 'Seu perfil, objetivo, idioma, unidades e privacidade.',
     profileSection: 'Perfil',

@@ -60,3 +60,14 @@ export async function fetchLatestReadyDietPlan(): Promise<DietPlanRecord | null>
   if (error) throw error
   return data ? toDietPlanRecord(data) : null
 }
+
+/** Local days ("YYYY-MM-DD") the user opened the app since `since`, oldest first. */
+export async function fetchActivityDays(since: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .from('activity_days')
+    .select('day')
+    .gte('day', since)
+    .order('day', { ascending: true })
+  if (error) throw error
+  return data.map((row) => row.day)
+}
