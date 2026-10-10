@@ -74,16 +74,21 @@ export function Card({ style, children }: { style?: StyleProp<ViewStyle>; childr
 }
 
 /**
- * A scrolling screen with safe-area padding. The avatar floats top-right (linking to Profile),
- * like the web app on phones; titles leave room for it.
+ * A scrolling screen. Starts with a header row (title left, avatar linking to Profile right)
+ * that scrolls with the content. Screens with their own header (Home) pass neither.
+ *
+ * Insets are applied once, explicitly: iOS's automatic content-inset adjustment is turned off,
+ * otherwise it adds the safe area on top of our padding (a blank band at the top).
  */
 export function Screen({
   children,
+  title,
   showAvatar = true,
   onRefresh,
   refreshing = false,
 }: {
   children: ReactNode
+  title?: string
   showAvatar?: boolean
   onRefresh?: () => void
   refreshing?: boolean
@@ -91,33 +96,32 @@ export function Screen({
   const colors = useColors()
   const insets = useSafeAreaInsets()
   return (
-    <View style={{ flex: 1, backgroundColor: colors.bg }}>
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        contentContainerStyle={{
-          paddingTop: insets.top + space.lg,
-          paddingHorizontal: space.lg,
-          paddingBottom: insets.bottom + 120,
-          gap: space.xl,
-        }}
-        refreshControl={
-          onRefresh ? (
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              tintColor={colors.muted}
-            />
-          ) : undefined
-        }
-      >
-        {children}
-      </ScrollView>
-      {showAvatar && (
-        <View style={[styles.avatarSlot, { top: insets.top + space.lg }]}>
-          <ProfileAvatarLink />
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      contentInsetAdjustmentBehavior="never"
+      contentContainerStyle={{
+        paddingTop: insets.top + space.md,
+        paddingHorizontal: space.lg,
+        // Room for the floating native tab bar.
+        paddingBottom: insets.bottom + 96,
+        gap: space.xl,
+      }}
+      refreshControl={
+        onRefresh ? (
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.muted} />
+        ) : undefined
+      }
+    >
+      {(title !== undefined || showAvatar) && (
+        <View style={styles.header}>
+          <Txt variant="title" numberOfLines={1} style={{ flex: 1 }}>
+            {title ?? ''}
+          </Txt>
+          {showAvatar && <ProfileAvatarLink />}
         </View>
       )}
-    </View>
+      {children}
+    </ScrollView>
   )
 }
 
@@ -264,7 +268,7 @@ const styles = StyleSheet.create({
     padding: space.xl,
     gap: space.md,
   },
-  avatarSlot: { position: 'absolute', right: space.lg },
+  header: { flexDirection: 'row', alignItems: 'center', gap: space.md, minHeight: 40 },
   button: {
     height: 48,
     borderRadius: radius.full,

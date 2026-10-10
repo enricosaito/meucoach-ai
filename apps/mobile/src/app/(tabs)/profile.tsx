@@ -15,8 +15,7 @@ export default function ProfileScreen() {
   const { me } = useMe()
 
   return (
-    <Screen showAvatar={false}>
-      <Txt variant="title">{t('profile.title')}</Txt>
+    <Screen title={t('profile.title')} showAvatar={false}>
       {me ? (
         <>
           <Card style={{ alignItems: 'center' }}>

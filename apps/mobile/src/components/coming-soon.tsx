@@ -9,10 +9,7 @@ export function ComingSoon({ title, icon: Icon }: { title: string; icon: LucideI
   const { t } = useI18n()
   const colors = useColors()
   return (
-    <Screen>
-      <Txt variant="title" style={{ paddingRight: 56 }}>
-        {title}
-      </Txt>
+    <Screen title={title}>
       <Card>
         <View
           style={{
