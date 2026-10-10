@@ -94,9 +94,8 @@ workout first, then awards XP, so a retry after a partial failure completes the 
 - [ ] Security advisor (2026-10-10): WARN "Leaked password protection disabled" (Auth settings) and
       INFO "RLS enabled, no policy" on `ai_calls`, `idempotency_keys`, `outbox_events` (intended:
       server-only tables).
-- [ ] Migrations `20261012000000_workout_sessions_and_xp` and `20261013000000_diet_plans` are NOT
-      in production yet: `pnpm db:push:check` then `pnpm db:push` (needs
-      `.env.supabase.local` with the owner's access token) before pushing to `main`.
+- [ ] Code for checkpoint 3 (workouts/XP, diet, settings move) is committed locally but not pushed
+      to `main`. All migrations are already in production (2026-10-10, verified grants/RLS).
 - [ ] Diet: the mock template's portions are only good enough to pass validation (dev/test); real
       quality depends on the AI. Ideas: diet in the coach's context, swap a single food, weekly
       variety, grocery list by category.
