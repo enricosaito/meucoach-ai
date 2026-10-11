@@ -41,7 +41,7 @@ export const ptBR = {
   },
   nav: {
     main: 'Principal',
-    home: 'Início',
+    home: APP_NAME,
     training: 'Treino',
     diet: 'Dieta',
     energy: 'Energia',

@@ -41,7 +41,7 @@ export const en = {
   },
   nav: {
     main: 'Main',
-    home: 'Home',
+    home: APP_NAME,
     training: 'Training',
     diet: 'Diet',
     energy: 'Energy',

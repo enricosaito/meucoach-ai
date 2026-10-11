@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url'
 
 /** Tab route → Lucide icon name (same icons as apps/web/src/app/app/app-shell.tsx). */
 const TAB_ICONS = {
-  home: 'house',
+  home: 'sparkles',
   training: 'dumbbell',
   diet: 'salad',
 }

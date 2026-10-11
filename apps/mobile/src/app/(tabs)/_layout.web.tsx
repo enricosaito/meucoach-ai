@@ -1,5 +1,5 @@
 import { TabList, Tabs, TabSlot, TabTrigger, type TabTriggerSlotProps } from 'expo-router/ui'
-import { Dumbbell, House, Salad, type LucideIcon } from 'lucide-react-native'
+import { Dumbbell, Salad, Sparkles, type LucideIcon } from 'lucide-react-native'
 import { forwardRef } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useI18n } from '../../lib/i18n'
@@ -20,7 +20,7 @@ export default function WebTabsLayout() {
         style={[styles.bar, { backgroundColor: colors.surface, borderTopColor: colors.border }]}
       >
         <TabTrigger name="index" href="/" asChild>
-          <TabButton icon={House} label={t('nav.home')} />
+          <TabButton icon={Sparkles} label={t('nav.home')} />
         </TabTrigger>
         <TabTrigger name="training" href="/training" asChild>
           <TabButton icon={Dumbbell} label={t('nav.training')} />
