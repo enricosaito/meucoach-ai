@@ -4,7 +4,7 @@
 //   3. pending migrations → production (`pnpm db:push`), BEFORE the code that needs them
 //   4. `git push origin main` → Vercel deploys automatically
 // After the deploy finishes, check `pnpm health`.
-import { execSync } from 'node:child_process'
+import { execSync, spawnSync } from 'node:child_process'
 import { repoRoot } from './lib/env-file.mjs'
 
 const run = (command, opts = {}) =>
@@ -31,15 +31,29 @@ step('Verifying')
 run('node scripts/verify.mjs', { stdio: 'inherit' })
 
 step('Migrations')
-const dryRun = run('node scripts/with-supabase-token.mjs db push --dry-run')
-if (/Would push these migrations/.test(dryRun)) {
-  console.log(
-    dryRun
-      .split('\n')
-      .filter((l) => l.includes('•'))
-      .join('\n'),
-  )
+// The Supabase CLI prints the migration list on stderr and a JSON summary at the end, so read both
+// streams and trust the JSON flag, not the wording. If the state can't be read, stop: pushing code
+// that needs a missing migration breaks production.
+function pendingMigrations() {
+  const result = spawnSync('node', ['scripts/with-supabase-token.mjs', 'db', 'push', '--dry-run'], {
+    cwd: repoRoot,
+    encoding: 'utf8',
+    shell: process.platform === 'win32',
+  })
+  const output = [result.stdout ?? '', result.stderr ?? ''].join('\n')
+  const summary = /\{"upToDate":(true|false)[^\n]*\}/.exec(output)
+  if (result.status !== 0 || !summary) {
+    console.error(output)
+    fail('Could not read the production migration state (dry run). Nothing was pushed.')
+  }
+  return JSON.parse(summary[0]).migrations ?? []
+}
+const pending = pendingMigrations()
+if (pending.length > 0) {
+  console.log(pending.map((m) => `  • ${m}`).join('\n'))
   run('node scripts/with-supabase-token.mjs db push --yes', { stdio: 'inherit' })
+  if (pendingMigrations().length > 0) fail('Migrations are still pending after db push.')
+  console.log('Production schema updated.')
 } else {
   console.log('Production schema is up to date.')
 }
