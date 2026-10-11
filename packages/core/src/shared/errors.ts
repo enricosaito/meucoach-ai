@@ -12,6 +12,7 @@ export type ErrorCode =
   | 'idempotency_in_progress'
   | 'rate_limited'
   | 'ai_unavailable'
+  | 'voice_unclear'
   | 'internal'
 
 const STATUS_BY_CODE: Record<ErrorCode, number> = {
@@ -28,6 +29,7 @@ const STATUS_BY_CODE: Record<ErrorCode, number> = {
   idempotency_in_progress: 409,
   rate_limited: 429,
   ai_unavailable: 502,
+  voice_unclear: 422,
   internal: 500,
 }
 

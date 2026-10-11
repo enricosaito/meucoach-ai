@@ -28,7 +28,7 @@ export function CoachView() {
   useEffect(() => {
     void getSupabaseBrowserClient()
       .from('chat_messages')
-      .select('id, role, content, created_at')
+      .select('id, role, content, created_at, has_image, via_voice')
       .order('created_at', { ascending: false })
       .limit(HISTORY_LIMIT)
       .then(({ data }) => {
@@ -38,6 +38,8 @@ export function CoachView() {
             role: row.role as ChatMessage['role'],
             content: row.content,
             createdAt: row.created_at,
+            hasImage: row.has_image,
+            viaVoice: row.via_voice,
           })),
         )
       })
@@ -131,7 +133,14 @@ export function CoachView() {
             {sending && (
               <>
                 <Bubble
-                  message={{ id: 'pending', role: 'user', content: sending, createdAt: '' }}
+                  message={{
+                    id: 'pending',
+                    role: 'user',
+                    content: sending,
+                    createdAt: '',
+                    hasImage: false,
+                    viaVoice: false,
+                  }}
                   showAvatar
                   faded={failed}
                 />

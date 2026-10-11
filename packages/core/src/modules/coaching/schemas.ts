@@ -30,3 +30,31 @@ export const sendChatMessageSchema = z
     path: ['content'],
   })
 export type SendChatMessageInput = z.infer<typeof sendChatMessageSchema>
+
+export const VOICE_AUDIO_TYPES = [
+  'audio/m4a',
+  'audio/x-m4a',
+  'audio/mp4',
+  'audio/aac',
+  'audio/webm',
+  'audio/mpeg',
+  'audio/wav',
+] as const
+/** Longest voice note the app records (2 minutes), with a little slack for timing. */
+export const VOICE_MAX_DURATION_MS = 125_000
+/** ~3 MB of audio: far above a 2-minute speech recording (~1 MB), under the body limit. */
+export const VOICE_MAX_BASE64 = 4_000_000
+
+/** A voice note to the coach: transcribed, then answered like text. The audio isn't kept. */
+export const sendVoiceMessageSchema = z.strictObject({
+  audio: z.strictObject({
+    mediaType: z.enum(VOICE_AUDIO_TYPES),
+    base64: z
+      .string()
+      .min(1)
+      .max(VOICE_MAX_BASE64)
+      .regex(/^[A-Za-z0-9+/]+={0,2}$/, 'Not base64'),
+  }),
+  durationMs: z.number().int().min(0).max(VOICE_MAX_DURATION_MS),
+})
+export type SendVoiceMessageInput = z.infer<typeof sendVoiceMessageSchema>

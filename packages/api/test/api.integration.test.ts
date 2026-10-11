@@ -353,3 +353,49 @@ describe('POST /chat/messages with a photo', () => {
     expect(res.status).toBe(400)
   })
 })
+
+describe('POST /chat/voice', () => {
+  it('transcribes a voice note (mock), answers it and records both AI calls', async () => {
+    const res = await app.request('/api/v1/chat/voice', {
+      method: 'POST',
+      headers: authHeaders(user, { 'idempotency-key': newKey(), 'x-request-id': 'voice-req-1' }),
+      body: JSON.stringify({
+        audio: { mediaType: 'audio/m4a', base64: btoa('fake audio bytes') },
+        durationMs: 4000,
+      }),
+    })
+    expect(res.status).toBe(201)
+    const body = (await res.json()) as {
+      question: { content: string; viaVoice: boolean }
+      reply: { content: string }
+    }
+    // The user's language is pt-BR, so the mock transcribes in Portuguese.
+    expect(body.question).toMatchObject({
+      viaVoice: true,
+      content: 'Mensagem de voz de teste: como foi meu treino ontem?',
+    })
+    expect(body.reply.content.length).toBeGreaterThan(0)
+
+    const { data: calls } = await adminClient()
+      .from('ai_calls')
+      .select('feature, provider, status')
+      .eq('request_id', 'voice-req-1')
+      .order('created_at')
+    expect(calls).toEqual([
+      { feature: 'voice_transcription', provider: 'mock', status: 'succeeded' },
+      { feature: 'coach_chat', provider: 'mock', status: 'succeeded' },
+    ])
+  })
+
+  it('rejects audio over the length limit', async () => {
+    const res = await app.request('/api/v1/chat/voice', {
+      method: 'POST',
+      headers: authHeaders(user, { 'idempotency-key': newKey() }),
+      body: JSON.stringify({
+        audio: { mediaType: 'audio/m4a', base64: btoa('x') },
+        durationMs: 10 * 60_000,
+      }),
+    })
+    expect(res.status).toBe(400)
+  })
+})

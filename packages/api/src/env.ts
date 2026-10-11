@@ -1,4 +1,4 @@
-import { AI_PROVIDER_NAMES } from '@mycoach/core/coaching'
+import { AI_PROVIDER_NAMES, TRANSCRIPTION_PROVIDER_NAMES } from '@mycoach/core/coaching'
 import { z } from 'zod'
 
 const emptyToUndefined = (value: unknown) => (value === '' ? undefined : value)
@@ -15,6 +15,10 @@ export const apiEnvSchema = z
     AI_MODEL_SMART: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     AI_MOCK_DELAY_MS: z.coerce.number().int().min(0).default(400),
     ANTHROPIC_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    // Voice notes: speech-to-text (mock by default; openai needs OPENAI_API_KEY).
+    TRANSCRIPTION_PROVIDER: z.enum(TRANSCRIPTION_PROVIDER_NAMES).default('mock'),
+    TRANSCRIPTION_MODEL: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
+    OPENAI_API_KEY: z.preprocess(emptyToUndefined, z.string().min(1).optional()),
     LOG_LEVEL: z
       .enum(['trace', 'debug', 'info', 'warn', 'error', 'fatal', 'silent'])
       .default('info'),
@@ -36,6 +40,10 @@ export const apiEnvSchema = z
   .refine((env) => env.AI_PROVIDER !== 'anthropic' || env.ANTHROPIC_API_KEY, {
     message: 'ANTHROPIC_API_KEY is required when AI_PROVIDER=anthropic',
     path: ['ANTHROPIC_API_KEY'],
+  })
+  .refine((env) => env.TRANSCRIPTION_PROVIDER !== 'openai' || env.OPENAI_API_KEY, {
+    message: 'OPENAI_API_KEY is required when TRANSCRIPTION_PROVIDER=openai',
+    path: ['OPENAI_API_KEY'],
   })
 
 export type ApiEnv = z.infer<typeof apiEnvSchema>

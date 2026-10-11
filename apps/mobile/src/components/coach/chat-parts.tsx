@@ -1,7 +1,8 @@
-import { CHAT_MESSAGE_MAX_LENGTH, type ChatMessage } from '@mycoach/core/coaching/contracts'
-import { ArrowUp } from 'lucide-react-native'
-import { useEffect, useState } from 'react'
-import { Pressable, StyleSheet, TextInput, View } from 'react-native'
+import type { ChatMessage } from '@mycoach/core/coaching/contracts'
+import { Image } from 'expo-image'
+import { Camera, Mic } from 'lucide-react-native'
+import { useEffect } from 'react'
+import { StyleSheet, View } from 'react-native'
 import Animated, {
   useAnimatedStyle,
   useReducedMotion,
@@ -11,14 +12,13 @@ import Animated, {
   withSequence,
   withTiming,
 } from 'react-native-reanimated'
-import { haptics } from '../../lib/haptics'
+import { chatPhotoUri } from '../../lib/chat-photos'
 import { useI18n } from '../../lib/i18n'
-import { font } from '../../lib/typography'
 import { radius, space, useColors } from '../../theme'
 import { Appear } from '../appear'
-import { ChatText } from './chat-text'
 import { ShiningSparkles } from '../training/shining-sparkles'
 import { Txt } from '../ui'
+import { ChatText } from './chat-text'
 
 /** The coach's mark next to its messages: the twinkling sparkles on a soft orange disc. */
 export function CoachAvatar({ size = 28, still = false }: { size?: number; still?: boolean }) {
@@ -43,13 +43,18 @@ export function Bubble({
   message,
   showAvatar,
   faded = false,
+  photoUri,
 }: {
   message: ChatMessage
   showAvatar: boolean
   faded?: boolean
+  /** The photo to show for a message being sent (otherwise this phone's saved copy). */
+  photoUri?: string | null
 }) {
+  const { t } = useI18n()
   const colors = useColors()
   const mine = message.role === 'user'
+  const photo = message.hasImage ? (photoUri ?? chatPhotoUri(message.id)) : null
   return (
     <Appear style={[styles.row, mine ? styles.rowMine : styles.rowCoach]}>
       {!mine && (
@@ -67,10 +72,34 @@ export function Bubble({
         ]}
       >
         {mine ? (
-          // What the user typed stays exactly as typed.
-          <Txt style={{ color: colors.onAccent }} selectable>
-            {message.content}
-          </Txt>
+          <View style={{ gap: space.sm }}>
+            {message.hasImage &&
+              (photo ? (
+                <Image source={{ uri: photo }} style={styles.photo} contentFit="cover" />
+              ) : (
+                // Photos aren't stored on the server; another phone has no copy.
+                <View style={styles.meta}>
+                  <Camera size={14} color={colors.onAccent} />
+                  <Txt variant="caption" style={{ color: colors.onAccent }}>
+                    {t('coach.photoSent')}
+                  </Txt>
+                </View>
+              ))}
+            {message.viaVoice && (
+              <View style={styles.meta}>
+                <Mic size={14} color={colors.onAccent} />
+                <Txt variant="caption" style={{ color: colors.onAccent, fontWeight: '700' }}>
+                  {t('coach.voiceNote')}
+                </Txt>
+              </View>
+            )}
+            {/* What the user typed (or said) stays exactly as it was. */}
+            {message.content ? (
+              <Txt style={{ color: colors.onAccent }} selectable>
+                {message.content}
+              </Txt>
+            ) : null}
+          </View>
         ) : (
           <ChatText content={message.content} color={colors.textPrimary} />
         )}
@@ -136,76 +165,6 @@ function Dot({ delay, color }: { delay: number; color: string }) {
   return <Animated.View style={[styles.dot, { backgroundColor: color }, animated]} />
 }
 
-/** Message field with a round send button. */
-export function Composer({
-  onSend,
-  disabled,
-  autoFocus = false,
-}: {
-  onSend: (text: string) => void
-  disabled: boolean
-  autoFocus?: boolean
-}) {
-  const { t } = useI18n()
-  const colors = useColors()
-  const [draft, setDraft] = useState('')
-  const canSend = draft.trim().length > 0 && !disabled
-
-  function send() {
-    if (!canSend) return
-    haptics.tap()
-    onSend(draft.trim())
-    setDraft('')
-  }
-
-  return (
-    <View
-      style={[
-        styles.composer,
-        { backgroundColor: colors.surfaceElevated, borderColor: colors.border },
-      ]}
-    >
-      <TextInput
-        accessibilityLabel={t('coach.inputLabel')}
-        placeholder={t('coach.placeholder')}
-        placeholderTextColor={colors.textSecondary}
-        selectionColor={colors.accentIcon}
-        cursorColor={colors.accentIcon}
-        value={draft}
-        onChangeText={setDraft}
-        maxLength={CHAT_MESSAGE_MAX_LENGTH}
-        multiline
-        autoFocus={autoFocus}
-        style={[styles.input, { color: colors.textPrimary }]}
-      />
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel={t('coach.send')}
-        accessibilityState={{ disabled: !canSend }}
-        disabled={!canSend}
-        onPress={send}
-        style={({ pressed }) => [
-          styles.send,
-          {
-            backgroundColor: canSend
-              ? pressed
-                ? colors.accentPressed
-                : colors.accent
-              : colors.surfaceMuted,
-            transform: [{ scale: pressed ? 0.92 : 1 }],
-          },
-        ]}
-      >
-        <ArrowUp
-          size={20}
-          strokeWidth={2.5}
-          color={canSend ? colors.onAccent : colors.textDisabled}
-        />
-      </Pressable>
-    </View>
-  )
-}
-
 const styles = StyleSheet.create({
   avatar: { alignItems: 'center', justifyContent: 'center' },
   row: { flexDirection: 'row', alignItems: 'flex-end', gap: space.sm },
@@ -222,29 +181,6 @@ const styles = StyleSheet.create({
   typing: { flexDirection: 'row', gap: 5, paddingVertical: space.lg },
   dot: { width: 7, height: 7, borderRadius: 3.5 },
   dots: { flexDirection: 'row', gap: 5 },
-  composer: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    gap: space.sm,
-    borderWidth: 1,
-    borderRadius: 26,
-    padding: 6,
-    paddingLeft: space.lg,
-  },
-  input: {
-    flex: 1,
-    minHeight: 40,
-    maxHeight: 140,
-    paddingTop: 10,
-    paddingBottom: 10,
-    fontSize: 16,
-    ...font('ui', 500),
-  },
-  send: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  photo: { width: 220, height: 220, borderRadius: radius.md },
+  meta: { flexDirection: 'row', alignItems: 'center', gap: 6 },
 })

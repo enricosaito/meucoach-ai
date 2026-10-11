@@ -121,7 +121,7 @@ export async function hasPhotoConsent(): Promise<boolean> {
 export async function fetchChatHistory(limit = 50): Promise<ChatMessage[]> {
   const { data, error } = await supabase
     .from('chat_messages')
-    .select('id, role, content, created_at')
+    .select('id, role, content, created_at, has_image, via_voice')
     .order('created_at', { ascending: false })
     .limit(limit)
   if (error) throw error
@@ -130,5 +130,7 @@ export async function fetchChatHistory(limit = 50): Promise<ChatMessage[]> {
     role: row.role === 'assistant' ? 'assistant' : 'user',
     content: row.content,
     createdAt: row.created_at,
+    hasImage: row.has_image,
+    viaVoice: row.via_voice,
   }))
 }

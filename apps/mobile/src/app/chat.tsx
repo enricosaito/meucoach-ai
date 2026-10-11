@@ -4,17 +4,30 @@ import { ChevronLeft, RotateCw } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
 import { FlatList, KeyboardAvoidingView, Platform, Pressable, StyleSheet, View } from 'react-native'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { Bubble, CoachAvatar, Composer, TypingIndicator } from '../components/coach/chat-parts'
+import { Bubble, CoachAvatar, TypingIndicator } from '../components/coach/chat-parts'
+import { Composer } from '../components/coach/composer'
 import { Button, ErrorText, Skeleton, Txt } from '../components/ui'
 import { api, newIdempotencyKey, unwrap, writeHeaders } from '../lib/api'
+import { rememberChatPhoto, type ChatPhoto } from '../lib/chat-photos'
 import { fetchChatHistory } from '../lib/data'
 import { haptics } from '../lib/haptics'
 import { errorMessage, useI18n } from '../lib/i18n'
+import type { VoiceNote } from '../lib/use-voice-recorder'
 import { space, useColors } from '../theme'
 
 type Row =
-  | { kind: 'message'; message: ChatMessage; showAvatar: boolean; faded?: boolean }
+  | {
+      kind: 'message'
+      message: ChatMessage
+      showAvatar: boolean
+      faded?: boolean
+      photoUri?: string | null
+    }
   | { kind: 'typing' }
+
+/** What's being sent: text and/or a photo, or a voice note (transcribed by the API). */
+type Outgoing =
+  { kind: 'text'; text: string; photo: ChatPhoto | null } | { kind: 'voice'; note: VoiceNote }
 
 /**
  * The coach conversation, full screen (no tab bar, so the composer can sit on the keyboard).
@@ -28,8 +41,8 @@ export default function ChatScreen() {
   const params = useLocalSearchParams<{ q?: string; focus?: string }>()
   const [messages, setMessages] = useState<ChatMessage[] | null>(null)
   const [loadError, setLoadError] = useState('')
-  // The question in flight: kept until the reply arrives, so a retry resends the same body.
-  const [sending, setSending] = useState('')
+  // The message in flight: kept until the reply arrives, so a retry resends the same body.
+  const [sending, setSending] = useState<Outgoing | null>(null)
   const [pending, setPending] = useState(false)
   const [error, setError] = useState('')
   // One Idempotency-Key per question, reused on retry (the API replays a completed reply).
@@ -45,20 +58,42 @@ export default function ChatScreen() {
       })
   }, [t])
 
-  async function deliver(question: string) {
+  async function deliver(outgoing: Outgoing) {
     keyRef.current ??= newIdempotencyKey()
+    const headers = writeHeaders(keyRef.current)
     setPending(true)
     setError('')
     try {
       const exchange = await unwrap(
-        api.chat.messages.$post(
-          { json: { content: question } },
-          { headers: writeHeaders(keyRef.current) },
-        ),
+        outgoing.kind === 'voice'
+          ? api.chat.voice.$post(
+              {
+                json: {
+                  audio: { mediaType: outgoing.note.mediaType, base64: outgoing.note.base64 },
+                  durationMs: Math.round(outgoing.note.durationMs),
+                },
+              },
+              { headers },
+            )
+          : api.chat.messages.$post(
+              {
+                json: {
+                  content: outgoing.text,
+                  ...(outgoing.photo && {
+                    image: { mediaType: 'image/jpeg' as const, base64: outgoing.photo.base64 },
+                  }),
+                },
+              },
+              { headers },
+            ),
       )
       keyRef.current = null
+      // The photo isn't kept on the server: this phone keeps its copy for the thread.
+      if (outgoing.kind === 'text' && outgoing.photo) {
+        rememberChatPhoto(exchange.question.id, outgoing.photo.uri)
+      }
       setMessages((current) => [...(current ?? []), exchange.question, exchange.reply])
-      setSending('')
+      setSending(null)
       haptics.tap()
     } catch (e) {
       setError(errorMessage(t, e))
@@ -67,11 +102,16 @@ export default function ChatScreen() {
     }
   }
 
-  function ask(question: string) {
-    if (!question || pending || sending) return
+  function send(outgoing: Outgoing) {
+    if (pending || sending) return
+    if (outgoing.kind === 'text' && !outgoing.text && !outgoing.photo) return
     keyRef.current = null
-    setSending(question)
-    void deliver(question)
+    setSending(outgoing)
+    void deliver(outgoing)
+  }
+
+  const ask = (text: string) => {
+    send({ kind: 'text', text, photo: null })
   }
 
   // A question passed in (suggestion chip, Treino button): send it once history has loaded.
@@ -90,11 +130,21 @@ export default function ChatScreen() {
   const rows: Row[] = []
   if (pending) rows.push({ kind: 'typing' })
   if (sending) {
+    const voice = sending.kind === 'voice'
     rows.push({
       kind: 'message',
-      message: { id: 'pending', role: 'user', content: sending, createdAt: '' },
+      message: {
+        id: 'pending',
+        role: 'user',
+        // A voice note shows "Transcribing…" until the API returns its transcript.
+        content: voice ? t('coach.transcribing') : sending.text,
+        createdAt: '',
+        hasImage: !voice && sending.photo !== null,
+        viaVoice: voice,
+      },
       showAvatar: true,
       faded: failed,
+      photoUri: voice ? null : (sending.photo?.uri ?? null),
     })
   }
   const list = messages ?? []
@@ -150,7 +200,12 @@ export default function ChatScreen() {
             item.kind === 'typing' ? (
               <TypingIndicator />
             ) : (
-              <Bubble message={item.message} showAvatar={item.showAvatar} faded={item.faded} />
+              <Bubble
+                message={item.message}
+                showAvatar={item.showAvatar}
+                faded={item.faded}
+                photoUri={item.photoUri}
+              />
             )
           }
           ListEmptyComponent={
@@ -175,7 +230,9 @@ export default function ChatScreen() {
             <ErrorText>{error}</ErrorText>
             <Button
               variant="ghost"
-              onPress={() => void deliver(sending)}
+              onPress={() => {
+                if (sending) void deliver(sending)
+              }}
               icon={<RotateCw size={16} color={colors.accentIcon} />}
             >
               {t('common.tryAgain')}
@@ -183,7 +240,12 @@ export default function ChatScreen() {
           </View>
         )}
         <Composer
-          onSend={ask}
+          onSend={({ text, photo }) => {
+            send({ kind: 'text', text, photo })
+          }}
+          onVoice={(note) => {
+            send({ kind: 'voice', note })
+          }}
           disabled={pending || Boolean(sending) || messages === null}
           autoFocus={params.focus === '1'}
         />

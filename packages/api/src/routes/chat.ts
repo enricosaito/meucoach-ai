@@ -1,4 +1,4 @@
-import { sendChatMessageSchema } from '@mycoach/core/coaching'
+import { sendChatMessageSchema, sendVoiceMessageSchema } from '@mycoach/core/coaching'
 import { Hono } from 'hono'
 import { rateLimit } from '../middleware/rate-limit'
 import type { AppEnv } from '../types'
@@ -18,6 +18,20 @@ export const chatRoutes = new Hono<AppEnv>()
         {
           requestId: c.var.requestId,
         },
+      )
+      return c.json(exchange, 201)
+    },
+  )
+  // A voice note: transcribed (audio discarded), then answered like a text message.
+  .post(
+    '/voice',
+    rateLimit('chat', (deps) => deps.limits.chatPerMinute),
+    jsonBody(sendVoiceMessageSchema),
+    async (c) => {
+      const exchange = await c.var.deps.coaching.sendVoiceMessage(
+        c.var.userId,
+        c.req.valid('json'),
+        { requestId: c.var.requestId },
       )
       return c.json(exchange, 201)
     },

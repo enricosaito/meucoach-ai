@@ -41,6 +41,12 @@
           "cameraPermission": "O Meu Coach usa a câmera para tirar fotos de progresso.",
           "microphonePermission": false
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "O Meu Coach usa o microfone só quando você grava uma mensagem de voz para o seu coach."
+        }
       ]
     ],
     "experiments": {

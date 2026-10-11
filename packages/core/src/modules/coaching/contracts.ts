@@ -5,8 +5,12 @@ export {
   CHAT_MESSAGE_MAX_LENGTH,
   chatImageSchema,
   sendChatMessageSchema,
+  sendVoiceMessageSchema,
+  VOICE_AUDIO_TYPES,
+  VOICE_MAX_DURATION_MS,
   type ChatImage,
   type SendChatMessageInput,
+  type SendVoiceMessageInput,
 } from './schemas'
 export type { ChatMessage, CheckIn } from './types'
 export { parseChatMarkdown, type ChatBlock, type ChatSpan } from './domain/chat-format'

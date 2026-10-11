@@ -24,6 +24,14 @@ export { createAiCallRecorder } from './data/ai-calls-repository'
 export {
   COACH_CHAT_FEATURE,
   COACH_CHECK_IN_FEATURE,
+  VOICE_TRANSCRIPTION_FEATURE,
   createCoachingService,
   type CoachingService,
 } from './service'
+export {
+  DEFAULT_TRANSCRIPTION_MODEL,
+  TRANSCRIPTION_PROVIDER_NAMES,
+  createTranscriber,
+  type TranscriptionProvider,
+  type TranscriptionProviderName,
+} from './ai/transcription'

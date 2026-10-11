@@ -13,11 +13,12 @@ import {
 import { buildCheckInFacts, fallbackCheckIn, type CheckInDraft } from './domain/check-in'
 import { MAX_HISTORY_TURNS, buildChatWindow, historyTurn } from './domain/chat-window'
 import { coachChat, coachCheckIn } from './prompts'
-import type { ChatImage } from './schemas'
+import { CHAT_MESSAGE_MAX_LENGTH, type ChatImage, type SendVoiceMessageInput } from './schemas'
 import type { ChatMessage, CheckIn } from './types'
 
 export const COACH_CHAT_FEATURE = 'coach_chat'
 export const COACH_CHECK_IN_FEATURE = 'coach_check_in'
+export const VOICE_TRANSCRIPTION_FEATURE = 'voice_transcription'
 /** How far back the check-in looks at workouts (also covers the current week). */
 const CHECK_IN_LOOKBACK_DAYS = 14
 const CHECK_IN_MAX_CHARS = 600
@@ -61,7 +62,7 @@ export function createCoachingService(deps: {
   const logger = deps.logger ?? noopLogger
   const now = deps.now ?? (() => new Date())
 
-  return {
+  const service = {
     /**
      * Answers a message: text, a photo, or both (a voice note arrives here as its transcript).
      * The photo goes to the AI for this reply only and is never stored. Nothing is persisted
@@ -130,6 +131,29 @@ export function createCoachingService(deps: {
     },
 
     /**
+     * A voice note: transcribed (the audio is discarded), then answered like a text message, with
+     * the transcript stored as the user's message and marked as voice.
+     */
+    async sendVoiceMessage(
+      userId: string,
+      input: SendVoiceMessageInput,
+      options: { requestId?: string } = {},
+    ): Promise<{ question: ChatMessage; reply: ChatMessage }> {
+      const context = await profile.getCoachingContext(userId)
+      const { text } = await gateway.transcribe({
+        userId,
+        feature: VOICE_TRANSCRIPTION_FEATURE,
+        requestId: options.requestId,
+        audio: input.audio,
+        language: context.locale === 'pt-BR' ? 'pt' : 'en',
+        durationMs: input.durationMs,
+      })
+      const content = text.slice(0, CHAT_MESSAGE_MAX_LENGTH)
+      if (!content) throw new AppError('voice_unclear', 'No speech was recognised in the recording')
+      return service.sendMessage(userId, { content, viaVoice: true }, options)
+    },
+
+    /**
      * Today's check-in: written once per local day (the first open), then reused. The coach
      * draws on yesterday's and today's workout, a break, limitations and the recent chat. If
      * the AI is unavailable, a template check-in is stored instead, so Home never stays empty.
@@ -194,6 +218,7 @@ export function createCoachingService(deps: {
       return toCheckIn(row)
     },
   }
+  return service
 }
 
 function toCheckIn(row: ChatMessageRow): CheckIn {

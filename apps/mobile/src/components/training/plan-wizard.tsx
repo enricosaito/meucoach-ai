@@ -15,15 +15,7 @@ import { router } from 'expo-router'
 import * as WebBrowser from 'expo-web-browser'
 import { ArrowLeft, Camera, ExternalLink, Info, ShieldCheck, X } from 'lucide-react-native'
 import { useEffect, useRef, useState } from 'react'
-import {
-  ActionSheetIOS,
-  Alert,
-  Platform,
-  Pressable,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native'
+import { Pressable, StyleSheet, TextInput, View } from 'react-native'
 import { api, newIdempotencyKey, unwrap, writeHeaders } from '../../lib/api'
 import {
   pickBodyPhoto,
@@ -32,6 +24,7 @@ import {
   type PhotoSource,
 } from '../../lib/body-photos'
 import { fetchQuestionnaire, hasPhotoConsent } from '../../lib/data'
+import { choosePhotoSource } from '../../lib/photo-source'
 import { env } from '../../lib/env'
 import { haptics } from '../../lib/haptics'
 import { errorMessage, useI18n } from '../../lib/i18n'
@@ -333,34 +326,6 @@ function PhotosStep({
       </Pressable>
     </Appear>
   )
-}
-
-/** Camera or library: an action sheet on iOS, an alert on Android, the file picker on web. */
-function choosePhotoSource(
-  labels: { title: string; camera: string; library: string; cancel: string },
-  onPick: (source: PhotoSource) => void,
-) {
-  if (Platform.OS === 'web') {
-    onPick('library')
-  } else if (Platform.OS === 'ios') {
-    ActionSheetIOS.showActionSheetWithOptions(
-      {
-        title: labels.title,
-        options: [labels.camera, labels.library, labels.cancel],
-        cancelButtonIndex: 2,
-      },
-      (index) => {
-        if (index === 0) onPick('camera')
-        if (index === 1) onPick('library')
-      },
-    )
-  } else {
-    Alert.alert(labels.title, undefined, [
-      { text: labels.camera, onPress: () => onPick('camera') },
-      { text: labels.library, onPress: () => onPick('library') },
-      { text: labels.cancel, style: 'cancel' },
-    ])
-  }
 }
 
 function PhotoSlot({

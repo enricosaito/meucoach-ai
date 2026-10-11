@@ -2,6 +2,7 @@ import {
   createAiCallRecorder,
   createAiGateway,
   createAiProvider,
+  createTranscriber,
   createCoachingService,
   type CoachingService,
 } from '@mycoach/core/coaching'
@@ -68,6 +69,11 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
       ...(env.AI_MODEL_FAST && { fast: env.AI_MODEL_FAST }),
       ...(env.AI_MODEL_SMART && { smart: env.AI_MODEL_SMART }),
     },
+    transcriber: createTranscriber({
+      provider: env.TRANSCRIPTION_PROVIDER,
+      openAiApiKey: env.OPENAI_API_KEY,
+      model: env.TRANSCRIPTION_MODEL,
+    }),
     recordCall: createAiCallRecorder(db),
     logger: logger.child({ component: 'ai-gateway' }),
   })
