@@ -379,6 +379,7 @@ describe('POST /chat/voice', () => {
     const { data: calls } = await adminClient()
       .from('ai_calls')
       .select('feature, provider, status')
+      .eq('user_id', user.id)
       .eq('request_id', 'voice-req-1')
       .order('created_at')
     expect(calls).toEqual([
