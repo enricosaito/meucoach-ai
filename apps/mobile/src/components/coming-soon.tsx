@@ -1,15 +1,25 @@
 import type { LucideIcon } from 'lucide-react-native'
+import type { ReactNode } from 'react'
 import { View } from 'react-native'
 import { useI18n } from '../lib/i18n'
 import { radius, space, useColors } from '../theme'
 import { Card, Screen, Txt } from './ui'
 
-/** Placeholder for tabs that are still being ported from the web app. */
-export function ComingSoon({ title, icon: Icon }: { title: string; icon: LucideIcon }) {
+/** Placeholder for tabs that are still being ported; `children` (already-ported parts) go above. */
+export function ComingSoon({
+  title,
+  icon: Icon,
+  children,
+}: {
+  title: string
+  icon: LucideIcon
+  children?: ReactNode
+}) {
   const { t } = useI18n()
   const colors = useColors()
   return (
     <Screen title={title}>
+      {children}
       <Card>
         <View
           style={{

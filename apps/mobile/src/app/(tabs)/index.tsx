@@ -9,11 +9,9 @@ import { ArrowRight, Check, ChevronRight, Dumbbell, Flame, Salad } from 'lucide-
 import { useCallback, useEffect, useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { DoneBadge } from '../../components/done-badge'
-import { MacroTiles } from '../../components/home/macro-tiles'
 import { StoryCard } from '../../components/home/story-card'
 import { StreakCelebration } from '../../components/home/streak-celebration'
 import { WeekHero } from '../../components/home/week-hero'
-import { WeekStrip } from '../../components/home/week-strip'
 import { XpNote } from '../../components/xp-note'
 import {
   Button,
@@ -95,9 +93,7 @@ export default function HomeScreen() {
       {me && plans && !log.loading ? (
         <>
           <WeekHero me={me} trainedDays={week.trainedDays} target={target} targets={me.targets} />
-          {target !== null && <WeekStrip days={week.days} />}
           <TodayCard plans={plans} log={log} />
-          {me.targets && <MacroTiles targets={me.targets} />}
           {me.targets && <DietCard diet={plans.diet} />}
           <StoryCard me={me} trainedDays={week.trainedDays} target={target} />
           <MilestoneCelebration me={me} />

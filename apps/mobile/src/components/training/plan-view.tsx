@@ -62,48 +62,42 @@ export function PlanView({
     <>
       <PlanHeader plan={plan} log={log} />
 
-      <View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={{ marginHorizontal: -space.lg }}
-          contentContainerStyle={styles.pills}
-        >
-          {plan.days.map((d, i) => {
-            const selected = i === dayIndex
-            return (
-              <Pressable
-                key={`${d.title}-${String(i)}`}
-                accessibilityRole="tab"
-                accessibilityState={{ selected }}
-                accessibilityLabel={workoutTitle(t, i, d.title)}
-                onPress={() => {
-                  haptics.tap()
-                  setPicked(i)
+      {/* Equal tiles across the width (plans have at most six days, so no scrolling). */}
+      <View style={styles.pills}>
+        {plan.days.map((d, i) => {
+          const selected = i === dayIndex
+          return (
+            <Pressable
+              key={`${d.title}-${String(i)}`}
+              accessibilityRole="tab"
+              accessibilityState={{ selected }}
+              accessibilityLabel={workoutTitle(t, i, d.title)}
+              onPress={() => {
+                haptics.tap()
+                setPicked(i)
+              }}
+              style={[
+                styles.pill,
+                { backgroundColor: selected ? colors.textPrimary : colors.surfaceMuted },
+              ]}
+            >
+              <Txt
+                variant="heading"
+                style={{
+                  color: selected ? colors.background : colors.textSecondary,
+                  fontWeight: '700',
                 }}
-                style={[
-                  styles.pill,
-                  { backgroundColor: selected ? colors.textPrimary : colors.surfaceMuted },
-                ]}
               >
-                <Txt
-                  variant="heading"
-                  style={{
-                    color: selected ? colors.background : colors.textSecondary,
-                    fontWeight: '700',
-                  }}
-                >
-                  {dayLetter(i)}
-                </Txt>
-                {doneToday.has(i) && (
-                  <View style={[styles.pillDone, { backgroundColor: colors.accent }]}>
-                    <Check size={10} strokeWidth={3.5} color={colors.onAccent} />
-                  </View>
-                )}
-              </Pressable>
-            )
-          })}
-        </ScrollView>
+                {dayLetter(i)}
+              </Txt>
+              {doneToday.has(i) && (
+                <View style={[styles.pillDone, { backgroundColor: colors.accent }]}>
+                  <Check size={10} strokeWidth={3.5} color={colors.onAccent} />
+                </View>
+              )}
+            </Pressable>
+          )
+        })}
       </View>
 
       <DayCarousel
@@ -174,25 +168,37 @@ function PlanHeader({ plan, log }: { plan: WorkoutPlan; log: WorkoutLog }) {
 
       {showInfo && (
         <Appear>
-          {/* Tooltip: a bubble pointing at the info icon; tap it to close. */}
-          <Pressable
-            accessibilityRole="button"
-            onPress={() => {
-              setShowInfo(false)
-            }}
-          >
-            <View
-              style={[
-                styles.caret,
-                { backgroundColor: colors.surfaceMuted, marginLeft: caretX - 6 },
-              ]}
-            />
-            <View style={[styles.bubble, { backgroundColor: colors.surfaceMuted }]}>
+          {/* Tooltip: a bubble pointing at the info icon. Tap the summary (or the icon) to close. */}
+          <View
+            style={[styles.caret, { backgroundColor: colors.surfaceMuted, marginLeft: caretX - 6 }]}
+          />
+          <View style={[styles.bubble, { backgroundColor: colors.surfaceMuted }]}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityHint={t('training.aboutPlan')}
+              onPress={() => {
+                setShowInfo(false)
+              }}
+            >
               <Txt variant="label" style={{ fontWeight: '400' }}>
                 {plan.summary}
               </Txt>
-            </View>
-          </Pressable>
+            </Pressable>
+            <Pressable
+              accessibilityRole="link"
+              hitSlop={8}
+              onPress={() => {
+                haptics.tap()
+                router.push('/chat')
+              }}
+              style={({ pressed }) => [styles.askCoach, { opacity: pressed ? 0.6 : 1 }]}
+            >
+              <ShiningSparkles size={14} color={colors.accentIcon} />
+              <Txt variant="label" color="accentText" style={{ fontWeight: '700' }}>
+                {t('training.askCoach')}
+              </Txt>
+            </Pressable>
+          </View>
         </Appear>
       )}
 
@@ -201,18 +207,6 @@ function PlanHeader({ plan, log }: { plan: WorkoutPlan; log: WorkoutLog }) {
           {tc('workout.thisWeek', log.today.thisWeek)}
         </Txt>
       ) : null}
-
-      <Button
-        variant="secondary"
-        onPress={() => {
-          haptics.tap()
-          router.push('/chat')
-        }}
-        icon={<ShiningSparkles size={16} color={colors.accentIcon} />}
-        style={{ alignSelf: 'stretch' }}
-      >
-        {t('training.askCoach')}
-      </Button>
     </Card>
   )
 }
@@ -489,12 +483,13 @@ const styles = StyleSheet.create({
     marginBottom: -6,
     transform: [{ rotate: '45deg' }],
   },
-  bubble: { borderRadius: radius.md, padding: space.md },
-  pills: { paddingHorizontal: space.lg, gap: space.sm },
+  bubble: { borderRadius: radius.md, padding: space.md, gap: space.md },
+  askCoach: { flexDirection: 'row', alignItems: 'center', gap: 6, alignSelf: 'flex-start' },
+  pills: { flexDirection: 'row', gap: space.sm },
   pill: {
-    width: 48,
+    flex: 1,
     height: 48,
-    borderRadius: 24,
+    borderRadius: radius.md,
     alignItems: 'center',
     justifyContent: 'center',
   },

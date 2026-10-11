@@ -103,8 +103,15 @@ export default function TrainingScreen() {
 
       {ready?.plan && (
         <>
-          <PlanView key={ready.id} planId={ready.id} plan={ready.plan} log={log} />
-          {!log.loading && <WorkoutHistory sessions={log.sessions} todayDate={log.todayDate} />}
+          {/* Wait for the log: it decides today's workout, which the carousel opens on. */}
+          {log.loading ? (
+            <Skeleton height={480} />
+          ) : (
+            <>
+              <PlanView key={ready.id} planId={ready.id} plan={ready.plan} log={log} />
+              <WorkoutHistory sessions={log.sessions} todayDate={log.todayDate} />
+            </>
+          )}
           {analysis && <BodyAnalysisCard analysis={analysis} />}
         </>
       )}
