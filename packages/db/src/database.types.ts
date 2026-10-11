@@ -182,7 +182,10 @@ export type Database = {
           content: string
           created_at: string
           id: string
+          kind: string
+          local_date: string | null
           prompt_version: string | null
+          quick_replies: string[] | null
           role: string
           user_id: string
         }
@@ -191,7 +194,10 @@ export type Database = {
           content: string
           created_at?: string
           id?: string
+          kind?: string
+          local_date?: string | null
           prompt_version?: string | null
+          quick_replies?: string[] | null
           role: string
           user_id: string
         }
@@ -200,7 +206,10 @@ export type Database = {
           content?: string
           created_at?: string
           id?: string
+          kind?: string
+          local_date?: string | null
           prompt_version?: string | null
+          quick_replies?: string[] | null
           role?: string
           user_id?: string
         }

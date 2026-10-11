@@ -56,6 +56,7 @@ export {
   type BodyScan,
   type BodyScanPhoto,
   type BodyScanStatus,
+  type CoachSnapshot,
   type PlanInputs,
   type PlanStatus,
   type WorkoutPlanRecord,

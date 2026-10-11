@@ -15,10 +15,13 @@ import {
 import {
   countPlansSince,
   deleteScanRows,
+  findLatestReadyPlan,
+  findLimitations,
   findPlan,
   findScan,
   insertWorkoutSession,
   listScanRows,
+  listSessionsSince,
   requestPlanAtomically,
   updatePlan,
   updateScan,
@@ -37,7 +40,7 @@ import {
   type PhotoUploadRequest,
   type RequestPlanInput,
 } from './schemas'
-import type { PlanInputs } from './types'
+import type { CoachSnapshot, PlanInputs } from './types'
 
 export const BODY_ANALYSIS_FEATURE = 'body_analysis'
 export const WORKOUT_PLAN_FEATURE = 'workout_plan'
@@ -306,6 +309,30 @@ export function createTrainingService(deps: {
         rows.map((r) => r.id),
       )
       return rows.length
+    },
+
+    /**
+     * What the coach may know about training, for the daily check-in: the current plan (titles and
+     * focus only), workouts logged since `sinceLocalDate` and the user's written limitations.
+     */
+    async getCoachSnapshot(userId: string, sinceLocalDate: string): Promise<CoachSnapshot> {
+      const [planRow, sessions, limitations] = await Promise.all([
+        findLatestReadyPlan(db, userId),
+        listSessionsSince(db, userId, sinceLocalDate),
+        findLimitations(db, userId),
+      ])
+      const plan = planRow ? workoutPlanSchema.safeParse(planRow.plan) : null
+      return {
+        plan:
+          planRow && plan?.success
+            ? {
+                id: planRow.id,
+                days: plan.data.days.map((d) => ({ title: d.title, focus: d.focus })),
+              }
+            : null,
+        sessions: sessions.map(toWorkoutSession),
+        limitations,
+      }
     },
 
     /**

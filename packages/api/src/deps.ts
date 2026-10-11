@@ -77,6 +77,7 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
     profile,
     logger: logger.child({ module: 'training' }),
   })
+  const gamification = createGamificationService({ db })
   const nutrition = createNutritionService({
     db,
     gateway,
@@ -93,10 +94,17 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
     rateLimiter: createInMemoryRateLimiter(),
     idempotency: createSupabaseIdempotencyStore(db),
     profile,
-    coaching: createCoachingService({ db, gateway, profile }),
+    coaching: createCoachingService({
+      db,
+      gateway,
+      profile,
+      training,
+      gamification,
+      logger: logger.child({ module: 'coaching' }),
+    }),
     training,
     nutrition,
-    gamification: createGamificationService({ db }),
+    gamification,
     limits: { perMinute: env.RATE_LIMIT_PER_MINUTE, chatPerMinute: env.CHAT_RATE_LIMIT_PER_MINUTE },
     corsOrigins: env.API_CORS_ORIGINS,
     jobFunctions: createJobFunctions({ db, training, nutrition, logger }),

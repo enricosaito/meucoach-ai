@@ -1,3 +1,4 @@
+import type { WorkoutSession } from './domain/workout-log'
 import type { Locale } from '@mycoach/i18n'
 import type { DailyTargets } from '../nutrition/contracts'
 import type { ActivityLevel, Goals, Sex, UnitSystem } from '../profile/contracts'
@@ -47,4 +48,14 @@ export interface WorkoutPlanRecord {
   bodyScanId: string | null
   createdAt: string
   completedAt: string | null
+}
+
+/** What the coach may know about the user's training (for the daily check-in). */
+export interface CoachSnapshot {
+  /** The current ready plan: day titles and focus, in rotation order. */
+  plan: { id: string; days: { title: string; focus: string }[] } | null
+  /** Recent logged workouts, newest first. */
+  sessions: WorkoutSession[]
+  /** Injuries or limitations the user wrote in the questionnaire. */
+  limitations: string | null
 }

@@ -151,3 +151,48 @@ export async function insertWorkoutSession(
   if (existing.error) throw dbError('insertWorkoutSession', existing.error)
   return { row: existing.data, created: false }
 }
+
+/** The newest plan that finished generating, if any. */
+export async function findLatestReadyPlan(
+  db: AdminClient,
+  userId: string,
+): Promise<PlanRow | null> {
+  const { data, error } = await db
+    .from('workout_plans')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('status', 'ready')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (error) throw dbError('findLatestReadyPlan', error)
+  return data
+}
+
+/** Logged workouts on or after a local date ("YYYY-MM-DD"), newest first. */
+export async function listSessionsSince(
+  db: AdminClient,
+  userId: string,
+  sinceLocalDate: string,
+): Promise<WorkoutSessionRow[]> {
+  const { data, error } = await db
+    .from('workout_sessions')
+    .select('*')
+    .eq('user_id', userId)
+    .gte('local_date', sinceLocalDate)
+    .order('created_at', { ascending: false })
+    .limit(100)
+  if (error) throw dbError('listSessionsSince', error)
+  return data
+}
+
+/** Injuries or limitations from the last questionnaire, if the user wrote any. */
+export async function findLimitations(db: AdminClient, userId: string): Promise<string | null> {
+  const { data, error } = await db
+    .from('training_profiles')
+    .select('limitations')
+    .eq('user_id', userId)
+    .maybeSingle()
+  if (error) throw dbError('findLimitations', error)
+  return data?.limitations?.trim() || null
+}

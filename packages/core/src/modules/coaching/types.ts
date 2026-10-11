@@ -4,3 +4,9 @@ export interface ChatMessage {
   content: string
   createdAt: string
 }
+
+/** Today's coach check-in: a message in the chat thread plus one-tap replies. */
+export interface CheckIn {
+  message: ChatMessage
+  quickReplies: string[]
+}

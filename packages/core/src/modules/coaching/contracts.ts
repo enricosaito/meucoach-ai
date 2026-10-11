@@ -4,5 +4,5 @@ export {
   sendChatMessageSchema,
   type SendChatMessageInput,
 } from './schemas'
-export type { ChatMessage } from './types'
+export type { ChatMessage, CheckIn } from './types'
 export { parseChatMarkdown, type ChatBlock, type ChatSpan } from './domain/chat-format'

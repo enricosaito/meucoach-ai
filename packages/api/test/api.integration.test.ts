@@ -275,3 +275,44 @@ describe('POST /chat/messages', () => {
     expect(history?.map((m) => m.role)).toEqual(['user', 'assistant'])
   })
 })
+
+describe('POST /chat/check-in', () => {
+  const checkIn = (key = newKey()) =>
+    app.request('/api/v1/chat/check-in', {
+      method: 'POST',
+      headers: authHeaders(user, { 'idempotency-key': key, 'x-request-id': `check-in-${key}` }),
+    })
+
+  it('writes today’s check-in once, into the chat thread, with quick replies', async () => {
+    const first = await checkIn()
+    expect(first.status).toBe(200)
+    const body = (await first.json()) as {
+      message: { id: string; role: string; content: string }
+      quickReplies: string[]
+    }
+    expect(body.message.role).toBe('assistant')
+    // No plan yet: the coach (mock = the template) offers to build one, in pt-BR, by first name.
+    expect(body.message.content).toContain('Oi, Test!')
+    expect(body.message.content).toContain('plano de treino')
+    expect(body.quickReplies).toHaveLength(3)
+
+    // Same local day: the same message comes back, and no second AI call is made.
+    const again = (await (await checkIn()).json()) as { message: { id: string } }
+    expect(again.message.id).toBe(body.message.id)
+    const { data: calls } = await adminClient()
+      .from('ai_calls')
+      .select('feature, prompt_version, status')
+      .eq('user_id', user.id)
+      .eq('feature', 'coach_check_in')
+    expect(calls).toEqual([
+      { feature: 'coach_check_in', prompt_version: 'coach-checkin@1', status: 'succeeded' },
+    ])
+
+    // It is part of the conversation the user reads (RLS) and replies to.
+    const { data: history } = await user.client
+      .from('chat_messages')
+      .select('role, kind')
+      .order('created_at')
+    expect(history?.at(-1)).toEqual({ role: 'assistant', kind: 'check_in' })
+  })
+})

@@ -21,4 +21,9 @@ export {
 } from './ai/registry'
 export type { AiProvider, ChatTurn, ContentPart, ImageMediaType } from './ai/types'
 export { createAiCallRecorder } from './data/ai-calls-repository'
-export { COACH_CHAT_FEATURE, createCoachingService, type CoachingService } from './service'
+export {
+  COACH_CHAT_FEATURE,
+  COACH_CHECK_IN_FEATURE,
+  createCoachingService,
+  type CoachingService,
+} from './service'
