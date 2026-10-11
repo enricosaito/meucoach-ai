@@ -63,6 +63,10 @@ function RootStack() {
         <Stack.Protected guard={session !== null}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
+            name="profile"
+            options={{ ...pushed, title: t('profile.title'), headerBackTitle: t('nav.home') }}
+          />
+          <Stack.Screen
             name="settings"
             options={{ ...pushed, title: t('settings.title'), headerBackTitle: t('nav.profile') }}
           />

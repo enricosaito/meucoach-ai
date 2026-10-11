@@ -61,7 +61,17 @@ Done (2026-10-10):
   `AI_MODEL_SMART` unset (plans/photos on Opus 5.5). Haiku has no server-side refusal fallback;
   the provider sends `fallbacks` only to models that support it.
 
-Next, in order: **coach voice** (new `coach-chat` prompt version with the BRAND.md voice; consider
+- **Coach-first Home (2026-10-11)**: navigation is three tabs (Início, Treino, Dieta); Profile
+  opens from the avatar (pushed screen, settings cog in its header); the Coach tab is gone and the
+  chat is the full-screen `/chat`. Home's hero is the **daily coach check-in**
+  (`POST /chat/check-in`, prompt `coach-checkin@1` on `coach-chat@3`): written once per local
+  day from yesterday's/today's workout, a break, the questionnaire limitations, streak and the
+  recent chat; stored in `chat_messages` (`kind = 'check_in'`, `quick_replies`) so replying
+  continues the thread; template fallback if the AI fails. Below: today's workout, a compact week
+  summary, the diet card. Coach replies render bold/lists (`parseChatMarkdown`).
+
+Next, in order: **set and weight logging** (records/PRs, "aumentei 2,5 kg porque…"), **coach
+notes memory** (facts extracted from chats), the check-in as a **push notification**, then **coach voice** (new `coach-chat` prompt version with the BRAND.md voice; consider
 plan/workout context in the chat), then **Dieta**, the
 **energy test** (the wizard's energy hint has no link until then); then
 **freemium** with RevenueCat (needs an EAS development build, not Expo Go). The web UI is paused

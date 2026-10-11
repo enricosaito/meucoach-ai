@@ -14,8 +14,6 @@ const TAB_ICONS = {
   home: 'house',
   training: 'dumbbell',
   diet: 'salad',
-  coach: 'message-circle',
-  profile: 'user-round',
 }
 const POINTS = 25
 const SCALES = [1, 2, 3]

@@ -2,18 +2,18 @@ import { plateForLevel } from '@mycoach/brand'
 import { addDays, localDay } from '@mycoach/core/gamification/contracts'
 import { cmToFeetInches, greetingName, kgToPounds } from '@mycoach/core/profile/contracts'
 import { LinearGradient } from 'expo-linear-gradient'
-import { Link } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import { Check, Flame, Ruler, Settings, Star, Target } from 'lucide-react-native'
 import { useCallback, useEffect, useState } from 'react'
-import { Pressable, StyleSheet, View } from 'react-native'
-import { Knurling } from '../../components/knurling'
-import { ProgressRing } from '../../components/progress-ring'
-import { Avatar, Card, Screen, Skeleton, Txt } from '../../components/ui'
-import { fetchActivityDays, fetchRecentSessions } from '../../lib/data'
-import { haptics } from '../../lib/haptics'
-import { useI18n } from '../../lib/i18n'
-import { useMe, type Me } from '../../lib/me'
-import { plates, radius, space, useColors } from '../../theme'
+import { Pressable, ScrollView, StyleSheet, View } from 'react-native'
+import { Knurling } from '../components/knurling'
+import { ProgressRing } from '../components/progress-ring'
+import { Avatar, Card, Skeleton, Txt } from '../components/ui'
+import { fetchActivityDays, fetchRecentSessions } from '../lib/data'
+import { haptics } from '../lib/haptics'
+import { useI18n } from '../lib/i18n'
+import { useMe, type Me } from '../lib/me'
+import { plates, radius, space, useColors } from '../theme'
 
 /** Read-only overview (Sweatcoin-style). Everything editable lives behind the cog. */
 export default function ProfileScreen() {
@@ -22,25 +22,29 @@ export default function ProfileScreen() {
   const { me } = useMe()
 
   return (
-    <Screen
-      title={t('profile.title')}
-      showAvatar={false}
-      headerRight={
-        <Link href="/settings" asChild>
-          <Pressable
-            accessibilityRole="button"
-            accessibilityLabel={t('profile.settings')}
-            onPress={haptics.tap}
-            style={({ pressed }) => [
-              styles.iconButton,
-              { backgroundColor: colors.surfaceMuted, opacity: pressed ? 0.7 : 1 },
-            ]}
-          >
-            <Settings size={20} color={colors.textPrimary} />
-          </Pressable>
-        </Link>
-      }
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.background }}
+      contentInsetAdjustmentBehavior="automatic"
+      contentContainerStyle={styles.content}
     >
+      {/* Opened from the avatar on Home: native header with back, settings cog on the right. */}
+      <Stack.Screen
+        options={{
+          headerRight: () => (
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={t('profile.settings')}
+              hitSlop={8}
+              onPress={() => {
+                haptics.tap()
+                router.push('/settings')
+              }}
+            >
+              <Settings size={22} color={colors.accentText} />
+            </Pressable>
+          ),
+        }}
+      />
       {me ? (
         <>
           <Hero me={me} />
@@ -54,7 +58,7 @@ export default function ProfileScreen() {
           <Skeleton height={140} />
         </>
       )}
-    </Screen>
+    </ScrollView>
   )
 }
 
@@ -276,13 +280,7 @@ function BodyCard({ me }: { me: Me }) {
 }
 
 const styles = StyleSheet.create({
-  iconButton: {
-    width: 40,
-    height: 40,
-    borderRadius: radius.md,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  content: { padding: space.lg, gap: space.xl, paddingBottom: space.xxl * 2 },
   hero: {
     borderRadius: radius.lg,
     borderWidth: StyleSheet.hairlineWidth,

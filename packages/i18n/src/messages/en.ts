@@ -119,6 +119,8 @@ export const en = {
     streakLabel: 'Streak',
     levelLabel: 'Level',
     proteinLabel: 'Protein',
+    replyToCoach: 'Reply to your coach…',
+    checkInError: 'Couldn’t load your coach’s message.',
     weekTitle: 'Your week',
     weekdaysShort: 'M,T,W,T,F,S,S',
     ofCalories: '{percent} of calories',

@@ -120,6 +120,8 @@ export const ptBR = {
     streakLabel: 'Sequência',
     levelLabel: 'Nível',
     proteinLabel: 'Proteína',
+    replyToCoach: 'Responder ao coach…',
+    checkInError: 'Não consegui carregar a mensagem do seu coach.',
     weekTitle: 'Sua semana',
     weekdaysShort: 'S,T,Q,Q,S,S,D',
     ofCalories: '{percent} das calorias',

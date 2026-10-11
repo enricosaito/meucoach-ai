@@ -12,11 +12,10 @@ const ICONS = {
   home: require('../../../assets/images/tabs/home.png') as ImageSourcePropType,
   training: require('../../../assets/images/tabs/training.png') as ImageSourcePropType,
   diet: require('../../../assets/images/tabs/diet.png') as ImageSourcePropType,
-  coach: require('../../../assets/images/tabs/coach.png') as ImageSourcePropType,
-  profile: require('../../../assets/images/tabs/profile.png') as ImageSourcePropType,
 }
 
-/** The real iOS tab bar (Liquid Glass on iOS 26) and Material tabs on Android. */
+/** Three tabs: Início (where the coach lives), Treino, Dieta. Profile opens from the avatar.
+ * The real iOS tab bar (Liquid Glass on iOS 26) and Material tabs on Android. */
 export default function TabsLayout() {
   const { t } = useI18n()
   const colors = useColors()
@@ -36,14 +35,6 @@ export default function TabsLayout() {
       <NativeTabs.Trigger name="diet">
         <NativeTabs.Trigger.Label>{t('nav.diet')}</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon src={ICONS.diet} renderingMode="template" />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="coach">
-        <NativeTabs.Trigger.Label>{t('nav.coach')}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon src={ICONS.coach} renderingMode="template" />
-      </NativeTabs.Trigger>
-      <NativeTabs.Trigger name="profile">
-        <NativeTabs.Trigger.Label>{t('nav.profile')}</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon src={ICONS.profile} renderingMode="template" />
       </NativeTabs.Trigger>
     </NativeTabs>
   )

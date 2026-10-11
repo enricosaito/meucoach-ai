@@ -5,13 +5,13 @@ import { firstName } from '@mycoach/core/profile/contracts'
 import { weekProgress, type WorkoutPlanRecord } from '@mycoach/core/training/contracts'
 import type { MessageKey } from '@mycoach/i18n'
 import { Link, useFocusEffect } from 'expo-router'
-import { ArrowRight, Check, ChevronRight, Dumbbell, Flame, Salad } from 'lucide-react-native'
+import { ArrowRight, Check, ChevronRight, Dumbbell, Salad } from 'lucide-react-native'
 import { useCallback, useEffect, useState } from 'react'
 import { Pressable, StyleSheet, View } from 'react-native'
 import { DoneBadge } from '../../components/done-badge'
-import { StoryCard } from '../../components/home/story-card'
+import { CoachCheckInCard } from '../../components/home/coach-check-in'
 import { StreakCelebration } from '../../components/home/streak-celebration'
-import { WeekHero } from '../../components/home/week-hero'
+import { WeekSummary } from '../../components/home/week-summary'
 import { XpNote } from '../../components/xp-note'
 import {
   Button,
@@ -26,6 +26,7 @@ import { fetchLatestPlan, fetchLatestReadyDietPlan, fetchLatestReadyPlan } from 
 import { haptics } from '../../lib/haptics'
 import { useI18n } from '../../lib/i18n'
 import { useMe, type Me } from '../../lib/me'
+import { useCheckIn } from '../../lib/use-check-in'
 import { useWorkoutLog } from '../../lib/use-workout-log'
 import { workoutTitle } from '../../lib/workout-names'
 import { radius, space, useColors } from '../../theme'
@@ -49,6 +50,7 @@ export default function HomeScreen() {
   const [plans, setPlans] = useState<Plans | null>(null)
   const [refreshing, setRefreshing] = useState(false)
   const log = useWorkoutLog(plans?.ready ?? null)
+  const coach = useCheckIn()
 
   const loadPlans = useCallback(async () => {
     const [latest, ready, diet] = await Promise.all([
@@ -72,7 +74,7 @@ export default function HomeScreen() {
 
   async function refresh() {
     setRefreshing(true)
-    await Promise.allSettled([reload(), loadPlans(), log.reload()])
+    await Promise.allSettled([reload(), loadPlans(), log.reload(), coach.reload()])
     setRefreshing(false)
   }
 
@@ -89,49 +91,38 @@ export default function HomeScreen() {
 
   return (
     <Screen showAvatar={false} onRefresh={() => void refresh()} refreshing={refreshing}>
-      {me ? <TopRow me={me} /> : <Skeleton height={56} />}
+      {me ? <TopRow me={me} /> : <Skeleton height={40} />}
+      {/* The coach comes first: today's check-in, written for this user. */}
+      <CoachCheckInCard
+        checkIn={coach.checkIn}
+        error={coach.error}
+        onRetry={() => void coach.reload()}
+      />
       {me && plans && !log.loading ? (
         <>
-          <WeekHero me={me} trainedDays={week.trainedDays} target={target} targets={me.targets} />
           <TodayCard plans={plans} log={log} />
+          <WeekSummary me={me} trainedDays={week.trainedDays} target={target} />
           {me.targets && <DietCard diet={plans.diet} />}
-          <StoryCard me={me} trainedDays={week.trainedDays} target={target} />
           <MilestoneCelebration me={me} />
         </>
       ) : (
         <>
-          <Skeleton height={320} />
-          <Skeleton height={96} />
           <Skeleton height={180} />
+          <Skeleton height={96} />
         </>
       )}
     </Screen>
   )
 }
 
-/** Greeting on the left; streak and avatar on the right (Opal). */
+/** One slim line: the greeting, and the avatar on the right (opens Profile). */
 function TopRow({ me }: { me: Me }) {
-  const { t, formatNumber } = useI18n()
-  const colors = useColors()
-  const { current } = me.streak
+  const { t } = useI18n()
   return (
     <View style={styles.topRow}>
-      <View style={{ flex: 1 }}>
-        <Txt muted>{t(greetingKey())},</Txt>
-        <Txt variant="displayL" numberOfLines={1}>
-          {firstName(me.profile)}
-        </Txt>
-      </View>
-      <View style={[styles.streakPill, { backgroundColor: colors.surfaceMuted }]}>
-        <Flame
-          size={16}
-          color={current > 0 ? colors.accentIcon : colors.textSecondary}
-          fill={current > 1 ? colors.accentIcon : 'transparent'}
-        />
-        <Txt variant="label" style={{ fontWeight: '700' }}>
-          {formatNumber(current)}
-        </Txt>
-      </View>
+      <Txt variant="title" numberOfLines={1} style={{ flex: 1 }}>
+        {t(greetingKey())}, {firstName(me.profile)}
+      </Txt>
       <ProfileAvatarLink />
     </View>
   )
@@ -285,14 +276,6 @@ function DietCard({ diet }: { diet: DietPlanRecord | null }) {
 
 const styles = StyleSheet.create({
   topRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
-  streakPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    height: 36,
-    paddingHorizontal: space.md,
-    borderRadius: radius.full,
-  },
   row: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
   rowBetween: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   rowCard: { flexDirection: 'row', alignItems: 'center', gap: space.lg },

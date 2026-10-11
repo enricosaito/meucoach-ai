@@ -1,12 +1,5 @@
 import { TabList, Tabs, TabSlot, TabTrigger, type TabTriggerSlotProps } from 'expo-router/ui'
-import {
-  Dumbbell,
-  House,
-  MessageCircle,
-  Salad,
-  UserRound,
-  type LucideIcon,
-} from 'lucide-react-native'
+import { Dumbbell, House, Salad, type LucideIcon } from 'lucide-react-native'
 import { forwardRef } from 'react'
 import { Pressable, StyleSheet, Text, View } from 'react-native'
 import { useI18n } from '../../lib/i18n'
@@ -34,12 +27,6 @@ export default function WebTabsLayout() {
         </TabTrigger>
         <TabTrigger name="diet" href="/diet" asChild>
           <TabButton icon={Salad} label={t('nav.diet')} />
-        </TabTrigger>
-        <TabTrigger name="coach" href="/coach" asChild>
-          <TabButton icon={MessageCircle} label={t('nav.coach')} />
-        </TabTrigger>
-        <TabTrigger name="profile" href="/profile" asChild>
-          <TabButton icon={UserRound} label={t('nav.profile')} />
         </TabTrigger>
       </TabList>
     </Tabs>

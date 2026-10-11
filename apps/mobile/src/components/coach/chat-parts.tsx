@@ -98,10 +98,20 @@ export function TypingIndicator() {
           { backgroundColor: colors.surface, borderColor: colors.border },
         ]}
       >
-        {[0, 1, 2].map((i) => (
-          <Dot key={i} delay={i * 150} color={colors.textSecondary} />
-        ))}
+        <TypingDots />
       </View>
+    </View>
+  )
+}
+
+/** The three animated dots on their own (inside a bubble or a card). */
+export function TypingDots() {
+  const colors = useColors()
+  return (
+    <View style={styles.dots}>
+      {[0, 1, 2].map((i) => (
+        <Dot key={i} delay={i * 150} color={colors.textSecondary} />
+      ))}
     </View>
   )
 }
@@ -211,6 +221,7 @@ const styles = StyleSheet.create({
   bubbleCoach: { borderWidth: StyleSheet.hairlineWidth, borderBottomLeftRadius: radius.xs },
   typing: { flexDirection: 'row', gap: 5, paddingVertical: space.lg },
   dot: { width: 7, height: 7, borderRadius: 3.5 },
+  dots: { flexDirection: 'row', gap: 5 },
   composer: {
     flexDirection: 'row',
     alignItems: 'flex-end',
