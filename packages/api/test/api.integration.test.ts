@@ -252,7 +252,7 @@ describe('POST /chat/messages', () => {
     })
     expect(body.reply.role).toBe('assistant')
     // The mock provider sees the targets and the user's language (pt-BR) through the prompt.
-    expect(body.reply.content).toContain('Suas metas diárias são cerca de 2760 kcal e 144 g')
+    expect(body.reply.content).toContain('Suas metas diárias são cerca de **2760 kcal** e **144 g')
 
     const { data: calls } = await adminClient()
       .from('ai_calls')
@@ -263,7 +263,7 @@ describe('POST /chat/messages', () => {
     expect(calls?.[0]).toMatchObject({
       feature: 'coach_chat',
       provider: 'mock',
-      prompt_version: 'coach-chat@2',
+      prompt_version: 'coach-chat@3',
       status: 'succeeded',
     })
 

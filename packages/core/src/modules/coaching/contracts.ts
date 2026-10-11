@@ -5,3 +5,4 @@ export {
   type SendChatMessageInput,
 } from './schemas'
 export type { ChatMessage } from './types'
+export { parseChatMarkdown, type ChatBlock, type ChatSpan } from './domain/chat-format'

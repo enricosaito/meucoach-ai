@@ -13,7 +13,7 @@ const COPY = {
   en: {
     asked: (q: string) => `(mock coach) You asked: "${q}".`,
     targets: (kcal: string, protein: string) =>
-      `Your daily targets are about ${kcal} kcal and ${protein} g of protein.`,
+      `Your daily targets are about **${kcal} kcal** and **${protein} g of protein**.`,
     tdee: (tdee: string) =>
       `Based on your last test, your estimated maintenance is about ${tdee} kcal/day.`,
     noTest: 'Take the energy test so I can personalise calorie advice.',
@@ -28,7 +28,7 @@ const COPY = {
   pt: {
     asked: (q: string) => `(coach simulado) Você perguntou: "${q}".`,
     targets: (kcal: string, protein: string) =>
-      `Suas metas diárias são cerca de ${kcal} kcal e ${protein} g de proteína.`,
+      `Suas metas diárias são cerca de **${kcal} kcal** e **${protein} g de proteína**.`,
     tdee: (tdee: string) =>
       `Pelo seu último teste, sua manutenção estimada é de cerca de ${tdee} kcal/dia.`,
     noTest: 'Faça o teste de energia para eu personalizar as dicas de calorias.',

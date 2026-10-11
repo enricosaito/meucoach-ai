@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "0.133.0",
+    "@mycoach/brand": "workspace:*",
     "@mycoach/db": "workspace:*",
     "@mycoach/i18n": "workspace:*",
     "zod": "4.6.5"

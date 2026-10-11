@@ -100,7 +100,8 @@ describe('POST /training/workouts', () => {
     expect(body.session).toMatchObject({
       planId,
       dayIndex: 0,
-      localDate: localDay(new Date(), 'America/Sao_Paulo'),
+      // The test user keeps the profile default time zone (UTC); São Paulo broke this test at night.
+      localDate: localDay(new Date(), 'UTC'),
     })
     expect(body.session.dayTitle.length).toBeGreaterThan(0)
     expect(body.xp).toEqual({

@@ -494,6 +494,9 @@ importers:
       '@anthropic-ai/sdk':
         specifier: 0.133.0
         version: 0.133.0(zod@4.6.5)
+      '@mycoach/brand':
+        specifier: workspace:*
+        version: link:../brand
       '@mycoach/db':
         specifier: workspace:*
         version: link:../db

@@ -16,6 +16,7 @@ import { useI18n } from '../../lib/i18n'
 import { font } from '../../lib/typography'
 import { radius, space, useColors } from '../../theme'
 import { Appear } from '../appear'
+import { ChatText } from './chat-text'
 import { ShiningSparkles } from '../training/shining-sparkles'
 import { Txt } from '../ui'
 
@@ -65,9 +66,14 @@ export function Bubble({
           faded && { opacity: 0.5 },
         ]}
       >
-        <Txt style={{ color: mine ? colors.onAccent : colors.textPrimary }} selectable>
-          {message.content}
-        </Txt>
+        {mine ? (
+          // What the user typed stays exactly as typed.
+          <Txt style={{ color: colors.onAccent }} selectable>
+            {message.content}
+          </Txt>
+        ) : (
+          <ChatText content={message.content} color={colors.textPrimary} />
+        )}
       </View>
     </Appear>
   )
