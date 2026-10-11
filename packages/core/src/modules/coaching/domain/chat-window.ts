@@ -15,7 +15,7 @@ export const OPENED_APP_TURN = '[The user opened the app.]'
  */
 export function buildChatWindow(
   historyOldestFirst: readonly ChatTurn[],
-  question: string,
+  question: ChatTurn['content'],
   maxTurns: number = MAX_HISTORY_TURNS,
 ): ChatTurn[] {
   const recent = maxTurns > 0 ? historyOldestFirst.slice(-maxTurns) : []
@@ -30,4 +30,24 @@ export function buildChatWindow(
   const firstUser = recent.findIndex((turn) => turn.role === 'user')
   const trimmed = firstUser === -1 ? [] : recent.slice(firstUser)
   return [...trimmed, { role: 'user', content: question }]
+}
+
+/**
+ * A stored message as the model sees it in history. Photos aren't kept, so an earlier photo is
+ * a note; voice notes are marked so the coach reads them as speech (filler words, no typos).
+ */
+export function historyTurn(message: {
+  role: 'user' | 'assistant'
+  content: string
+  hasImage: boolean
+  viaVoice: boolean
+}): ChatTurn {
+  const notes = [
+    message.hasImage ? '[The user sent a photo here; it is no longer available.]' : '',
+    message.viaVoice ? '[Voice note, transcribed]' : '',
+  ].filter(Boolean)
+  return {
+    role: message.role,
+    content: [...notes, message.content].filter(Boolean).join(' '),
+  }
 }

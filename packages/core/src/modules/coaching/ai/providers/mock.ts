@@ -12,6 +12,7 @@ import type {
 const COPY = {
   en: {
     asked: (q: string) => `(mock coach) You asked: "${q}".`,
+    photo: '[photo]',
     targets: (kcal: string, protein: string) =>
       `Your daily targets are about **${kcal} kcal** and **${protein} g of protein**.`,
     tdee: (tdee: string) =>
@@ -27,6 +28,7 @@ const COPY = {
   },
   pt: {
     asked: (q: string) => `(coach simulado) Você perguntou: "${q}".`,
+    photo: '[foto]',
     targets: (kcal: string, protein: string) =>
       `Suas metas diárias são cerca de **${kcal} kcal** e **${protein} g de proteína**.`,
     tdee: (tdee: string) =>
@@ -64,7 +66,14 @@ export function createMockProvider(options: { delayMs?: number } = {}): AiProvid
     async chat(request: ProviderChatRequest): Promise<ProviderChatResult> {
       if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs))
       const copy = request.system.includes('Reply in Brazilian Portuguese') ? COPY.pt : COPY.en
-      const question = request.messages.at(-1)?.content ?? ''
+      const last = request.messages.at(-1)?.content ?? ''
+      const question =
+        typeof last === 'string'
+          ? last
+          : last
+              .map((part) => (part.type === 'text' ? part.text : copy.photo))
+              .join(' ')
+              .trim()
       const targets = /Daily targets: (\d+) kcal, protein (\d+) g/.exec(request.system)
       const tdee = /TDEE: (\d+) kcal/.exec(request.system)?.[1]
       const text = [
@@ -76,7 +85,11 @@ export function createMockProvider(options: { delayMs?: number } = {}): AiProvid
             : copy.noTest,
         copy.tips[hash(question) % copy.tips.length] ?? '',
       ].join(' ')
-      const input = request.system + request.messages.map((m) => m.content).join('\n')
+      const input =
+        request.system +
+        request.messages
+          .map((m) => (typeof m.content === 'string' ? m.content : JSON.stringify(m.content)))
+          .join('\n')
       return {
         text,
         model: 'mock',

@@ -181,6 +181,7 @@ export type Database = {
           ai_call_id: string | null
           content: string
           created_at: string
+          has_image: boolean
           id: string
           kind: string
           local_date: string | null
@@ -188,11 +189,13 @@ export type Database = {
           quick_replies: string[] | null
           role: string
           user_id: string
+          via_voice: boolean
         }
         Insert: {
           ai_call_id?: string | null
           content: string
           created_at?: string
+          has_image?: boolean
           id?: string
           kind?: string
           local_date?: string | null
@@ -200,11 +203,13 @@ export type Database = {
           quick_replies?: string[] | null
           role: string
           user_id: string
+          via_voice?: boolean
         }
         Update: {
           ai_call_id?: string | null
           content?: string
           created_at?: string
+          has_image?: boolean
           id?: string
           kind?: string
           local_date?: string | null
@@ -212,6 +217,7 @@ export type Database = {
           quick_replies?: string[] | null
           role?: string
           user_id?: string
+          via_voice?: boolean
         }
         Relationships: [
           {

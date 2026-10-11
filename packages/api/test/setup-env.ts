@@ -25,4 +25,4 @@ if (!process.env.SUPABASE_SECRET_KEY) {
 }
 process.env.AI_PROVIDER = 'mock'
 process.env.AI_MOCK_DELAY_MS = '0'
-process.env.LOG_LEVEL = 'silent'
+process.env.LOG_LEVEL = process.env.DEBUG_LOGS ? 'error' : 'silent'

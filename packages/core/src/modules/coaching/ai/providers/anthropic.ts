@@ -33,7 +33,10 @@ export function createAnthropicProvider(options: { apiKey: string }): AiProvider
         model: request.model,
         max_tokens: request.maxTokens,
         system: request.system,
-        messages: request.messages,
+        messages: request.messages.map((turn) => ({
+          role: turn.role,
+          content: typeof turn.content === 'string' ? turn.content : toContentBlocks(turn.content),
+        })),
         // Chat is latency-sensitive and simple: low effort keeps cost and latency down.
         output_config: { effort: 'low' },
         // On a safety refusal, transparently retry on the API's default fallback model, where

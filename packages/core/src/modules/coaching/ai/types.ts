@@ -2,7 +2,8 @@ import type { z } from 'zod'
 
 export interface ChatTurn {
   role: 'user' | 'assistant'
-  content: string
+  /** Plain text, or parts when the turn carries an image (only the turn it was sent in). */
+  content: string | ContentPart[]
 }
 
 export interface ProviderChatRequest {

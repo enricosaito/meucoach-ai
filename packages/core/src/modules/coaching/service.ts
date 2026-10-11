@@ -11,8 +11,9 @@ import {
   type ChatMessageRow,
 } from './data/chat-repository'
 import { buildCheckInFacts, fallbackCheckIn, type CheckInDraft } from './domain/check-in'
-import { MAX_HISTORY_TURNS, buildChatWindow } from './domain/chat-window'
+import { MAX_HISTORY_TURNS, buildChatWindow, historyTurn } from './domain/chat-window'
 import { coachChat, coachCheckIn } from './prompts'
+import type { ChatImage } from './schemas'
 import type { ChatMessage, CheckIn } from './types'
 
 export const COACH_CHAT_FEATURE = 'coach_chat'
@@ -31,6 +32,8 @@ function toChatMessage(row: ChatMessageRow): ChatMessage {
     role: row.role as ChatMessage['role'],
     content: row.content,
     createdAt: row.created_at,
+    hasImage: row.has_image,
+    viaVoice: row.via_voice,
   }
 }
 
@@ -60,14 +63,18 @@ export function createCoachingService(deps: {
 
   return {
     /**
-     * Answers a question. Nothing is persisted unless the AI call succeeds, and the question and
-     * reply are stored together, so a failed request can be retried without duplicates.
+     * Answers a message: text, a photo, or both (a voice note arrives here as its transcript).
+     * The photo goes to the AI for this reply only and is never stored. Nothing is persisted
+     * unless the AI call succeeds, and the question and reply are stored together, so a failed
+     * request can be retried without duplicates.
      */
     async sendMessage(
       userId: string,
-      content: string,
+      input: { content: string; image?: ChatImage | undefined; viaVoice?: boolean },
       options: { requestId?: string } = {},
     ): Promise<{ question: ChatMessage; reply: ChatMessage }> {
+      const { content, image } = input
+      const viaVoice = input.viaVoice ?? false
       const askedAt = now()
       const [context, history] = await Promise.all([
         profile.getCoachingContext(userId),
@@ -82,8 +89,15 @@ export function createCoachingService(deps: {
         request: {
           system: coachChat.buildSystemPrompt(context),
           messages: buildChatWindow(
-            history.map((row) => ({ role: row.role as ChatMessage['role'], content: row.content })),
-            content,
+            history.map((row) => historyTurn(toChatMessage(row))),
+            image
+              ? [
+                  { type: 'image', mediaType: image.mediaType, base64: image.base64 },
+                  ...(content ? [{ type: 'text' as const, text: content }] : []),
+                ]
+              : viaVoice
+                ? historyTurn({ role: 'user', content, hasImage: false, viaVoice }).content
+                : content,
           ),
           maxTokens: MAX_REPLY_TOKENS,
         },
@@ -92,11 +106,21 @@ export function createCoachingService(deps: {
       const replyText = result.refused || result.text.length === 0 ? REFUSAL_REPLY : result.text
       const answeredAt = new Date(Math.max(now().getTime(), askedAt.getTime() + 1))
       const [question, reply] = await insertExchange(db, [
-        { user_id: userId, role: 'user', content, created_at: askedAt.toISOString() },
+        {
+          user_id: userId,
+          role: 'user',
+          content,
+          has_image: image !== undefined,
+          via_voice: viaVoice,
+          created_at: askedAt.toISOString(),
+        },
         {
           user_id: userId,
           role: 'assistant',
           content: replyText,
+          // Both rows go in one insert, which sends NULL (not the default) for missing keys.
+          has_image: false,
+          via_voice: false,
           ai_call_id: result.aiCallId,
           prompt_version: coachChat.version,
           created_at: answeredAt.toISOString(),

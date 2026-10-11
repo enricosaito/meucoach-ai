@@ -1,4 +1,4 @@
-// Versioned prompts. Never edit a published version in place: add coach-chat.v4.ts and switch here.
+// Versioned prompts. Never edit a published version in place: add coach-chat.v5.ts and switch here.
 // The active version string is stored with every AI call and chat message.
-export * as coachChat from './coach-chat.v3'
+export * as coachChat from './coach-chat.v4'
 export * as coachCheckIn from './coach-checkin.v1'

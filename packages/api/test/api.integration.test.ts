@@ -263,7 +263,7 @@ describe('POST /chat/messages', () => {
     expect(calls?.[0]).toMatchObject({
       feature: 'coach_chat',
       provider: 'mock',
-      prompt_version: 'coach-chat@3',
+      prompt_version: 'coach-chat@4',
       status: 'succeeded',
     })
 
@@ -314,5 +314,42 @@ describe('POST /chat/check-in', () => {
       .select('role, kind')
       .order('created_at')
     expect(history?.at(-1)).toEqual({ role: 'assistant', kind: 'check_in' })
+  })
+})
+
+describe('POST /chat/messages with a photo', () => {
+  // A tiny valid JPEG; the mock coach only notes that a photo arrived.
+  const TINY_JPEG =
+    '/9j/4AAQSkZJRgABAQEASABIAAD/2wBDAP//////////////////////////////////////////////////////////////////////////////////////wgALCAABAAEBAREA/8QAFBABAAAAAAAAAAAAAAAAAAAAAP/aAAgBAQABPxA='
+
+  const send = (body: unknown) =>
+    app.request('/api/v1/chat/messages', {
+      method: 'POST',
+      headers: authHeaders(user, { 'idempotency-key': newKey() }),
+      body: JSON.stringify(body),
+    })
+
+  it('answers a photo-only message and stores only that a photo was sent', async () => {
+    const res = await send({ image: { mediaType: 'image/jpeg', base64: TINY_JPEG } })
+    expect(res.status).toBe(201)
+    const body = (await res.json()) as {
+      question: { id: string; content: string; hasImage: boolean }
+      reply: { content: string }
+    }
+    expect(body.question).toMatchObject({ content: '', hasImage: true })
+    expect(body.reply.content).toContain('[foto]')
+
+    // The image itself is not kept anywhere in the row.
+    const { data: row } = await adminClient()
+      .from('chat_messages')
+      .select('*')
+      .eq('id', body.question.id)
+      .single()
+    expect(JSON.stringify(row)).not.toContain(TINY_JPEG.slice(0, 40))
+  })
+
+  it('rejects a message with neither text nor photo', async () => {
+    const res = await send({ content: '   ' })
+    expect(res.status).toBe(400)
   })
 })
