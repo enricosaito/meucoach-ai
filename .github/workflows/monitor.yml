@@ -2,9 +2,9 @@ name: Production monitor
 
 # Fails (and GitHub emails the repo owner) when production's background jobs are stuck:
 # outbox events not dispatched to Inngest, or plans unfinished after 15 minutes.
+# Schedule is off while MeuCoach is paused (no traffic, and the outbox safety-net cron is off, so
+# alerts would be noise). Restore `schedule: [{ cron: '*/15 * * * *' }]` when the project resumes.
 on:
-  schedule:
-    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 permissions: {}

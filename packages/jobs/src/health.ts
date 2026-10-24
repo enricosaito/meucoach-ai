@@ -1,7 +1,11 @@
 import type { AdminClient } from '@mycoach/db'
 import { z } from 'zod'
 
-/** The outbox should be drained within a minute (cron) or seconds (nudge). */
+/**
+ * The outbox should be drained within seconds (the API's nudge). While the project is paused there
+ * is no safety-net cron, so an event whose nudge failed waits for the next write; the scheduled
+ * monitor is off too, so this only flags it on a manual `pnpm health`.
+ */
 export const MAX_OUTBOX_AGE_SECONDS = 5 * 60
 
 const jobHealthRowSchema = z.object({

@@ -44,8 +44,8 @@ export interface AppDeps {
   /** Background functions served at /api/inngest. */
   jobFunctions: ReturnType<typeof createJobFunctions>
   /**
-   * Asks the outbox dispatcher to run now instead of waiting for its cron. Best effort: if this
-   * fails, the cron still delivers the event within a minute.
+   * Asks the outbox dispatcher to run now. Best effort: if this fails, the event waits for the
+   * next nudge (the safety-net cron is off while the project is paused; see jobs/functions).
    */
   nudgeOutbox: () => Promise<void>
   /** Health of the background pipeline (public, aggregates only). */
@@ -118,7 +118,7 @@ export function createDefaultDeps(env: ApiEnv, overrides: Partial<AppDeps> = {})
       try {
         await inngest.send(outboxDispatchRequested.create({}))
       } catch (error) {
-        logger.warn({ err: error }, 'outbox nudge failed; the cron will deliver the event')
+        logger.warn({ err: error }, 'outbox nudge failed; the next nudge will deliver the event')
       }
     },
     jobHealth: () => getJobHealth(db),

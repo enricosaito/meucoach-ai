@@ -99,8 +99,8 @@ analysis, AI workout plans generated in a background job, workout log) and `gami
 11. **Slow/expensive work belongs in background jobs** (Inngest, `packages/jobs`), never in the
     HTTP request. The coach chat reply is the deliberate exception (interactive). Write an
     `outbox_events` row in the SAME transaction as the data change (a Postgres function, e.g.
-    `training_request_plan`); the dispatcher (cron + a nudge from the API) forwards it to Inngest
-    with the outbox id as event id. Every step must be idempotent and safe to retry (check
+    `training_request_plan`); the dispatcher (a nudge from the API; the safety-net cron is off
+    while the project is paused) forwards it to Inngest with the outbox id as event id. Every step must be idempotent and safe to retry (check
     status before calling the AI; never call the AI twice for the same row).
 12. **Derived data is recomputable.** Use append-only logs as the source of truth (e.g.
     `metabolic_assessments`, future `xp_events`); totals/levels/streaks are derived.
@@ -158,8 +158,9 @@ analysis, AI workout plans generated in a background job, workout log) and `gami
 
 Before finishing a change run `pnpm verify` (needs `pnpm db:start`). Release with `pnpm ship`, then
 `pnpm health` once Vercel has deployed. Local demo user (seeded): `demo@example.test` /
-`demo-password-123`. A scheduled GitHub Action (`.github/workflows/monitor.yml`) checks
-`/api/v1/health/jobs` every 15 min and fails (emailing the owner) when jobs are stuck.
+`demo-password-123`. A GitHub Action (`.github/workflows/monitor.yml`) checks
+`/api/v1/health/jobs` and fails (emailing the owner) when jobs are stuck. Its 15-min schedule is
+off while the project is paused (run it manually).
 
 ## Gotchas
 
