@@ -27,7 +27,10 @@ export function createJobFunctions(deps: JobDeps) {
   const outboxDispatcher = inngest.createFunction(
     {
       id: 'outbox-dispatcher',
-      triggers: [{ cron: '* * * * *' }, outboxDispatchRequested],
+      // Only the API's nudge triggers it: the every-minute safety-net cron is off while the project
+      // is paused (~43k Inngest runs/month). A missed nudge is delivered by the next write's nudge.
+      // Re-add a cron (e.g. `{ cron: '*/15 * * * *' }`) when the project resumes.
+      triggers: [outboxDispatchRequested],
       concurrency: { limit: 1 },
     },
     async ({ step }) => {

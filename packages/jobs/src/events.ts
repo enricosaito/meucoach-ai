@@ -22,7 +22,7 @@ export const dietPlanRequested = eventType('nutrition/diet-plan.requested', {
   schema: dietPlanRequestedSchema,
 })
 
-/** Sent by the API after a write that added outbox rows, so dispatch doesn't wait for the cron. */
+/** Sent by the API after a write that added outbox rows, the dispatcher runs. */
 export const outboxDispatchRequested = eventType('outbox/dispatch.requested', {
   schema: z.object({}),
 })
